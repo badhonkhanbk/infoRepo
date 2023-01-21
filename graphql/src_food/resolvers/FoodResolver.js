@@ -25,13 +25,21 @@ let FoodResolver = class FoodResolver {
     }
     async storeData() {
         const data = JSON.parse(fs_1.default.readFileSync('./temp/infoData.json', 'utf-8'));
-        for (let i = 0; i < data.length; i++) {
+        for (let i = 89521; i < data.length; i++) {
             await infoGraphic_1.default.create(data[i]);
         }
         return 'done';
     }
     async deleteData() {
         await infoGraphic_1.default.deleteMany({});
+        return 'done';
+    }
+    async filterData() {
+        let data = await infoGraphic_1.default.find({
+            topic: 'Depression',
+            Year: '2011',
+        }).select('_id year');
+        console.log(data.length);
         return 'done';
     }
     async readFile() {
@@ -121,6 +129,12 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], FoodResolver.prototype, "deleteData", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => String),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], FoodResolver.prototype, "filterData", null);
 __decorate([
     (0, type_graphql_1.Query)(() => String),
     __metadata("design:type", Function),
