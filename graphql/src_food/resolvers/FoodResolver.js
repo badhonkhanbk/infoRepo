@@ -26,10 +26,21 @@ let FoodResolver = class FoodResolver {
     async modifyData() {
         let allData = await infoGraphic_1.default.find();
         for (let i = 0; i < allData.length; i++) {
-            let sampleSizeInNumber = Number(allData[i].Sample_Size);
-            let dataValueInNumber = Number(allData[i].Data_value);
-            let actualDataValueInNumber = (100 / dataValueInNumber) * sampleSizeInNumber;
+            let sampleSizeInNumber;
+            let dataValueInNumber;
+            let actualDataValueInNumber;
             let Category;
+            if (allData[i].Sample_Size === '0') {
+                sampleSizeInNumber = 0;
+                dataValueInNumber = 0;
+                actualDataValueInNumber = 0;
+            }
+            else {
+                sampleSizeInNumber = Number(allData[i].Sample_Size);
+                dataValueInNumber = Number(allData[i].Data_value);
+                actualDataValueInNumber =
+                    (100 / dataValueInNumber) * sampleSizeInNumber;
+            }
             if (allData[i].Break_Out_Category === 'Race/Ethnicity') {
                 if (allData[i].Break_Out ===
                     'Native Hawaiian or other Pacific Islander, non-Hispanic' ||
