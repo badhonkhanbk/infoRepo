@@ -23,6 +23,46 @@ let FoodResolver = class FoodResolver {
         fs_1.default.writeFileSync('./temp/infoData.json', JSON.stringify(jsonArray));
         return 'done';
     }
+    async modifyData() {
+        let allData = await infoGraphic_1.default.find();
+        for (let i = 0; i < allData.length; i++) {
+            let sampleSizeInNumber = Number(allData[i].Sample_Size);
+            let dataValueInNumber = Number(allData[i].Data_value);
+            let actualDataValueInNumber = (100 / dataValueInNumber) * sampleSizeInNumber;
+            let Category;
+            if (allData[i].Break_Out_Category === 'Race/Ethnicity') {
+                if (allData[i].Break_Out ===
+                    'Native Hawaiian or other Pacific Islander, non-Hispanic' ||
+                    allData[i].Break_Out ===
+                        'American Indian or Alaskan Native, non-Hispanic' ||
+                    allData[i].Break_Out === 'Multiracial, non-Hispanic' ||
+                    allData[i].Break_Out === 'Other, non-Hispanic') {
+                    Category = 'Other';
+                }
+                else if (allData[i].Break_Out === 'Hispanic') {
+                    Category = 'Hispanic';
+                }
+                else if (allData[i].Break_Out === 'White, non-Hispanic') {
+                    Category = 'White';
+                }
+                else if (allData[i].Break_Out === 'Black, non-Hispanic') {
+                    Category = 'Black';
+                }
+                else if (allData[i].Break_Out === 'Asian, non-Hispanic') {
+                    Category = 'Asian';
+                }
+            }
+            else {
+                Category = allData[i].Break_Out;
+            }
+            await infoGraphic_1.default.findByIdAndUpdate(allData[i]._id, {
+                Sample_Size_Number: sampleSizeInNumber,
+                Data_value_Number: dataValueInNumber,
+                Actual_Data_Value_Number: actualDataValueInNumber,
+                Category,
+            });
+        }
+    }
     async storeData() {
         const data = JSON.parse(fs_1.default.readFileSync('./temp/infoData.json', 'utf-8'));
         for (let i = 89521; i < data.length; i++) {
@@ -117,6 +157,12 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], FoodResolver.prototype, "csvConverter", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => String),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], FoodResolver.prototype, "modifyData", null);
 __decorate([
     (0, type_graphql_1.Query)(() => String),
     __metadata("design:type", Function),
