@@ -88,7 +88,70 @@ let FoodResolver = class FoodResolver {
                 console.log(i);
             }
         }
+        return 'done';
     }
+    // @Query(() => String)
+    // async modifyData() {
+    //   let allData = await InfoGraphic.find();
+    //   for (let i = 0; i < allData.length; i++) {
+    //     let sampleSizeInNumber;
+    //     let dataValueInNumber;
+    //     let actualDataValueInNumber;
+    //     let Category;
+    //     if (allData[i].Data_value === '') {
+    //       sampleSizeInNumber = Number(allData[i].Sample_Size);
+    //       dataValueInNumber = 0;
+    //       actualDataValueInNumber = 0;
+    //     } else if (allData[i].Sample_Size === '0') {
+    //       if (allData[i].Data_value === '') {
+    //         sampleSizeInNumber = 0;
+    //         dataValueInNumber = 0;
+    //         actualDataValueInNumber = 0;
+    //       } else {
+    //         sampleSizeInNumber = 0;
+    //         dataValueInNumber = 0;
+    //         actualDataValueInNumber = 0;
+    //       }
+    //     } else {
+    //       sampleSizeInNumber = Number(allData[i].Sample_Size);
+    //       dataValueInNumber = Number(allData[i].Data_value);
+    //       actualDataValueInNumber =
+    //         (100 / dataValueInNumber) * sampleSizeInNumber;
+    //     }
+    //     if (allData[i].Break_Out_Category === 'Race/Ethnicity') {
+    //       if (
+    //         allData[i].Break_Out ===
+    //           'Native Hawaiian or other Pacific Islander, non-Hispanic' ||
+    //         allData[i].Break_Out ===
+    //           'American Indian or Alaskan Native, non-Hispanic' ||
+    //         allData[i].Break_Out === 'Multiracial, non-Hispanic' ||
+    //         allData[i].Break_Out === 'Other, non-Hispanic'
+    //       ) {
+    //         Category = 'Other';
+    //       } else if (allData[i].Break_Out === 'Hispanic') {
+    //         Category = 'Hispanic';
+    //       } else if (allData[i].Break_Out === 'White, non-Hispanic') {
+    //         Category = 'White';
+    //       } else if (allData[i].Break_Out === 'Black, non-Hispanic') {
+    //         Category = 'Black';
+    //       } else if (allData[i].Break_Out === 'Asian, non-Hispanic') {
+    //         Category = 'Asian';
+    //       }
+    //     } else {
+    //       Category = allData[i].Break_Out;
+    //     }
+    //     await InfoGraphic.findByIdAndUpdate(allData[i]._id, {
+    //       Sample_Size_Number: sampleSizeInNumber,
+    //       Data_value_Number: dataValueInNumber,
+    //       Actual_Data_Value_Number: actualDataValueInNumber,
+    //       Category,
+    //     });
+    //     if (i % 1000 === 0) {
+    //       console.log(i);
+    //     }
+    //   }
+    //   return 'done';
+    // }
     async storeData() {
         const data = JSON.parse(fs_1.default.readFileSync('./temp/infoData.json', 'utf-8'));
         for (let i = 89521; i < data.length; i++) {
