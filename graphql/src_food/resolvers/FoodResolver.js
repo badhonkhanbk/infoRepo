@@ -30,10 +30,22 @@ let FoodResolver = class FoodResolver {
             let dataValueInNumber;
             let actualDataValueInNumber;
             let Category;
-            if (allData[i].Sample_Size === '0') {
-                sampleSizeInNumber = 0;
+            if (allData[i].Data_value === '') {
+                sampleSizeInNumber = Number(allData[i].Sample_Size);
                 dataValueInNumber = 0;
                 actualDataValueInNumber = 0;
+            }
+            else if (allData[i].Sample_Size === '0') {
+                if (allData[i].Data_value === '') {
+                    sampleSizeInNumber = 0;
+                    dataValueInNumber = 0;
+                    actualDataValueInNumber = 0;
+                }
+                else {
+                    sampleSizeInNumber = 0;
+                    dataValueInNumber = 0;
+                    actualDataValueInNumber = 0;
+                }
             }
             else {
                 sampleSizeInNumber = Number(allData[i].Sample_Size);
@@ -72,6 +84,9 @@ let FoodResolver = class FoodResolver {
                 Actual_Data_Value_Number: actualDataValueInNumber,
                 Category,
             });
+            if (i % 1000 === 0) {
+                console.log(i);
+            }
         }
     }
     async storeData() {
