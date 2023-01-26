@@ -20,6 +20,7 @@ const infoGraphic_1 = __importDefault(require("../../../models/infoGraphic"));
 const Overall_1 = __importDefault(require("../../../models/Overall"));
 const FotmatedData_1 = __importDefault(require("../schemas/FotmatedData"));
 const ReturnInfoData_1 = __importDefault(require("../schemas/ReturnInfoData"));
+const Compare_1 = __importDefault(require("../schemas/Compare"));
 let FoodResolver = class FoodResolver {
     // @Query(() => String)
     // async csvConverter() {
@@ -28,66 +29,42 @@ let FoodResolver = class FoodResolver {
     //   fs.writeFileSync('./temp/infoData.json', JSON.stringify(jsonArray));
     //   return 'done';
     // }
-    // @Query(() => String)
-    // async modifyData() {
-    //   let allData = await InfoGraphic.find().skip(107000);
-    //   for (let i = 0; i < allData.length; i++) {
-    //     let sampleSizeInNumber;
-    //     let dataValueInNumber;
-    //     let actualDataValueInNumber;
-    //     let Category;
-    //     if (allData[i].Data_value === '') {
-    //       sampleSizeInNumber = Number(allData[i].Sample_Size);
-    //       dataValueInNumber = 0;
-    //       actualDataValueInNumber = 0;
-    //     } else if (allData[i].Sample_Size === '0') {
-    //       if (allData[i].Data_value === '') {
-    //         sampleSizeInNumber = 0;
-    //         dataValueInNumber = 0;
-    //         actualDataValueInNumber = 0;
-    //       } else {
-    //         sampleSizeInNumber = 0;
-    //         dataValueInNumber = 0;
-    //         actualDataValueInNumber = 0;
-    //       }
-    //     } else {
-    //       sampleSizeInNumber = Number(allData[i].Sample_Size);
-    //       dataValueInNumber = Number(allData[i].Data_value);
-    //       actualDataValueInNumber =
-    //         (100 / dataValueInNumber) * sampleSizeInNumber;
-    //     }
-    //     if (allData[i].Break_Out_Category === 'Race/Ethnicity') {
-    //       if (
-    //         allData[i].Break_Out ===
-    //           'Native Hawaiian or other Pacific Islander, non-Hispanic' ||
-    //         allData[i].Break_Out ===
-    //           'American Indian or Alaskan Native, non-Hispanic' ||
-    //         allData[i].Break_Out === 'Multiracial, non-Hispanic' ||
-    //         allData[i].Break_Out === 'Other, non-Hispanic'
-    //       ) {
-    //         Category = 'Other';
-    //       } else if (allData[i].Break_Out === 'Hispanic') {
-    //         Category = 'Hispanic';
-    //       } else if (allData[i].Break_Out === 'White, non-Hispanic') {
-    //         Category = 'White';
-    //       } else if (allData[i].Break_Out === 'Black, non-Hispanic') {
-    //         Category = 'Black';
-    //       } else if (allData[i].Break_Out === 'Asian, non-Hispanic') {
-    //         Category = 'Asian';
-    //       }
-    //     } else {
-    //       Category = allData[i].Break_Out;
-    //     }
-    //     await InfoGraphic.findByIdAndUpdate(allData[i]._id, {
-    //       Sample_Size_Number: sampleSizeInNumber,
-    //       Data_value_Number: dataValueInNumber,
-    //       Actual_Data_Value_Number: actualDataValueInNumber,
-    //       Category,
-    //     });
-    //     console.log(i);
-    //   }
-    //   return 'done';
-    // }
+    async modifyData() {
+        let allData = await infoGraphic_1.default.find().skip(2000).limit(50000);
+        for (let i = 0; i < allData.length; i++) {
+            let sampleSizeInNumber;
+            let dataValueInNumber;
+            let actualDataValueInNumber;
+            if (allData[i].Data_value === '') {
+                sampleSizeInNumber = Number(allData[i].Sample_Size);
+                dataValueInNumber = 0;
+                actualDataValueInNumber = 0;
+            }
+            else if (allData[i].Sample_Size === '0') {
+                if (allData[i].Data_value === '') {
+                    sampleSizeInNumber = 0;
+                    dataValueInNumber = 0;
+                    actualDataValueInNumber = 0;
+                }
+                else {
+                    sampleSizeInNumber = 0;
+                    dataValueInNumber = 0;
+                    actualDataValueInNumber = 0;
+                }
+            }
+            else {
+                sampleSizeInNumber = Number(allData[i].Sample_Size);
+                dataValueInNumber = Number(allData[i].Data_value);
+                actualDataValueInNumber =
+                    (dataValueInNumber / 100) * sampleSizeInNumber;
+            }
+            await infoGraphic_1.default.findByIdAndUpdate(allData[i]._id, {
+                Actual_Data_Value_Number: actualDataValueInNumber,
+            });
+            console.log(i);
+        }
+        return 'done';
+    }
     // @Query(() => String)
     // async modifyData2() {
     //   let allData = await InfoGraphic.find();
@@ -534,7 +511,181 @@ let FoodResolver = class FoodResolver {
             return forMatedData1;
         }
     }
+    async getCompareData(disease, type) {
+        let obj = {};
+        if (!disease) {
+            obj.Topic = 'Arthritis';
+        }
+        else {
+            obj.Topic = disease;
+        }
+        let years = [
+            '2011',
+            '2012',
+            '2013',
+            '2014',
+            '2015',
+            '2016',
+            '2017',
+            '2018',
+            '2019',
+            '2020',
+            '2021',
+        ];
+        let formateData = [];
+        let matchObj = {};
+        if (type === 'disease') {
+            matchObj = {
+                Break_Out_Category: 'Overall',
+                Year: '',
+            };
+            for (let i = 0; i < years.length; i++) {
+                matchObj.Year = years[i];
+                let data = await Overall_1.default.aggregate([
+                    {
+                        $match: matchObj,
+                    },
+                    {
+                        $unwind: '$Topic',
+                    },
+                    {
+                        $group: {
+                            _id: '$Topic',
+                            sampleSize: { $sum: '$Sample_Size_Number' },
+                            value: { $sum: '$Actual_Data_Value_Number' },
+                        },
+                    },
+                    {
+                        $sort: {
+                            _id: 1,
+                        },
+                    },
+                ]);
+                let total1 = data.reduce((acc, d) => {
+                    acc += d.sampleSize;
+                    return acc;
+                }, 0);
+                let forMatedData = data.map((d) => {
+                    return {
+                        _id: d._id,
+                        sampleSize: d.sampleSize,
+                        value: d.value,
+                        percentage: (100 / total1) * d.sampleSize,
+                    };
+                });
+                formateData.push({
+                    year: years[i],
+                    fotmatedData: forMatedData,
+                });
+            }
+            return formateData;
+        }
+        else if (type === 'sex') {
+            matchObj = {
+                ...obj,
+                Break_Out_Category: 'Gender',
+            };
+        }
+        else if (type === 'age') {
+            matchObj = {
+                ...obj,
+                Break_Out_Category: 'Age Group',
+            };
+        }
+        else if (type === 'race') {
+            matchObj = {
+                ...obj,
+                Break_Out_Category: 'Race/Ethnicity',
+            };
+            for (let i = 0; i < years.length; i++) {
+                matchObj.Year = years[i];
+                let data = await infoGraphic_1.default.aggregate([
+                    {
+                        $match: matchObj,
+                    },
+                    {
+                        $unwind: '$Category',
+                    },
+                    {
+                        $group: {
+                            _id: '$Category',
+                            sampleSize: { $sum: '$Sample_Size_Number' },
+                            value: { $sum: '$Actual_Data_Value_Number' },
+                        },
+                    },
+                    {
+                        $sort: {
+                            _id: 1,
+                        },
+                    },
+                ]);
+                let total1 = data.reduce((acc, d) => {
+                    acc += d.sampleSize;
+                    return acc;
+                }, 0);
+                let forMatedData = data.map((d) => {
+                    return {
+                        _id: d._id,
+                        sampleSize: d.sampleSize,
+                        value: d.value,
+                        percentage: (100 / total1) * d.sampleSize,
+                    };
+                });
+                formateData.push({
+                    year: years[i],
+                    fotmatedData: forMatedData,
+                });
+            }
+            return formateData;
+        }
+        for (let i = 0; i < years.length; i++) {
+            matchObj.Year = years[i];
+            let data = await infoGraphic_1.default.aggregate([
+                {
+                    $match: matchObj,
+                },
+                {
+                    $unwind: '$Break_Out',
+                },
+                {
+                    $group: {
+                        _id: '$Break_Out',
+                        sampleSize: { $sum: '$Sample_Size_Number' },
+                        value: { $sum: '$Actual_Data_Value_Number' },
+                    },
+                },
+                {
+                    $sort: {
+                        _id: 1,
+                    },
+                },
+            ]);
+            let total1 = data.reduce((acc, d) => {
+                acc += d.sampleSize;
+                return acc;
+            }, 0);
+            let forMatedData = data.map((d) => {
+                return {
+                    _id: d._id,
+                    sampleSize: d.sampleSize,
+                    value: d.value,
+                    percentage: (100 / total1) * d.sampleSize,
+                };
+            });
+            formateData.push({
+                year: years[i],
+                fotmatedData: forMatedData,
+            });
+        }
+        return formateData;
+    }
 };
+__decorate([
+    (0, type_graphql_1.Query)(() => String),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], FoodResolver.prototype, "modifyData", null);
 __decorate([
     (0, type_graphql_1.Query)(() => String),
     __metadata("design:type", Function),
@@ -565,6 +716,15 @@ __decorate([
         String]),
     __metadata("design:returntype", Promise)
 ], FoodResolver.prototype, "yearBasedAggregation", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => [Compare_1.default]),
+    __param(0, (0, type_graphql_1.Arg)('disease', { nullable: true })),
+    __param(1, (0, type_graphql_1.Arg)('type')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String,
+        String]),
+    __metadata("design:returntype", Promise)
+], FoodResolver.prototype, "getCompareData", null);
 FoodResolver = __decorate([
     (0, type_graphql_1.Resolver)()
 ], FoodResolver);
