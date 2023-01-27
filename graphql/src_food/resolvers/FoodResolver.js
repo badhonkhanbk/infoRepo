@@ -260,7 +260,7 @@ let FoodResolver = class FoodResolver {
     //   // fs.writeFileSync('./temp/locationDesc.json', JSON.stringify(locationDesc));
     //   return '';
     // }
-    async showInfoData(year, state) {
+    async showInfoData(year, state, disease, race, age, sex) {
         let obj = {};
         if (year) {
             obj.Year = year;
@@ -271,9 +271,21 @@ let FoodResolver = class FoodResolver {
         if (state) {
             obj.Locationabbr = state;
         }
-        let data = await Overall_1.default.aggregate([
+        let diseaseObj = {
+            ...obj,
+        };
+        if (race) {
+            diseaseObj.Category = race;
+        }
+        if (age) {
+            diseaseObj.Category = age;
+        }
+        if (sex) {
+            diseaseObj.Category = sex;
+        }
+        let data = await infoGraphic_1.default.aggregate([
             {
-                $match: obj,
+                $match: diseaseObj,
             },
             {
                 $unwind: '$Topic',
@@ -307,6 +319,12 @@ let FoodResolver = class FoodResolver {
             ...obj,
             Break_Out_Category: 'Race/Ethnicity',
         };
+        if (disease) {
+            raceObj.Topic = disease;
+        }
+        else {
+            raceObj.Topic = 'Arthritis';
+        }
         let data2 = await infoGraphic_1.default.aggregate([
             {
                 $match: raceObj,
@@ -343,6 +361,12 @@ let FoodResolver = class FoodResolver {
             ...obj,
             Break_Out_Category: 'Age Group',
         };
+        if (disease) {
+            ageObj.Topic = disease;
+        }
+        else {
+            ageObj.Topic = 'Arthritis';
+        }
         let data3 = await infoGraphic_1.default.aggregate([
             {
                 $match: ageObj,
@@ -379,6 +403,12 @@ let FoodResolver = class FoodResolver {
             ...obj,
             Break_Out_Category: 'Gender',
         };
+        if (disease) {
+            genderObj.Topic = disease;
+        }
+        else {
+            genderObj.Topic = 'Arthritis';
+        }
         let data4 = await infoGraphic_1.default.aggregate([
             {
                 $match: genderObj,
@@ -424,6 +454,9 @@ let FoodResolver = class FoodResolver {
         let allYearsData = [];
         if (disease) {
             obj.Topic = disease;
+        }
+        else {
+            obj.Topic = 'Arthritis';
         }
         if (state) {
             obj.Locationabbr = state;
@@ -533,7 +566,11 @@ let FoodResolver = class FoodResolver {
             '2021',
         ];
         let formateData = [];
-        let matchObj = {};
+        let matchObj = {
+            $ne: {
+                topic: 'Vision',
+            },
+        };
         if (type === 'disease') {
             matchObj = {
                 Break_Out_Category: 'Overall',
@@ -679,6 +716,120 @@ let FoodResolver = class FoodResolver {
         }
         return formateData;
     }
+    async getStateData(year, disease) {
+        let obj = {};
+        if (year) {
+            obj.Year = year;
+        }
+        else {
+            obj.Year = '2021';
+        }
+        if (disease) {
+            obj.Topic = disease;
+        }
+        else {
+            obj.Topic = 'Arthritis';
+        }
+        // let states = [
+        //   'AL',
+        //   'KY',
+        //   'AK',
+        //   'LA',
+        //   'AZ',
+        //   'AR',
+        //   'GU',
+        //   'CA',
+        //   'CO',
+        //   'CT',
+        //   'WY',
+        //   'DE',
+        //   'MT',
+        //   'MD',
+        //   'DC',
+        //   'OH',
+        //   'FL',
+        //   'KS',
+        //   'TN',
+        //   'HI',
+        //   'PR',
+        //   'ID',
+        //   'IL',
+        //   'IN',
+        //   'UW',
+        //   'IA',
+        //   'ME',
+        //   'MA',
+        //   'OR',
+        //   'MI',
+        //   'RI',
+        //   'MO',
+        //   'UT',
+        //   'MN',
+        //   'MS',
+        //   'SD',
+        //   'NH',
+        //   'NE',
+        //   'WA',
+        //   'NV',
+        //   'NY',
+        //   'NJ',
+        //   'NM',
+        //   'NC',
+        //   'ND',
+        //   'OK',
+        //   'VA',
+        //   'WV',
+        //   'SC',
+        //   'WI',
+        //   'TX',
+        //   'VT',
+        //   'PA',
+        //   'GA',
+        //   'US',
+        //   'VI',
+        // ];
+        let returnData = [];
+        let data = await infoGraphic_1.default.aggregate([
+            {
+                $match: obj,
+            },
+            {
+                $unwind: '$Locationabbr',
+            },
+            {
+                $group: {
+                    _id: '$Locationabbr',
+                    sampleSize: { $sum: '$Sample_Size_Number' },
+                    value: { $sum: '$Actual_Data_Value_Number' },
+                },
+            },
+            {
+                $sort: {
+                    _id: 1,
+                },
+            },
+        ]);
+        let total1 = data.reduce((acc, d) => {
+            acc += d.sampleSize;
+            return acc;
+        }, 0);
+        let forMatedData = data.map((d) => {
+            return {
+                _id: d._id,
+                sampleSize: d.sampleSize,
+                value: d.value,
+                percentage: (100 / total1) * d.sampleSize,
+                prevalence: 0,
+            };
+        });
+        console.log('forMatedData', forMatedData.length);
+        let returnObj = {};
+        for (let i = 0; i < forMatedData.length; i++) {
+            returnObj[forMatedData[i]._id] = forMatedData[i];
+        }
+        console.log(returnObj.AL);
+        return JSON.stringify(returnObj);
+    }
 };
 __decorate([
     (0, type_graphql_1.Query)(() => String),
@@ -696,8 +847,16 @@ __decorate([
     (0, type_graphql_1.Query)(() => ReturnInfoData_1.default),
     __param(0, (0, type_graphql_1.Arg)('year', { nullable: true })),
     __param(1, (0, type_graphql_1.Arg)('state', { nullable: true })),
+    __param(2, (0, type_graphql_1.Arg)('disease', { nullable: true })),
+    __param(3, (0, type_graphql_1.Arg)('race', { nullable: true })),
+    __param(4, (0, type_graphql_1.Arg)('age', { nullable: true })),
+    __param(5, (0, type_graphql_1.Arg)('sex', { nullable: true })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String,
+        String,
+        String,
+        String,
+        String,
         String]),
     __metadata("design:returntype", Promise)
 ], FoodResolver.prototype, "showInfoData", null);
@@ -725,6 +884,15 @@ __decorate([
         String]),
     __metadata("design:returntype", Promise)
 ], FoodResolver.prototype, "getCompareData", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => String),
+    __param(0, (0, type_graphql_1.Arg)('year', { nullable: true })),
+    __param(1, (0, type_graphql_1.Arg)('disease', { nullable: true })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String,
+        String]),
+    __metadata("design:returntype", Promise)
+], FoodResolver.prototype, "getStateData", null);
 FoodResolver = __decorate([
     (0, type_graphql_1.Resolver)()
 ], FoodResolver);

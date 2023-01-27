@@ -8,31 +8,23 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
-let FormatedData = class FormatedData {
+const FotmatedData_1 = __importDefault(require("./FotmatedData"));
+let StateData = class StateData {
 };
 __decorate([
     (0, type_graphql_1.Field)(),
     __metadata("design:type", String)
-], FormatedData.prototype, "_id", void 0);
+], StateData.prototype, "state", void 0);
 __decorate([
-    (0, type_graphql_1.Field)(),
-    __metadata("design:type", Number)
-], FormatedData.prototype, "sampleSize", void 0);
-__decorate([
-    (0, type_graphql_1.Field)(),
-    __metadata("design:type", Number)
-], FormatedData.prototype, "value", void 0);
-__decorate([
-    (0, type_graphql_1.Field)(),
-    __metadata("design:type", Number)
-], FormatedData.prototype, "percentage", void 0);
-__decorate([
-    (0, type_graphql_1.Field)({ nullable: true }),
-    __metadata("design:type", Number)
-], FormatedData.prototype, "prevalence", void 0);
-FormatedData = __decorate([
+    (0, type_graphql_1.Field)((type) => FotmatedData_1.default),
+    __metadata("design:type", FotmatedData_1.default)
+], StateData.prototype, "fotmatedData", void 0);
+StateData = __decorate([
     (0, type_graphql_1.ObjectType)()
-], FormatedData);
-exports.default = FormatedData;
+], StateData);
+exports.default = StateData;
