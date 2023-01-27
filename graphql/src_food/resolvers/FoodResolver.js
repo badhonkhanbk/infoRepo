@@ -303,16 +303,14 @@ let FoodResolver = class FoodResolver {
                 },
             },
         ]);
-        let total1 = data.reduce((acc, d) => {
-            acc += d.sampleSize;
-            return acc;
-        }, 0);
         let forMatedData1 = data.map((d) => {
             return {
                 _id: d._id,
                 sampleSize: d.sampleSize,
                 value: d.value,
-                percentage: (100 / total1) * d.sampleSize,
+                percentage: (+d.value / +d.sampleSize) * 100
+                    ? (+d.value / +d.sampleSize) * 100
+                    : 0,
             };
         });
         let raceObj = {
@@ -345,16 +343,14 @@ let FoodResolver = class FoodResolver {
                 },
             },
         ]);
-        let total2 = data2.reduce((acc, d) => {
-            acc += d.sampleSize;
-            return acc;
-        }, 0);
         let forMatedData2 = data2.map((d) => {
             return {
                 _id: d._id,
                 sampleSize: d.sampleSize,
                 value: d.value,
-                percentage: (100 / total2) * d.sampleSize,
+                percentage: (+d.value / +d.sampleSize) * 100
+                    ? (+d.value / +d.sampleSize) * 100
+                    : 0,
             };
         });
         let ageObj = {
@@ -387,16 +383,14 @@ let FoodResolver = class FoodResolver {
                 },
             },
         ]);
-        let total3 = data3.reduce((acc, d) => {
-            acc += d.sampleSize;
-            return acc;
-        }, 0);
         let forMatedData3 = data3.map((d) => {
             return {
                 _id: d._id,
                 sampleSize: d.sampleSize,
                 value: d.value,
-                percentage: (100 / total3) * d.sampleSize,
+                percentage: (+d.value / +d.sampleSize) * 100
+                    ? (+d.value / +d.sampleSize) * 100
+                    : 0,
             };
         });
         let genderObj = {
@@ -429,17 +423,14 @@ let FoodResolver = class FoodResolver {
                 },
             },
         ]);
-        let total4 = data4.reduce((acc, d) => {
-            acc += d.sampleSize;
-            return acc;
-        }, 0);
-        console.log('total4', total4);
         let forMatedData4 = data4.map((d) => {
             return {
                 _id: d._id,
                 sampleSize: d.sampleSize,
                 value: d.value,
-                percentage: (100 / total4) * d.sampleSize,
+                percentage: (+d.value / +d.sampleSize) * 100
+                    ? (+d.value / +d.sampleSize) * 100
+                    : 0,
             };
         });
         return {
@@ -494,16 +485,14 @@ let FoodResolver = class FoodResolver {
                     },
                 },
             ]);
-            let total1 = data.reduce((acc, d) => {
-                acc += d.sampleSize;
-                return acc;
-            }, 0);
             let forMatedData1 = data.map((d) => {
                 return {
                     _id: d._id,
                     sampleSize: d.sampleSize,
                     value: d.value,
-                    percentage: (100 / total1) * d.sampleSize,
+                    percentage: (+d.value / +d.sampleSize) * 100
+                        ? (+d.value / +d.sampleSize) * 100
+                        : 0,
                 };
             });
             return forMatedData1;
@@ -529,16 +518,14 @@ let FoodResolver = class FoodResolver {
                     },
                 },
             ]);
-            let total1 = data.reduce((acc, d) => {
-                acc += d.sampleSize;
-                return acc;
-            }, 0);
             let forMatedData1 = data.map((d) => {
                 return {
                     _id: d._id,
                     sampleSize: d.sampleSize,
                     value: d.value,
-                    percentage: (100 / total1) * d.sampleSize,
+                    percentage: (+d.value / +d.sampleSize) * 100
+                        ? (+d.value / +d.sampleSize) * 100
+                        : 0,
                 };
             });
             return forMatedData1;
@@ -598,16 +585,14 @@ let FoodResolver = class FoodResolver {
                         },
                     },
                 ]);
-                let total1 = data.reduce((acc, d) => {
-                    acc += d.sampleSize;
-                    return acc;
-                }, 0);
                 let forMatedData = data.map((d) => {
                     return {
                         _id: d._id,
                         sampleSize: d.sampleSize,
                         value: d.value,
-                        percentage: (100 / total1) * d.sampleSize,
+                        percentage: (+d.value / +d.sampleSize) * 100
+                            ? (+d.value / +d.sampleSize) * 100
+                            : 0,
                     };
                 });
                 formateData.push({
@@ -656,16 +641,14 @@ let FoodResolver = class FoodResolver {
                         },
                     },
                 ]);
-                let total1 = data.reduce((acc, d) => {
-                    acc += d.sampleSize;
-                    return acc;
-                }, 0);
                 let forMatedData = data.map((d) => {
                     return {
                         _id: d._id,
                         sampleSize: d.sampleSize,
                         value: d.value,
-                        percentage: (100 / total1) * d.sampleSize,
+                        percentage: (+d.value / +d.sampleSize) * 100
+                            ? (+d.value / +d.sampleSize) * 100
+                            : 0,
                     };
                 });
                 formateData.push({
@@ -697,16 +680,14 @@ let FoodResolver = class FoodResolver {
                     },
                 },
             ]);
-            let total1 = data.reduce((acc, d) => {
-                acc += d.sampleSize;
-                return acc;
-            }, 0);
             let forMatedData = data.map((d) => {
                 return {
                     _id: d._id,
                     sampleSize: d.sampleSize,
                     value: d.value,
-                    percentage: (100 / total1) * d.sampleSize,
+                    percentage: (+d.value / +d.sampleSize) * 100
+                        ? (+d.value / +d.sampleSize) * 100
+                        : 0,
                 };
             });
             formateData.push({
@@ -809,16 +790,14 @@ let FoodResolver = class FoodResolver {
                 },
             },
         ]);
-        let total1 = data.reduce((acc, d) => {
-            acc += d.sampleSize;
-            return acc;
-        }, 0);
         let forMatedData = data.map((d) => {
             return {
                 _id: d._id,
                 sampleSize: d.sampleSize,
                 value: d.value,
-                percentage: (100 / total1) * d.sampleSize,
+                percentage: (+d.value / +d.sampleSize) * 100
+                    ? (+d.value / +d.sampleSize) * 100
+                    : 0,
                 prevalence: 0,
             };
         });
