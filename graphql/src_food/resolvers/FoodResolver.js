@@ -268,21 +268,24 @@ let FoodResolver = class FoodResolver {
         else {
             obj.Year = '2021';
         }
+        if (disease) {
+            obj.Topic = disease;
+        }
         if (state) {
             obj.Locationabbr = state;
+        }
+        if (race) {
+            obj.Category = race;
+        }
+        if (age) {
+            obj.Category = age;
+        }
+        if (sex) {
+            obj.Category = sex;
         }
         let diseaseObj = {
             ...obj,
         };
-        if (race) {
-            diseaseObj.Category = race;
-        }
-        if (age) {
-            diseaseObj.Category = age;
-        }
-        if (sex) {
-            diseaseObj.Category = sex;
-        }
         let data = await infoGraphic_1.default.aggregate([
             {
                 $match: diseaseObj,
