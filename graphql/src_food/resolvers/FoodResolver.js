@@ -534,13 +534,10 @@ let FoodResolver = class FoodResolver {
             return forMatedData1;
         }
     }
-    async getCompareData(disease, type) {
+    async getCompareData(disease, type, category, state) {
         let obj = {};
-        if (!disease) {
-            obj.Topic = 'Arthritis';
-        }
-        else {
-            obj.Topic = disease;
+        if (state) {
+            obj.Locationabbr = state;
         }
         let years = [
             '2011',
@@ -558,17 +555,21 @@ let FoodResolver = class FoodResolver {
         let formateData = [];
         let matchObj = {
             $ne: {
-                topic: 'Vision',
+                Topic: 'Vision',
+                Break_Out_Category: 'Overall',
             },
         };
         if (type === 'disease') {
             matchObj = {
-                Break_Out_Category: 'Overall',
-                Year: '',
+                ...obj,
             };
+            if (category) {
+                matchObj.Category = category;
+            }
+            console.log(matchObj);
             for (let i = 0; i < years.length; i++) {
                 matchObj.Year = years[i];
-                let data = await Overall_1.default.aggregate([
+                let data = await infoGraphic_1.default.aggregate([
                     {
                         $match: matchObj,
                     },
@@ -606,18 +607,36 @@ let FoodResolver = class FoodResolver {
             return formateData;
         }
         else if (type === 'sex') {
+            if (!disease) {
+                obj.Topic = 'Arthritis';
+            }
+            else {
+                obj.Topic = disease;
+            }
             matchObj = {
                 ...obj,
                 Break_Out_Category: 'Gender',
             };
         }
         else if (type === 'age') {
+            if (!disease) {
+                obj.Topic = 'Arthritis';
+            }
+            else {
+                obj.Topic = disease;
+            }
             matchObj = {
                 ...obj,
                 Break_Out_Category: 'Age Group',
             };
         }
         else if (type === 'race') {
+            if (!disease) {
+                obj.Topic = 'Arthritis';
+            }
+            else {
+                obj.Topic = disease;
+            }
             matchObj = {
                 ...obj,
                 Break_Out_Category: 'Race/Ethnicity',
@@ -861,8 +880,12 @@ __decorate([
     (0, type_graphql_1.Query)(() => [Compare_1.default]),
     __param(0, (0, type_graphql_1.Arg)('disease', { nullable: true })),
     __param(1, (0, type_graphql_1.Arg)('type')),
+    __param(2, (0, type_graphql_1.Arg)('category', { nullable: true })),
+    __param(3, (0, type_graphql_1.Arg)('state', { nullable: true })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String,
+        String,
+        String,
         String]),
     __metadata("design:returntype", Promise)
 ], FoodResolver.prototype, "getCompareData", null);
