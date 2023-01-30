@@ -268,9 +268,6 @@ let FoodResolver = class FoodResolver {
         else {
             obj.Year = '2021';
         }
-        if (disease) {
-            obj.Topic = disease;
-        }
         if (state) {
             obj.Locationabbr = state;
         }
@@ -286,7 +283,15 @@ let FoodResolver = class FoodResolver {
         let diseaseObj = {
             ...obj,
         };
-        let data = await infoGraphic_1.default.aggregate([
+        let model;
+        if (diseaseObj.sex || diseaseObj.age || diseaseObj.race) {
+            model = infoGraphic_1.default;
+        }
+        else {
+            model = Overall_1.default;
+        }
+        console.log(diseaseObj);
+        let data = await model.aggregate([
             {
                 $match: diseaseObj,
             },
