@@ -271,20 +271,20 @@ let FoodResolver = class FoodResolver {
         if (state) {
             obj.Locationabbr = state;
         }
-        if (race) {
-            obj.Category = race;
-        }
-        if (age) {
-            obj.Category = age;
-        }
-        if (sex) {
-            obj.Category = sex;
-        }
         let diseaseObj = {
             ...obj,
         };
+        if (race) {
+            diseaseObj.Category = race;
+        }
+        if (age) {
+            diseaseObj.Category = age;
+        }
+        if (sex) {
+            diseaseObj.Category = sex;
+        }
         let model;
-        if (diseaseObj.sex || diseaseObj.age || diseaseObj.race) {
+        if (diseaseObj.Category) {
             model = infoGraphic_1.default;
         }
         else {
@@ -724,7 +724,7 @@ let FoodResolver = class FoodResolver {
         }
         return formateData;
     }
-    async getStateData(year, disease) {
+    async getStateData(year, disease, state) {
         let obj = {};
         if (year) {
             obj.Year = year;
@@ -737,6 +737,9 @@ let FoodResolver = class FoodResolver {
         }
         else {
             obj.Topic = 'Arthritis';
+        }
+        if (state) {
+            obj.LocationDesc = state;
         }
         // let states = [
         //   'AL',
@@ -898,8 +901,10 @@ __decorate([
     (0, type_graphql_1.Query)(() => String),
     __param(0, (0, type_graphql_1.Arg)('year', { nullable: true })),
     __param(1, (0, type_graphql_1.Arg)('disease', { nullable: true })),
+    __param(2, (0, type_graphql_1.Arg)('state', { nullable: true })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String,
+        String,
         String]),
     __metadata("design:returntype", Promise)
 ], FoodResolver.prototype, "getStateData", null);
