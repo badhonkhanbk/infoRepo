@@ -705,7 +705,9 @@ let FoodResolver = class FoodResolver {
         }
         return formateData;
     }
-    async getStateData(year, disease, state) {
+    async getStateData(year, disease, 
+    // @Arg('state', { nullable: true }) state: String,
+    category) {
         let obj = {};
         if (year) {
             obj.Year = year;
@@ -719,67 +721,9 @@ let FoodResolver = class FoodResolver {
         else {
             obj.Topic = 'Arthritis';
         }
-        if (state) {
-            obj.LocationDesc = state;
+        if (category) {
+            obj.Category = category;
         }
-        // let states = [
-        //   'AL',
-        //   'KY',
-        //   'AK',
-        //   'LA',
-        //   'AZ',
-        //   'AR',
-        //   'GU',
-        //   'CA',
-        //   'CO',
-        //   'CT',
-        //   'WY',
-        //   'DE',
-        //   'MT',
-        //   'MD',
-        //   'DC',
-        //   'OH',
-        //   'FL',
-        //   'KS',
-        //   'TN',
-        //   'HI',
-        //   'PR',
-        //   'ID',
-        //   'IL',
-        //   'IN',
-        //   'UW',
-        //   'IA',
-        //   'ME',
-        //   'MA',
-        //   'OR',
-        //   'MI',
-        //   'RI',
-        //   'MO',
-        //   'UT',
-        //   'MN',
-        //   'MS',
-        //   'SD',
-        //   'NH',
-        //   'NE',
-        //   'WA',
-        //   'NV',
-        //   'NY',
-        //   'NJ',
-        //   'NM',
-        //   'NC',
-        //   'ND',
-        //   'OK',
-        //   'VA',
-        //   'WV',
-        //   'SC',
-        //   'WI',
-        //   'TX',
-        //   'VT',
-        //   'PA',
-        //   'GA',
-        //   'US',
-        //   'VI',
-        // ];
         let returnData = [];
         let data = await infoGraphic_1.default.aggregate([
             {
@@ -841,7 +785,7 @@ let FoodResolver = class FoodResolver {
             }
         }
         // console.log(returnObj[0].quartile)
-        // console.log(returnObj.CT.quartile);
+        console.log(returnObj.FL.quartile);
         return JSON.stringify(returnObj);
     }
 };
@@ -906,7 +850,7 @@ __decorate([
     (0, type_graphql_1.Query)(() => String),
     __param(0, (0, type_graphql_1.Arg)('year', { nullable: true })),
     __param(1, (0, type_graphql_1.Arg)('disease', { nullable: true })),
-    __param(2, (0, type_graphql_1.Arg)('state', { nullable: true })),
+    __param(2, (0, type_graphql_1.Arg)('category', { nullable: true })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String,
         String,
