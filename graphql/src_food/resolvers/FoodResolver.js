@@ -127,34 +127,15 @@ let FoodResolver = class FoodResolver {
     //   }
     //   return 'done';
     // }
+    // 2 4 6 8 10
     async modifyDataOverall() {
-        await Overall_1.default.deleteMany({});
-        let allData = await infoGraphic_1.default.find({
-            Break_Out_Category: 'Overall',
+        let allData = await Overall_1.default.updateMany({
+            Topic: 'Cardiovascular Disease',
+        }, {
+            $set: {
+                Topic: 'Cardiovascular',
+            },
         });
-        console.log(allData.length);
-        for (let i = 0; i < allData.length; i++) {
-            let data = {
-                Year: allData[i].Year,
-                Locationabbr: allData[i].Locationabbr,
-                Locationdesc: allData[i].Locationdesc,
-                Class: allData[i].Class,
-                Topic: allData[i].Topic,
-                Break_Out: allData[i].Break_Out,
-                Break_Out_Category: allData[i].Break_Out_Category,
-                Category: allData[i].Category,
-                Sample_Size: allData[i].Sample_Size,
-                Sample_Size_Number: allData[i].Sample_Size_Number,
-                Data_value: allData[i].Data_value,
-                Data_value_Number: allData[i].Data_value_Number,
-                Actual_Data_Value_Number: allData[i].Actual_Data_Value_Number,
-                Confidence_limit_Low: allData[i].Confidence_limit_Low,
-                Confidence_limit_High: allData[i].Confidence_limit_High,
-                Data_value_unit: allData[i].Data_value_unit,
-            };
-            await Overall_1.default.create(data);
-            console.log(i);
-        }
         return 'done';
     }
     // @Query(() => String)
@@ -833,10 +814,34 @@ let FoodResolver = class FoodResolver {
         });
         console.log('forMatedData', forMatedData.length);
         let returnObj = {};
-        for (let i = 0; i < forMatedData.length; i++) {
-            returnObj[forMatedData[i]._id] = forMatedData[i];
+        let sortedArray = forMatedData.sort((data1, data2) => data1.value - data2.value);
+        let t25 = (25 / 100) * (55 + 1);
+        let t50 = (50 / 100) * (55 + 1);
+        let t75 = (75 / 100) * (55 + 1);
+        //let t100 = (100 / 100) * (55 + 1);
+        // console.log(sortedArray[t25]);
+        // console.log(sortedArray[t50]);
+        // console.log(sortedArray[t75]);
+        //console.log(sortedArray[t100]);
+        for (let i = 0; i < sortedArray.length; i++) {
+            returnObj[sortedArray[i]._id] = sortedArray[i];
+            if (sortedArray[t75].value < sortedArray[i].value) {
+                returnObj[sortedArray[i]._id].quartile = 4;
+            }
+            else if (sortedArray[t50].value < sortedArray[i].value &&
+                sortedArray[t75].value <= sortedArray[i].value) {
+                returnObj[sortedArray[i]._id].quartile = 3;
+            }
+            else if (sortedArray[t25].value < sortedArray[i].value &&
+                sortedArray[t50].value <= sortedArray[i].value) {
+                returnObj[sortedArray[i]._id].quartile = 2;
+            }
+            else {
+                returnObj[sortedArray[i]._id].quartile = 1;
+            }
         }
-        console.log(returnObj.AL);
+        // console.log(returnObj[0].quartile)
+        // console.log(returnObj.CT.quartile);
         return JSON.stringify(returnObj);
     }
 };
