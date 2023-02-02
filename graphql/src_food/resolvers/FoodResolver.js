@@ -785,7 +785,6 @@ let FoodResolver = class FoodResolver {
             }
         }
         // console.log(returnObj[0].quartile)
-        console.log(returnObj.FL.quartile);
         return JSON.stringify(returnObj);
     }
 };
