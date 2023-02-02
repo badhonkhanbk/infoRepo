@@ -208,7 +208,7 @@ let FoodResolver = class FoodResolver {
     //   }
     //   console.log('ea', educationAttainedCategory);
     //   console.log('OA', overAllCategory);
-    //   console.log('HH', houseHoldIncomeCategory);
+    //   console.log('HH', houseHoldIncomeCategory);f
     //   console.log('AG', ageGroupCategory);
     //   console.log('RE', raceCategory);
     //   console.log('G', genderCategory);
@@ -521,7 +521,10 @@ let FoodResolver = class FoodResolver {
         }
     }
     async getCompareData(disease, type, category, state) {
-        let obj = {};
+        let obj = {
+            Topic: { $ne: 'Vision' },
+            Break_Out_Category: { $ne: 'Overall' },
+        };
         if (state) {
             obj.Locationabbr = state;
         }
@@ -539,12 +542,7 @@ let FoodResolver = class FoodResolver {
             '2021',
         ];
         let formateData = [];
-        let matchObj = {
-            $ne: {
-                Topic: 'Vision',
-                Break_Out_Category: 'Overall',
-            },
-        };
+        let matchObj = {};
         if (type === 'disease') {
             matchObj = {
                 ...obj,
