@@ -724,7 +724,6 @@ let FoodResolver = class FoodResolver {
         if (category) {
             obj.Category = category;
         }
-        let returnData = [];
         let data = await infoGraphic_1.default.aggregate([
             {
                 $match: obj,
@@ -762,11 +761,8 @@ let FoodResolver = class FoodResolver {
         let t25 = (25 / 100) * (55 + 1);
         let t50 = (50 / 100) * (55 + 1);
         let t75 = (75 / 100) * (55 + 1);
-        //let t100 = (100 / 100) * (55 + 1);
-        // console.log(sortedArray[t25]);
-        // console.log(sortedArray[t50]);
-        // console.log(sortedArray[t75]);
-        //console.log(sortedArray[t100]);
+        let lowest = sortedArray[0];
+        let highest = sortedArray[sortedArray.length - 1];
         for (let i = 0; i < sortedArray.length; i++) {
             returnObj[sortedArray[i]._id] = sortedArray[i];
             if (sortedArray[t75].value < sortedArray[i].value) {
@@ -784,8 +780,18 @@ let FoodResolver = class FoodResolver {
                 returnObj[sortedArray[i]._id].quartile = 1;
             }
         }
-        // console.log(returnObj[0].quartile)
-        return JSON.stringify(returnObj);
+        let returnData = {
+            quartile: {
+                0: lowest.value,
+                25: sortedArray[t25].value,
+                50: sortedArray[t50].value,
+                75: sortedArray[t75].value,
+                100: highest.value,
+            },
+            data: returnObj,
+        };
+        console.log(returnData.quartile);
+        return JSON.stringify(returnData);
     }
 };
 __decorate([
