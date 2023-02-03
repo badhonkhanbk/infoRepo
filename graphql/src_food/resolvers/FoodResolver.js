@@ -783,10 +783,10 @@ let FoodResolver = class FoodResolver {
         }
         let returnData = {
             quartile: {
-                0: lowest.value,
-                25: sortedArray[t25].value,
-                50: sortedArray[t50].value,
-                75: sortedArray[t75].value,
+                0: lowest.percentage,
+                25: sortedArray[t25].percentage,
+                50: sortedArray[t50].percentage,
+                75: sortedArray[t75].percentage,
                 100: highest.value,
             },
             data: returnObj,
