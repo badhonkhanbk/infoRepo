@@ -755,23 +755,26 @@ let FoodResolver = class FoodResolver {
         });
         console.log('forMatedData', forMatedData.length);
         let returnObj = {};
-        let sortedArray = forMatedData.sort((data1, data2) => data1.value - data2.value);
+        let sortedArray = forMatedData.sort((data1, data2) => data1.percentage - data2.percentage);
         let t25 = (25 / 100) * (55 + 1);
         let t50 = (50 / 100) * (55 + 1);
         let t75 = (75 / 100) * (55 + 1);
+        console.log(t25);
+        console.log(t50);
+        console.log(t75);
         let lowest = sortedArray[0];
         let highest = sortedArray[sortedArray.length - 1];
         for (let i = 0; i < sortedArray.length; i++) {
             returnObj[sortedArray[i]._id] = sortedArray[i];
-            if (sortedArray[t75].value < sortedArray[i].value) {
+            if (sortedArray[t75].percentage < sortedArray[i].percentage) {
                 returnObj[sortedArray[i]._id].quartile = 4;
             }
-            else if (sortedArray[t50].value < sortedArray[i].value &&
-                sortedArray[t75].value <= sortedArray[i].value) {
+            else if (sortedArray[t50].percentage < sortedArray[i].percentage &&
+                sortedArray[t75].percentage <= sortedArray[i].percentage) {
                 returnObj[sortedArray[i]._id].quartile = 3;
             }
-            else if (sortedArray[t25].value < sortedArray[i].value &&
-                sortedArray[t50].value <= sortedArray[i].value) {
+            else if (sortedArray[t25].percentage < sortedArray[i].percentage &&
+                sortedArray[t50].percentage <= sortedArray[i].percentage) {
                 returnObj[sortedArray[i]._id].quartile = 2;
             }
             else {
