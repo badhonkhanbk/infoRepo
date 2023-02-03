@@ -787,7 +787,7 @@ let FoodResolver = class FoodResolver {
                 25: sortedArray[t25].percentage,
                 50: sortedArray[t50].percentage,
                 75: sortedArray[t75].percentage,
-                100: highest.value,
+                100: highest.percentage,
             },
             data: returnObj,
         };
