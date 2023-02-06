@@ -601,6 +601,7 @@ let FoodResolver = class FoodResolver {
                 ...obj,
                 Break_Out_Category: 'Gender',
             };
+            console.log(matchObj);
         }
         else if (type === 'age') {
             if (!disease) {
@@ -732,6 +733,7 @@ let FoodResolver = class FoodResolver {
             {
                 $group: {
                     _id: '$Locationabbr',
+                    fullForm: { $first: '$Locationdesc' },
                     sampleSize: { $sum: '$Sample_Size_Number' },
                     value: { $sum: '$Actual_Data_Value_Number' },
                 },
@@ -747,21 +749,18 @@ let FoodResolver = class FoodResolver {
                 _id: d._id,
                 sampleSize: d.sampleSize,
                 value: d.value,
+                fullForm: d.fullForm,
                 percentage: (+d.value / +d.sampleSize) * 100
                     ? (+d.value / +d.sampleSize) * 100
                     : 0,
                 prevalence: 0,
             };
         });
-        console.log('forMatedData', forMatedData.length);
         let returnObj = {};
         let sortedArray = forMatedData.sort((data1, data2) => data1.percentage - data2.percentage);
         let t25 = (25 / 100) * (55 + 1);
         let t50 = (50 / 100) * (55 + 1);
         let t75 = (75 / 100) * (55 + 1);
-        console.log(t25);
-        console.log(t50);
-        console.log(t75);
         let lowest = sortedArray[0];
         let highest = sortedArray[sortedArray.length - 1];
         for (let i = 0; i < sortedArray.length; i++) {
@@ -791,7 +790,6 @@ let FoodResolver = class FoodResolver {
             },
             data: returnObj,
         };
-        console.log(returnData.quartile);
         return JSON.stringify(returnData);
     }
 };
@@ -867,3 +865,7 @@ FoodResolver = __decorate([
     (0, type_graphql_1.Resolver)()
 ], FoodResolver);
 exports.default = FoodResolver;
+// 1 table spoon of ingredient
+// id 10
+// tbsp: 10gm
+// cup
