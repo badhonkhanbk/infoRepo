@@ -18,8 +18,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
 const infoGraphic_1 = __importDefault(require("../../../models/infoGraphic"));
 const Overall_1 = __importDefault(require("../../../models/Overall"));
+const fs_1 = __importDefault(require("fs"));
 const FotmatedData_1 = __importDefault(require("../schemas/FotmatedData"));
 const ReturnInfoData_1 = __importDefault(require("../schemas/ReturnInfoData"));
+const class_1 = __importDefault(require("../../../models/class"));
+const myClass_1 = __importDefault(require("../schemas/myClass"));
 const Compare_1 = __importDefault(require("../schemas/Compare"));
 let FoodResolver = class FoodResolver {
     // @Query(() => String)
@@ -30,7 +33,7 @@ let FoodResolver = class FoodResolver {
     //   return 'done';
     // }
     async modifyData() {
-        let allData = await infoGraphic_1.default.find().skip(2000).limit(50000);
+        let allData = await infoGraphic_1.default.find().skip(50000);
         for (let i = 0; i < allData.length; i++) {
             let sampleSizeInNumber;
             let dataValueInNumber;
@@ -127,15 +130,34 @@ let FoodResolver = class FoodResolver {
     //   }
     //   return 'done';
     // }
-    // 2 4 6 8 10
     async modifyDataOverall() {
-        let allData = await Overall_1.default.updateMany({
-            Topic: 'Cardiovascular Disease',
-        }, {
-            $set: {
-                Topic: 'Cardiovascular',
-            },
+        await Overall_1.default.deleteMany({});
+        let allData = await infoGraphic_1.default.find({
+            Break_Out_Category: 'Overall',
         });
+        console.log(allData.length);
+        for (let i = 0; i < allData.length; i++) {
+            let data = {
+                Year: allData[i].Year,
+                Locationabbr: allData[i].Locationabbr,
+                Locationdesc: allData[i].Locationdesc,
+                Class: allData[i].Class,
+                Topic: allData[i].Topic,
+                Break_Out: allData[i].Break_Out,
+                Break_Out_Category: allData[i].Break_Out_Category,
+                Category: allData[i].Category,
+                Sample_Size: allData[i].Sample_Size,
+                Sample_Size_Number: allData[i].Sample_Size_Number,
+                Data_value: allData[i].Data_value,
+                Data_value_Number: allData[i].Data_value_Number,
+                Actual_Data_Value_Number: allData[i].Actual_Data_Value_Number,
+                Confidence_limit_Low: allData[i].Confidence_limit_Low,
+                Confidence_limit_High: allData[i].Confidence_limit_High,
+                Data_value_unit: allData[i].Data_value_unit,
+            };
+            await Overall_1.default.create(data);
+            console.log(i);
+        }
         return 'done';
     }
     // @Query(() => String)
@@ -148,6 +170,32 @@ let FoodResolver = class FoodResolver {
     //   }
     //   return 'done';
     // }
+    async storeData() {
+        const data = JSON.parse(fs_1.default.readFileSync('./temp/infoData2.json', 'utf-8'));
+        for (let i = 0; i < data.length; i++) {
+            await infoGraphic_1.default.create({
+                Condition: data[i].Condition,
+                ICD_Sub_Chapter_Code: data[i]['ICD Sub-Chapter Code'],
+                State: data[i].State,
+                State_Code: data[i]['State Code'],
+                Year: data[i].Year,
+                Year_Code: data[i]['Year Code'],
+                Ten_Year_Age_Groups: data[i]['Ten-Year Age Groups'],
+                Ten_Year_Age_Groups_Code: data[i]['Ten-Year Age Groups Code'],
+                Gender: data[i].Gender,
+                Race: data[i].Race,
+                Race_Code: data[i]['Race Code'],
+                Deaths: data[i].Deaths,
+                Population: data[i].Population,
+                Crude_Rate: data[i]['Crude Rate'],
+                Crude_Rate_Lower_95percent_Confidence_Interval: data[i]['Crude Rate Lower 95% Confidence Interval'],
+                Crude_Rate_Upper_95percent_Confidence_Interval: data[i]['Crude Rate Upper 95% Confidence Interval'],
+                Percentage_of_Total_Deaths: data[i]['% of Total Deaths'],
+            });
+            console.log(i);
+        }
+        return 'done';
+    }
     // @Mutation(() => String)
     // async deleteData() {
     //   await InfoGraphic.deleteMany({});
@@ -208,7 +256,7 @@ let FoodResolver = class FoodResolver {
     //   }
     //   console.log('ea', educationAttainedCategory);
     //   console.log('OA', overAllCategory);
-    //   console.log('HH', houseHoldIncomeCategory);f
+    //   console.log('HH', houseHoldIncomeCategory);
     //   console.log('AG', ageGroupCategory);
     //   console.log('RE', raceCategory);
     //   console.log('G', genderCategory);
@@ -241,7 +289,7 @@ let FoodResolver = class FoodResolver {
     //   // fs.writeFileSync('./temp/locationDesc.json', JSON.stringify(locationDesc));
     //   return '';
     // }
-    async showInfoData(year, state, disease, race, age, sex) {
+    async showInfoData(year, state) {
         let obj = {};
         if (year) {
             obj.Year = year;
@@ -252,29 +300,9 @@ let FoodResolver = class FoodResolver {
         if (state) {
             obj.Locationabbr = state;
         }
-        let diseaseObj = {
-            ...obj,
-        };
-        if (race) {
-            diseaseObj.Category = race;
-        }
-        if (age) {
-            diseaseObj.Category = age;
-        }
-        if (sex) {
-            diseaseObj.Category = sex;
-        }
-        let model;
-        if (diseaseObj.Category) {
-            model = infoGraphic_1.default;
-        }
-        else {
-            model = Overall_1.default;
-        }
-        console.log(diseaseObj);
-        let data = await model.aggregate([
+        let data = await Overall_1.default.aggregate([
             {
-                $match: diseaseObj,
+                $match: obj,
             },
             {
                 $unwind: '$Topic',
@@ -292,26 +320,22 @@ let FoodResolver = class FoodResolver {
                 },
             },
         ]);
+        let total1 = data.reduce((acc, d) => {
+            acc += d.sampleSize;
+            return acc;
+        }, 0);
         let forMatedData1 = data.map((d) => {
             return {
                 _id: d._id,
                 sampleSize: d.sampleSize,
                 value: d.value,
-                percentage: (+d.value / +d.sampleSize) * 100
-                    ? (+d.value / +d.sampleSize) * 100
-                    : 0,
+                percentage: (100 / total1) * d.sampleSize,
             };
         });
         let raceObj = {
             ...obj,
             Break_Out_Category: 'Race/Ethnicity',
         };
-        if (disease) {
-            raceObj.Topic = disease;
-        }
-        else {
-            raceObj.Topic = 'Arthritis';
-        }
         let data2 = await infoGraphic_1.default.aggregate([
             {
                 $match: raceObj,
@@ -332,26 +356,22 @@ let FoodResolver = class FoodResolver {
                 },
             },
         ]);
+        let total2 = data2.reduce((acc, d) => {
+            acc += d.sampleSize;
+            return acc;
+        }, 0);
         let forMatedData2 = data2.map((d) => {
             return {
                 _id: d._id,
                 sampleSize: d.sampleSize,
                 value: d.value,
-                percentage: (+d.value / +d.sampleSize) * 100
-                    ? (+d.value / +d.sampleSize) * 100
-                    : 0,
+                percentage: (100 / total2) * d.sampleSize,
             };
         });
         let ageObj = {
             ...obj,
             Break_Out_Category: 'Age Group',
         };
-        if (disease) {
-            ageObj.Topic = disease;
-        }
-        else {
-            ageObj.Topic = 'Arthritis';
-        }
         let data3 = await infoGraphic_1.default.aggregate([
             {
                 $match: ageObj,
@@ -372,26 +392,22 @@ let FoodResolver = class FoodResolver {
                 },
             },
         ]);
+        let total3 = data3.reduce((acc, d) => {
+            acc += d.sampleSize;
+            return acc;
+        }, 0);
         let forMatedData3 = data3.map((d) => {
             return {
                 _id: d._id,
                 sampleSize: d.sampleSize,
                 value: d.value,
-                percentage: (+d.value / +d.sampleSize) * 100
-                    ? (+d.value / +d.sampleSize) * 100
-                    : 0,
+                percentage: (100 / total3) * d.sampleSize,
             };
         });
         let genderObj = {
             ...obj,
             Break_Out_Category: 'Gender',
         };
-        if (disease) {
-            genderObj.Topic = disease;
-        }
-        else {
-            genderObj.Topic = 'Arthritis';
-        }
         let data4 = await infoGraphic_1.default.aggregate([
             {
                 $match: genderObj,
@@ -412,14 +428,17 @@ let FoodResolver = class FoodResolver {
                 },
             },
         ]);
+        let total4 = data4.reduce((acc, d) => {
+            acc += d.sampleSize;
+            return acc;
+        }, 0);
+        console.log('total4', total4);
         let forMatedData4 = data4.map((d) => {
             return {
                 _id: d._id,
                 sampleSize: d.sampleSize,
                 value: d.value,
-                percentage: (+d.value / +d.sampleSize) * 100
-                    ? (+d.value / +d.sampleSize) * 100
-                    : 0,
+                percentage: (100 / total4) * d.sampleSize,
             };
         });
         return {
@@ -434,9 +453,6 @@ let FoodResolver = class FoodResolver {
         let allYearsData = [];
         if (disease) {
             obj.Topic = disease;
-        }
-        else {
-            obj.Topic = 'Arthritis';
         }
         if (state) {
             obj.Locationabbr = state;
@@ -474,14 +490,16 @@ let FoodResolver = class FoodResolver {
                     },
                 },
             ]);
+            let total1 = data.reduce((acc, d) => {
+                acc += d.sampleSize;
+                return acc;
+            }, 0);
             let forMatedData1 = data.map((d) => {
                 return {
                     _id: d._id,
                     sampleSize: d.sampleSize,
                     value: d.value,
-                    percentage: (+d.value / +d.sampleSize) * 100
-                        ? (+d.value / +d.sampleSize) * 100
-                        : 0,
+                    percentage: (100 / total1) * d.sampleSize,
                 };
             });
             return forMatedData1;
@@ -507,14 +525,16 @@ let FoodResolver = class FoodResolver {
                     },
                 },
             ]);
+            let total1 = data.reduce((acc, d) => {
+                acc += d.sampleSize;
+                return acc;
+            }, 0);
             let forMatedData1 = data.map((d) => {
                 return {
                     _id: d._id,
                     sampleSize: d.sampleSize,
                     value: d.value,
-                    percentage: (+d.value / +d.sampleSize) * 100
-                        ? (+d.value / +d.sampleSize) * 100
-                        : 0,
+                    percentage: (100 / total1) * d.sampleSize,
                 };
             });
             return forMatedData1;
@@ -792,6 +812,261 @@ let FoodResolver = class FoodResolver {
         };
         return JSON.stringify(returnData);
     }
+    async addClasses() {
+        console.log('add classes');
+        let data1 = [
+            {
+                day: 'Tue',
+                code: 'SE225',
+                myCode: 'SWE426',
+                time: '1:30',
+                room: '612',
+                name: 'Distributive Computing and Network Security',
+                TI: 'NIR',
+                sec: 'A',
+            },
+            {
+                day: 'Tue',
+                code: 'SE225',
+                myCode: 'SWE426',
+                time: '2:30',
+                room: '712B',
+                name: 'Distributive Computing and Network Security',
+                TI: 'JNM',
+                sec: 'B',
+            },
+            {
+                day: 'Wed',
+                code: 'SE225',
+                myCode: 'SWE426',
+                time: '1:30',
+                room: '603',
+                name: 'Distributive Computing and Network Security',
+                TI: 'NIR',
+                sec: 'A',
+            },
+            {
+                day: 'Wed',
+                code: 'SE225',
+                myCode: 'SWE426',
+                time: '12:30',
+                room: '1017',
+                name: 'Distributive Computing and Network Security',
+                TI: 'JNM',
+                sec: 'B',
+            },
+            {
+                day: 'Tue',
+                code: 'SE226',
+                myCode: 'SWE426',
+                time: '3:30',
+                room: '609',
+                name: 'Distributive Computing and Network Security',
+                TI: 'JNM',
+                sec: 'B',
+                lab: true,
+            },
+            {
+                day: 'Tue',
+                code: 'SE226',
+                myCode: 'SWE426',
+                time: '11:30',
+                room: '601',
+                name: 'Distributive Computing and Network Security',
+                TI: 'SA',
+                sec: 'A',
+                subSec: '1',
+                lab: true,
+            },
+            {
+                day: 'Wed',
+                code: 'SE226',
+                myCode: 'SWE426',
+                time: '3:30',
+                room: '616',
+                name: 'Distributive Computing and Network Security',
+                TI: 'SA',
+                sec: 'A',
+                subSec: '2',
+                lab: true,
+            },
+            {
+                day: 'Sat',
+                code: 'SE331',
+                myCode: 'SWE332',
+                time: '8:30',
+                room: '610',
+                name: 'Software Engineering Project-II (Web Programming)',
+                TI: 'AKS',
+                sec: 'A',
+                subSec: '2',
+            },
+            {
+                day: 'Sat',
+                code: 'SE331',
+                myCode: 'SWE332',
+                time: '9:30',
+                room: '610',
+                name: 'Software Engineering Project-II (Web Programming)',
+                TI: 'AKS',
+                sec: 'A',
+                subSec: '2',
+            },
+            {
+                day: 'Sun',
+                code: 'SE331',
+                myCode: 'SWE332',
+                time: '8:30',
+                room: '610',
+                name: 'Software Engineering Project-II (Web Programming)',
+                TI: 'MRA',
+                sec: 'A',
+                subSec: '1',
+            },
+            {
+                day: 'Sun',
+                code: 'SE331',
+                myCode: 'SWE332',
+                time: '9:30',
+                room: '610',
+                name: 'Software Engineering Project-II (Web Programming)',
+                TI: 'MRA',
+                sec: 'A',
+                subSec: '1',
+            },
+            {
+                day: 'Tue',
+                code: 'SE331',
+                myCode: 'SWE332',
+                time: '12:30',
+                room: '601',
+                name: 'Software Engineering Project-II (Web Programming)',
+                TI: 'MRA',
+                sec: 'A',
+                subSec: '2',
+            },
+            {
+                day: 'Tue',
+                code: 'SE331',
+                myCode: 'SWE332',
+                time: '1:30',
+                room: '601',
+                name: 'Software Engineering Project-II (Web Programming)',
+                TI: 'MRA',
+                sec: 'A',
+                subSec: '2',
+            },
+            {
+                day: 'Wed',
+                code: 'SE331',
+                myCode: 'SWE332',
+                time: '9:30',
+                room: '610',
+                name: 'Software Engineering Project-II (Web Programming)',
+                TI: 'MSA',
+                sec: 'A',
+                subSec: '1',
+            },
+            {
+                day: 'Wed',
+                code: 'SE331',
+                myCode: 'SWE332',
+                time: '10:30',
+                room: '610',
+                name: 'Software Engineering Project-II (Web Programming)',
+                TI: 'MSA',
+                sec: 'A',
+                subSec: '1',
+            },
+            {
+                day: 'Sun',
+                code: 'GE235',
+                myCode: 'ACC124',
+                time: '2:30',
+                room: '710',
+                name: 'Principles of Accounting',
+                TI: 'MJM',
+                sec: 'A',
+            },
+            {
+                day: 'Sun',
+                code: 'GE235',
+                myCode: 'ACC124',
+                time: '3:30',
+                room: '710',
+                name: 'Principles of Accounting',
+                TI: 'MJM',
+                sec: 'A',
+            },
+            {
+                day: 'Sat',
+                code: 'SE411',
+                myCode: 'SWE212',
+                time: '8:30',
+                room: '603',
+                name: 'Software Project Management',
+                TI: 'AA',
+                sec: 'A',
+            },
+            {
+                day: 'Sat',
+                code: 'SE411',
+                myCode: 'SWE212',
+                time: '9:30',
+                room: '603',
+                name: 'Software Project Management',
+                TI: 'AA',
+                sec: 'A',
+            },
+            {
+                day: 'Sun',
+                code: 'SE411',
+                myCode: 'SWE212',
+                time: '12:30',
+                room: '704',
+                name: 'Software Project Management',
+                TI: 'MKS',
+                sec: 'A',
+            },
+            {
+                day: 'Thu',
+                code: 'SE411',
+                myCode: 'SWE212',
+                time: '1:30',
+                room: '603',
+                name: 'Software Project Management',
+                TI: 'MKS',
+                sec: 'A',
+            },
+        ];
+        await class_1.default.insertMany(data1);
+        return 'done';
+    }
+    async filterClasses(day, code, time, room, name, TI, sec, subSec, lab) {
+        let obj = {};
+        if (day)
+            obj.day = day;
+        if (code)
+            obj.code = code;
+        if (time)
+            obj.time = time;
+        if (room)
+            obj.room = room;
+        if (name)
+            obj.name = name;
+        if (TI)
+            obj.TI = TI;
+        if (sec)
+            obj.sec = sec;
+        if (subSec)
+            obj.subSec = subSec;
+        if (lab)
+            obj.lab = lab;
+        let data = await class_1.default.find(obj).sort({
+            time: 1,
+        });
+        return data;
+    }
 };
 __decorate([
     (0, type_graphql_1.Query)(() => String),
@@ -806,19 +1081,17 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], FoodResolver.prototype, "modifyDataOverall", null);
 __decorate([
+    (0, type_graphql_1.Query)(() => String),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], FoodResolver.prototype, "storeData", null);
+__decorate([
     (0, type_graphql_1.Query)(() => ReturnInfoData_1.default),
     __param(0, (0, type_graphql_1.Arg)('year', { nullable: true })),
     __param(1, (0, type_graphql_1.Arg)('state', { nullable: true })),
-    __param(2, (0, type_graphql_1.Arg)('disease', { nullable: true })),
-    __param(3, (0, type_graphql_1.Arg)('race', { nullable: true })),
-    __param(4, (0, type_graphql_1.Arg)('age', { nullable: true })),
-    __param(5, (0, type_graphql_1.Arg)('sex', { nullable: true })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String,
-        String,
-        String,
-        String,
-        String,
         String]),
     __metadata("design:returntype", Promise)
 ], FoodResolver.prototype, "showInfoData", null);
@@ -861,11 +1134,36 @@ __decorate([
         String]),
     __metadata("design:returntype", Promise)
 ], FoodResolver.prototype, "getStateData", null);
+__decorate([
+    (0, type_graphql_1.Mutation)(() => String),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], FoodResolver.prototype, "addClasses", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => [myClass_1.default]),
+    __param(0, (0, type_graphql_1.Arg)('day', { nullable: true })),
+    __param(1, (0, type_graphql_1.Arg)('code', { nullable: true })),
+    __param(2, (0, type_graphql_1.Arg)('time', { nullable: true })),
+    __param(3, (0, type_graphql_1.Arg)('room', { nullable: true })),
+    __param(4, (0, type_graphql_1.Arg)('name', { nullable: true })),
+    __param(5, (0, type_graphql_1.Arg)('TI', { nullable: true })),
+    __param(6, (0, type_graphql_1.Arg)('sec', { nullable: true })),
+    __param(7, (0, type_graphql_1.Arg)('subSec', { nullable: true })),
+    __param(8, (0, type_graphql_1.Arg)('lab', { nullable: true })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String,
+        String,
+        String,
+        String,
+        String,
+        String,
+        String,
+        String,
+        Boolean]),
+    __metadata("design:returntype", Promise)
+], FoodResolver.prototype, "filterClasses", null);
 FoodResolver = __decorate([
     (0, type_graphql_1.Resolver)()
 ], FoodResolver);
 exports.default = FoodResolver;
-// 1 table spoon of ingredient
-// id 10
-// tbsp: 10gm
-// cup
