@@ -24,6 +24,7 @@ const ReturnInfoData_1 = __importDefault(require("../schemas/ReturnInfoData"));
 const class_1 = __importDefault(require("../../../models/class"));
 const myClass_1 = __importDefault(require("../schemas/myClass"));
 const Compare_1 = __importDefault(require("../schemas/Compare"));
+const infoGraphicDeath_1 = __importDefault(require("../../../models/infoGraphicDeath"));
 //https://blending101-infographic.vercel.app/
 let FoodResolver = class FoodResolver {
     // @Query(() => String)
@@ -290,232 +291,28 @@ let FoodResolver = class FoodResolver {
     //   // fs.writeFileSync('./temp/locationDesc.json', JSON.stringify(locationDesc));
     //   return '';
     // }
-    async showInfoData(year, state) {
-        let obj = {};
-        if (year) {
-            obj.Year = year;
-        }
-        else {
-            obj.Year = '2021';
-        }
-        if (state) {
-            obj.Locationabbr = state;
-        }
-        let data = await Overall_1.default.aggregate([
-            {
-                $match: obj,
-            },
-            {
-                $unwind: '$Topic',
-            },
-            {
-                $group: {
-                    _id: '$Topic',
-                    sampleSize: { $sum: '$Sample_Size_Number' },
-                    value: { $sum: '$Actual_Data_Value_Number' },
-                },
-            },
-            {
-                $sort: {
-                    _id: 1,
-                },
-            },
-        ]);
-        let total1 = data.reduce((acc, d) => {
-            acc += d.sampleSize;
-            return acc;
-        }, 0);
-        let forMatedData1 = data.map((d) => {
-            return {
-                _id: d._id,
-                sampleSize: d.sampleSize,
-                value: d.value,
-                percentage: (100 / total1) * d.sampleSize,
-            };
-        });
-        let raceObj = {
-            ...obj,
-            Break_Out_Category: 'Race/Ethnicity',
-        };
-        let data2 = await infoGraphic_1.default.aggregate([
-            {
-                $match: raceObj,
-            },
-            {
-                $unwind: '$Category',
-            },
-            {
-                $group: {
-                    _id: '$Category',
-                    sampleSize: { $sum: '$Sample_Size_Number' },
-                    value: { $sum: '$Actual_Data_Value_Number' },
-                },
-            },
-            {
-                $sort: {
-                    _id: 1,
-                },
-            },
-        ]);
-        let total2 = data2.reduce((acc, d) => {
-            acc += d.sampleSize;
-            return acc;
-        }, 0);
-        let forMatedData2 = data2.map((d) => {
-            return {
-                _id: d._id,
-                sampleSize: d.sampleSize,
-                value: d.value,
-                percentage: (100 / total2) * d.sampleSize,
-            };
-        });
-        let ageObj = {
-            ...obj,
-            Break_Out_Category: 'Age Group',
-        };
-        let data3 = await infoGraphic_1.default.aggregate([
-            {
-                $match: ageObj,
-            },
-            {
-                $unwind: '$Break_Out',
-            },
-            {
-                $group: {
-                    _id: '$Break_Out',
-                    sampleSize: { $sum: '$Sample_Size_Number' },
-                    value: { $sum: '$Actual_Data_Value_Number' },
-                },
-            },
-            {
-                $sort: {
-                    _id: 1,
-                },
-            },
-        ]);
-        let total3 = data3.reduce((acc, d) => {
-            acc += d.sampleSize;
-            return acc;
-        }, 0);
-        let forMatedData3 = data3.map((d) => {
-            return {
-                _id: d._id,
-                sampleSize: d.sampleSize,
-                value: d.value,
-                percentage: (100 / total3) * d.sampleSize,
-            };
-        });
-        let genderObj = {
-            ...obj,
-            Break_Out_Category: 'Gender',
-        };
-        let data4 = await infoGraphic_1.default.aggregate([
-            {
-                $match: genderObj,
-            },
-            {
-                $unwind: '$Break_Out',
-            },
-            {
-                $group: {
-                    _id: '$Break_Out',
-                    sampleSize: { $sum: '$Sample_Size_Number' },
-                    value: { $sum: '$Actual_Data_Value_Number' },
-                },
-            },
-            {
-                $sort: {
-                    _id: 1,
-                },
-            },
-        ]);
-        let total4 = data4.reduce((acc, d) => {
-            acc += d.sampleSize;
-            return acc;
-        }, 0);
-        console.log('total4', total4);
-        let forMatedData4 = data4.map((d) => {
-            return {
-                _id: d._id,
-                sampleSize: d.sampleSize,
-                value: d.value,
-                percentage: (100 / total4) * d.sampleSize,
-            };
-        });
-        return {
-            diseases: forMatedData1,
-            race: forMatedData2,
-            age: forMatedData3,
-            sex: forMatedData4,
-        };
-    }
-    async yearBasedAggregation(disease, state, race, age, sex) {
-        let obj = {};
-        let allYearsData = [];
-        if (disease) {
-            obj.Topic = disease;
-        }
-        if (state) {
-            obj.Locationabbr = state;
-        }
-        if (race || age || sex) {
-            if (race) {
-                obj.Category = race;
-            }
-            else if (age) {
-                obj.Category = age;
+    async showInfoData(year, state, dataSet) {
+        if (dataSet === 'incidence' || !dataSet) {
+            let obj = {};
+            if (year) {
+                obj.Year = year;
             }
             else {
-                obj.Category = sex;
+                obj.Year = '2021';
             }
-            // obj.Break_Out = {
-            //   $ne: 'Overall',
-            // }
-            let data = await infoGraphic_1.default.aggregate([
-                {
-                    $match: obj,
-                },
-                {
-                    $unwind: '$Year',
-                },
-                {
-                    $group: {
-                        _id: '$Year',
-                        sampleSize: { $sum: '$Sample_Size_Number' },
-                        value: { $sum: '$Actual_Data_Value_Number' },
-                    },
-                },
-                {
-                    $sort: {
-                        _id: 1,
-                    },
-                },
-            ]);
-            let total1 = data.reduce((acc, d) => {
-                acc += d.sampleSize;
-                return acc;
-            }, 0);
-            let forMatedData1 = data.map((d) => {
-                return {
-                    _id: d._id,
-                    sampleSize: d.sampleSize,
-                    value: d.value,
-                    percentage: (100 / total1) * d.sampleSize,
-                };
-            });
-            return forMatedData1;
-        }
-        else {
+            if (state) {
+                obj.Locationabbr = state;
+            }
             let data = await Overall_1.default.aggregate([
                 {
                     $match: obj,
                 },
                 {
-                    $unwind: '$Year',
+                    $unwind: '$Topic',
                 },
                 {
                     $group: {
-                        _id: '$Year',
+                        _id: '$Topic',
                         sampleSize: { $sum: '$Sample_Size_Number' },
                         value: { $sum: '$Actual_Data_Value_Number' },
                     },
@@ -538,159 +335,49 @@ let FoodResolver = class FoodResolver {
                     percentage: (100 / total1) * d.sampleSize,
                 };
             });
-            return forMatedData1;
-        }
-    }
-    async getCompareData(disease, type, category, state) {
-        let obj = {
-            Topic: { $ne: 'Vision' },
-            Break_Out_Category: { $ne: 'Overall' },
-        };
-        if (state) {
-            obj.Locationabbr = state;
-        }
-        let years = [
-            '2011',
-            '2012',
-            '2013',
-            '2014',
-            '2015',
-            '2016',
-            '2017',
-            '2018',
-            '2019',
-            '2020',
-            '2021',
-        ];
-        let formateData = [];
-        let matchObj = {};
-        if (type === 'disease') {
-            matchObj = {
-                ...obj,
-            };
-            if (category) {
-                matchObj.Category = category;
-            }
-            console.log(matchObj);
-            for (let i = 0; i < years.length; i++) {
-                matchObj.Year = years[i];
-                let data = await infoGraphic_1.default.aggregate([
-                    {
-                        $match: matchObj,
-                    },
-                    {
-                        $unwind: '$Topic',
-                    },
-                    {
-                        $group: {
-                            _id: '$Topic',
-                            sampleSize: { $sum: '$Sample_Size_Number' },
-                            value: { $sum: '$Actual_Data_Value_Number' },
-                        },
-                    },
-                    {
-                        $sort: {
-                            _id: 1,
-                        },
-                    },
-                ]);
-                let forMatedData = data.map((d) => {
-                    return {
-                        _id: d._id,
-                        sampleSize: d.sampleSize,
-                        value: d.value,
-                        percentage: (+d.value / +d.sampleSize) * 100
-                            ? (+d.value / +d.sampleSize) * 100
-                            : 0,
-                    };
-                });
-                formateData.push({
-                    year: years[i],
-                    fotmatedData: forMatedData,
-                });
-            }
-            return formateData;
-        }
-        else if (type === 'sex') {
-            if (!disease) {
-                obj.Topic = 'Arthritis';
-            }
-            else {
-                obj.Topic = disease;
-            }
-            matchObj = {
-                ...obj,
-                Break_Out_Category: 'Gender',
-            };
-            console.log(matchObj);
-        }
-        else if (type === 'age') {
-            if (!disease) {
-                obj.Topic = 'Arthritis';
-            }
-            else {
-                obj.Topic = disease;
-            }
-            matchObj = {
-                ...obj,
-                Break_Out_Category: 'Age Group',
-            };
-        }
-        else if (type === 'race') {
-            if (!disease) {
-                obj.Topic = 'Arthritis';
-            }
-            else {
-                obj.Topic = disease;
-            }
-            matchObj = {
+            let raceObj = {
                 ...obj,
                 Break_Out_Category: 'Race/Ethnicity',
             };
-            for (let i = 0; i < years.length; i++) {
-                matchObj.Year = years[i];
-                let data = await infoGraphic_1.default.aggregate([
-                    {
-                        $match: matchObj,
-                    },
-                    {
-                        $unwind: '$Category',
-                    },
-                    {
-                        $group: {
-                            _id: '$Category',
-                            sampleSize: { $sum: '$Sample_Size_Number' },
-                            value: { $sum: '$Actual_Data_Value_Number' },
-                        },
-                    },
-                    {
-                        $sort: {
-                            _id: 1,
-                        },
-                    },
-                ]);
-                let forMatedData = data.map((d) => {
-                    return {
-                        _id: d._id,
-                        sampleSize: d.sampleSize,
-                        value: d.value,
-                        percentage: (+d.value / +d.sampleSize) * 100
-                            ? (+d.value / +d.sampleSize) * 100
-                            : 0,
-                    };
-                });
-                formateData.push({
-                    year: years[i],
-                    fotmatedData: forMatedData,
-                });
-            }
-            return formateData;
-        }
-        for (let i = 0; i < years.length; i++) {
-            matchObj.Year = years[i];
-            let data = await infoGraphic_1.default.aggregate([
+            let data2 = await infoGraphic_1.default.aggregate([
                 {
-                    $match: matchObj,
+                    $match: raceObj,
+                },
+                {
+                    $unwind: '$Category',
+                },
+                {
+                    $group: {
+                        _id: '$Category',
+                        sampleSize: { $sum: '$Sample_Size_Number' },
+                        value: { $sum: '$Actual_Data_Value_Number' },
+                    },
+                },
+                {
+                    $sort: {
+                        _id: 1,
+                    },
+                },
+            ]);
+            let total2 = data2.reduce((acc, d) => {
+                acc += d.sampleSize;
+                return acc;
+            }, 0);
+            let forMatedData2 = data2.map((d) => {
+                return {
+                    _id: d._id,
+                    sampleSize: d.sampleSize,
+                    value: d.value,
+                    percentage: (100 / total2) * d.sampleSize,
+                };
+            });
+            let ageObj = {
+                ...obj,
+                Break_Out_Category: 'Age Group',
+            };
+            let data3 = await infoGraphic_1.default.aggregate([
+                {
+                    $match: ageObj,
                 },
                 {
                     $unwind: '$Break_Out',
@@ -708,110 +395,838 @@ let FoodResolver = class FoodResolver {
                     },
                 },
             ]);
+            let total3 = data3.reduce((acc, d) => {
+                acc += d.sampleSize;
+                return acc;
+            }, 0);
+            let forMatedData3 = data3.map((d) => {
+                return {
+                    _id: d._id,
+                    sampleSize: d.sampleSize,
+                    value: d.value,
+                    percentage: (100 / total3) * d.sampleSize,
+                };
+            });
+            let genderObj = {
+                ...obj,
+                Break_Out_Category: 'Gender',
+            };
+            let data4 = await infoGraphic_1.default.aggregate([
+                {
+                    $match: genderObj,
+                },
+                {
+                    $unwind: '$Break_Out',
+                },
+                {
+                    $group: {
+                        _id: '$Break_Out',
+                        sampleSize: { $sum: '$Sample_Size_Number' },
+                        value: { $sum: '$Actual_Data_Value_Number' },
+                    },
+                },
+                {
+                    $sort: {
+                        _id: 1,
+                    },
+                },
+            ]);
+            let total4 = data4.reduce((acc, d) => {
+                acc += d.sampleSize;
+                return acc;
+            }, 0);
+            console.log('total4', total4);
+            let forMatedData4 = data4.map((d) => {
+                return {
+                    _id: d._id,
+                    sampleSize: d.sampleSize,
+                    value: d.value,
+                    percentage: (100 / total4) * d.sampleSize,
+                };
+            });
+            return {
+                diseases: forMatedData1,
+                race: forMatedData2,
+                age: forMatedData3,
+                sex: forMatedData4,
+            };
+        }
+        else {
+            let obj = {};
+            if (year) {
+                obj.Year = year;
+            }
+            else {
+                obj.Year = '2021';
+            }
+            if (state) {
+                obj.Locationabbr = state;
+            }
+            let data = await infoGraphicDeath_1.default.aggregate([
+                {
+                    $match: obj,
+                },
+                {
+                    $unwind: '$Topic',
+                },
+                {
+                    $group: {
+                        _id: '$Topic',
+                        sampleSize: { $sum: '$PopulationInNumber' },
+                        value: { $sum: '$DeathsInNumber' },
+                    },
+                },
+                {
+                    $sort: {
+                        _id: 1,
+                    },
+                },
+            ]);
+            let total1 = data.reduce((acc, d) => {
+                acc += d.sampleSize;
+                return acc;
+            }, 0);
+            let forMatedData1 = data.map((d) => {
+                return {
+                    _id: d._id,
+                    sampleSize: d.sampleSize,
+                    value: d.value,
+                    percentage: (100 / total1) * d.sampleSize,
+                };
+            });
+            let data2 = await infoGraphicDeath_1.default.aggregate([
+                {
+                    $match: obj,
+                },
+                {
+                    $unwind: '$Race',
+                },
+                {
+                    $group: {
+                        _id: '$Race',
+                        sampleSize: { $sum: '$PopulationInNumber' },
+                        value: { $sum: '$DeathsInNumber' },
+                    },
+                },
+                {
+                    $sort: {
+                        _id: 1,
+                    },
+                },
+            ]);
+            let total2 = data2.reduce((acc, d) => {
+                acc += d.sampleSize;
+                return acc;
+            }, 0);
+            let forMatedData2 = data2.map((d) => {
+                return {
+                    _id: d._id,
+                    sampleSize: d.sampleSize,
+                    value: d.value,
+                    percentage: (100 / total2) * d.sampleSize,
+                };
+            });
+            let data3 = await infoGraphicDeath_1.default.aggregate([
+                {
+                    $match: obj,
+                },
+                {
+                    $unwind: '$ageGroup',
+                },
+                {
+                    $group: {
+                        _id: '$ageGroup',
+                        sampleSize: { $sum: '$PopulationInNumber' },
+                        value: { $sum: '$DeathsInNumber' },
+                    },
+                },
+                {
+                    $sort: {
+                        _id: 1,
+                    },
+                },
+            ]);
+            let total3 = data3.reduce((acc, d) => {
+                acc += d.sampleSize;
+                return acc;
+            }, 0);
+            let forMatedData3 = data3.map((d) => {
+                return {
+                    _id: d._id,
+                    sampleSize: d.sampleSize,
+                    value: d.value,
+                    percentage: (100 / total3) * d.sampleSize,
+                };
+            });
+            let data4 = await infoGraphicDeath_1.default.aggregate([
+                {
+                    $match: obj,
+                },
+                {
+                    $unwind: '$Gender',
+                },
+                {
+                    $group: {
+                        _id: '$Gender',
+                        sampleSize: { $sum: '$PopulationInNumber' },
+                        value: { $sum: '$DeathsInNumber' },
+                    },
+                },
+                {
+                    $sort: {
+                        _id: 1,
+                    },
+                },
+            ]);
+            let total4 = data4.reduce((acc, d) => {
+                acc += d.sampleSize;
+                return acc;
+            }, 0);
+            let forMatedData4 = data4.map((d) => {
+                return {
+                    _id: d._id,
+                    sampleSize: d.sampleSize,
+                    value: d.value,
+                    percentage: (100 / total4) * d.sampleSize,
+                };
+            });
+            return {
+                diseases: forMatedData1,
+                race: forMatedData2,
+                age: forMatedData3,
+                sex: forMatedData4,
+            };
+        }
+    }
+    async yearBasedAggregation(disease, state, race, age, sex, dataSet) {
+        if (dataSet === 'incidence' || !dataSet) {
+            let obj = {};
+            let allYearsData = [];
+            if (disease) {
+                obj.Topic = disease;
+            }
+            if (state) {
+                obj.Locationabbr = state;
+            }
+            if (race || age || sex) {
+                if (race) {
+                    obj.Category = race;
+                }
+                else if (age) {
+                    obj.Category = age;
+                }
+                else {
+                    obj.Category = sex;
+                }
+                // obj.Break_Out = {
+                //   $ne: 'Overall',
+                // }
+                let data = await infoGraphic_1.default.aggregate([
+                    {
+                        $match: obj,
+                    },
+                    {
+                        $unwind: '$Year',
+                    },
+                    {
+                        $group: {
+                            _id: '$Year',
+                            sampleSize: { $sum: '$Sample_Size_Number' },
+                            value: { $sum: '$Actual_Data_Value_Number' },
+                        },
+                    },
+                    {
+                        $sort: {
+                            _id: 1,
+                        },
+                    },
+                ]);
+                let total1 = data.reduce((acc, d) => {
+                    acc += d.sampleSize;
+                    return acc;
+                }, 0);
+                let forMatedData1 = data.map((d) => {
+                    return {
+                        _id: d._id,
+                        sampleSize: d.sampleSize,
+                        value: d.value,
+                        percentage: (100 / total1) * d.sampleSize,
+                    };
+                });
+                return forMatedData1;
+            }
+            else {
+                let data = await Overall_1.default.aggregate([
+                    {
+                        $match: obj,
+                    },
+                    {
+                        $unwind: '$Year',
+                    },
+                    {
+                        $group: {
+                            _id: '$Year',
+                            sampleSize: { $sum: '$Sample_Size_Number' },
+                            value: { $sum: '$Actual_Data_Value_Number' },
+                        },
+                    },
+                    {
+                        $sort: {
+                            _id: 1,
+                        },
+                    },
+                ]);
+                let total1 = data.reduce((acc, d) => {
+                    acc += d.sampleSize;
+                    return acc;
+                }, 0);
+                let forMatedData1 = data.map((d) => {
+                    return {
+                        _id: d._id,
+                        sampleSize: d.sampleSize,
+                        value: d.value,
+                        percentage: (100 / total1) * d.sampleSize,
+                    };
+                });
+                return forMatedData1;
+            }
+        }
+        else {
+            let obj = {};
+            // let allYearsData: any[] = [];
+            if (disease) {
+                obj.Topic = disease;
+            }
+            if (state) {
+                obj.Locationabbr = state;
+            }
+            if (race) {
+                obj.Race = race;
+            }
+            if (age) {
+                obj.ageGroup = age;
+            }
+            if (sex) {
+                obj.Gender = sex;
+            }
+            if (Object.keys(obj).length === 0) {
+                return [];
+            }
+            // obj.Break_Out = {
+            //   $ne: 'Overall',
+            // }
+            let data = await infoGraphicDeath_1.default.aggregate([
+                {
+                    $match: obj,
+                },
+                {
+                    $unwind: '$Year',
+                },
+                {
+                    $group: {
+                        _id: '$Year',
+                        sampleSize: { $sum: '$PopulationInNumber' },
+                        value: { $sum: '$DeathsInNumber' },
+                    },
+                },
+                {
+                    $sort: {
+                        _id: 1,
+                    },
+                },
+            ]);
+            let total1 = data.reduce((acc, d) => {
+                acc += d.sampleSize;
+                return acc;
+            }, 0);
+            let forMatedData1 = data.map((d) => {
+                return {
+                    _id: d._id,
+                    sampleSize: d.sampleSize,
+                    value: d.value,
+                    percentage: (100 / total1) * d.sampleSize,
+                };
+            });
+            return forMatedData1;
+        }
+    }
+    async getCompareData(disease, type, race, age, sex, state, dataSet) {
+        if (dataSet === 'incidence' || !dataSet) {
+            let obj = {
+                Topic: { $ne: 'Vision' },
+                Break_Out_Category: { $ne: 'Overall' },
+            };
+            if (state) {
+                obj.Locationabbr = state;
+            }
+            let years = [
+                '2011',
+                '2012',
+                '2013',
+                '2014',
+                '2015',
+                '2016',
+                '2017',
+                '2018',
+                '2019',
+                '2020',
+                '2021',
+            ];
+            let formateData = [];
+            let matchObj = {};
+            if (type === 'disease') {
+                matchObj = {
+                    ...obj,
+                };
+                if (race) {
+                    matchObj.Category = race;
+                }
+                else if (sex) {
+                    matchObj.Category = sex;
+                }
+                else if (age) {
+                    matchObj.Category = age;
+                }
+                console.log(matchObj);
+                for (let i = 0; i < years.length; i++) {
+                    matchObj.Year = years[i];
+                    let data = await infoGraphic_1.default.aggregate([
+                        {
+                            $match: matchObj,
+                        },
+                        {
+                            $unwind: '$Topic',
+                        },
+                        {
+                            $group: {
+                                _id: '$Topic',
+                                sampleSize: { $sum: '$Sample_Size_Number' },
+                                value: { $sum: '$Actual_Data_Value_Number' },
+                            },
+                        },
+                        {
+                            $sort: {
+                                _id: 1,
+                            },
+                        },
+                    ]);
+                    let forMatedData = data.map((d) => {
+                        return {
+                            _id: d._id,
+                            sampleSize: d.sampleSize,
+                            value: d.value,
+                            percentage: (+d.value / +d.sampleSize) * 100
+                                ? (+d.value / +d.sampleSize) * 100
+                                : 0,
+                        };
+                    });
+                    formateData.push({
+                        year: years[i],
+                        fotmatedData: forMatedData,
+                    });
+                }
+                return formateData;
+            }
+            else if (type === 'sex') {
+                if (!disease) {
+                    obj.Topic = 'Arthritis';
+                }
+                else {
+                    obj.Topic = disease;
+                }
+                matchObj = {
+                    ...obj,
+                    Break_Out_Category: 'Gender',
+                };
+                console.log(matchObj);
+            }
+            else if (type === 'age') {
+                if (!disease) {
+                    obj.Topic = 'Arthritis';
+                }
+                else {
+                    obj.Topic = disease;
+                }
+                matchObj = {
+                    ...obj,
+                    Break_Out_Category: 'Age Group',
+                };
+            }
+            else if (type === 'race') {
+                if (!disease) {
+                    obj.Topic = 'Arthritis';
+                }
+                else {
+                    obj.Topic = disease;
+                }
+                matchObj = {
+                    ...obj,
+                    Break_Out_Category: 'Race/Ethnicity',
+                };
+                for (let i = 0; i < years.length; i++) {
+                    matchObj.Year = years[i];
+                    let data = await infoGraphic_1.default.aggregate([
+                        {
+                            $match: matchObj,
+                        },
+                        {
+                            $unwind: '$Category',
+                        },
+                        {
+                            $group: {
+                                _id: '$Category',
+                                sampleSize: { $sum: '$Sample_Size_Number' },
+                                value: { $sum: '$Actual_Data_Value_Number' },
+                            },
+                        },
+                        {
+                            $sort: {
+                                _id: 1,
+                            },
+                        },
+                    ]);
+                    let forMatedData = data.map((d) => {
+                        return {
+                            _id: d._id,
+                            sampleSize: d.sampleSize,
+                            value: d.value,
+                            percentage: (+d.value / +d.sampleSize) * 100
+                                ? (+d.value / +d.sampleSize) * 100
+                                : 0,
+                        };
+                    });
+                    formateData.push({
+                        year: years[i],
+                        fotmatedData: forMatedData,
+                    });
+                }
+                return formateData;
+            }
+            for (let i = 0; i < years.length; i++) {
+                matchObj.Year = years[i];
+                let data = await infoGraphic_1.default.aggregate([
+                    {
+                        $match: matchObj,
+                    },
+                    {
+                        $unwind: '$Break_Out',
+                    },
+                    {
+                        $group: {
+                            _id: '$Break_Out',
+                            sampleSize: { $sum: '$Sample_Size_Number' },
+                            value: { $sum: '$Actual_Data_Value_Number' },
+                        },
+                    },
+                    {
+                        $sort: {
+                            _id: 1,
+                        },
+                    },
+                ]);
+                let forMatedData = data.map((d) => {
+                    return {
+                        _id: d._id,
+                        sampleSize: d.sampleSize,
+                        value: d.value,
+                        percentage: (+d.value / +d.sampleSize) * 100
+                            ? (+d.value / +d.sampleSize) * 100
+                            : 0,
+                    };
+                });
+                formateData.push({
+                    year: years[i],
+                    fotmatedData: forMatedData,
+                });
+            }
+            return formateData;
+        }
+        else {
+            let obj = {};
+            let group = {
+                sampleSize: { $sum: '$PopulationInNumber' },
+                value: { $sum: '$DeathsInNumber' },
+            };
+            if (state) {
+                obj.Locationabbr = state;
+            }
+            if (race) {
+                obj.Race = race;
+            }
+            if (age) {
+                obj.ageGroup = age;
+            }
+            if (sex) {
+                obj.Gender = sex;
+            }
+            let unwind = '';
+            if (type === 'disease') {
+                delete obj.disease;
+                unwind = '$Topic';
+                group._id = '$Topic';
+            }
+            else if (type === 'sex') {
+                delete obj.Gender;
+                unwind = '$Gender';
+                group._id = '$Gender';
+            }
+            else if (type === 'age') {
+                delete obj.ageGroup;
+                unwind = '$ageGroup';
+                group._id = '$ageGroup';
+            }
+            else if (type === 'race') {
+                delete obj.Race;
+                unwind = '$Race';
+                group._id = '$Race';
+            }
+            let years = [
+                '2011',
+                '2012',
+                '2013',
+                '2014',
+                '2015',
+                '2016',
+                '2017',
+                '2018',
+                '2019',
+                '2020',
+            ];
+            let formateData = [];
+            console.log(group);
+            console.log(obj);
+            for (let i = 0; i < years.length; i++) {
+                obj.Year = years[i];
+                let data = await infoGraphicDeath_1.default.aggregate([
+                    {
+                        $match: obj,
+                    },
+                    {
+                        $unwind: unwind,
+                    },
+                    {
+                        $group: group,
+                    },
+                    {
+                        $sort: {
+                            _id: 1,
+                        },
+                    },
+                ]);
+                let forMatedData = data.map((d) => {
+                    return {
+                        _id: d._id,
+                        sampleSize: d.sampleSize,
+                        value: d.value,
+                        percentage: (+d.value / +d.sampleSize) * 100
+                            ? (+d.value / +d.sampleSize) * 100
+                            : 0,
+                    };
+                });
+                formateData.push({
+                    year: years[i],
+                    fotmatedData: forMatedData,
+                });
+            }
+            return formateData;
+        }
+    }
+    async getStateData(year, disease, 
+    // @Arg('state', { nullable: true }) state: String,
+    race, age, sex, dataSet) {
+        if (dataSet === 'incidence' || !dataSet) {
+            console.log('incidence');
+            let obj = {};
+            if (year) {
+                obj.Year = year;
+            }
+            else {
+                obj.Year = '2021';
+            }
+            if (disease) {
+                obj.Topic = disease;
+            }
+            else {
+                obj.Topic = 'Arthritis';
+            }
+            if (race) {
+                obj.Category = race;
+            }
+            else if (sex) {
+                obj.Category = sex;
+            }
+            else if (age) {
+                obj.Category = age;
+            }
+            console.log(obj);
+            let data = await infoGraphic_1.default.aggregate([
+                {
+                    $match: obj,
+                },
+                {
+                    $unwind: '$Locationabbr',
+                },
+                {
+                    $group: {
+                        _id: '$Locationabbr',
+                        fullForm: { $first: '$Locationdesc' },
+                        sampleSize: { $sum: '$Sample_Size_Number' },
+                        value: { $sum: '$Actual_Data_Value_Number' },
+                    },
+                },
+                {
+                    $sort: {
+                        _id: 1,
+                    },
+                },
+            ]);
             let forMatedData = data.map((d) => {
                 return {
                     _id: d._id,
                     sampleSize: d.sampleSize,
                     value: d.value,
+                    fullForm: d.fullForm,
                     percentage: (+d.value / +d.sampleSize) * 100
                         ? (+d.value / +d.sampleSize) * 100
                         : 0,
+                    prevalence: 0,
                 };
             });
-            formateData.push({
-                year: years[i],
-                fotmatedData: forMatedData,
-            });
-        }
-        return formateData;
-    }
-    async getStateData(year, disease, 
-    // @Arg('state', { nullable: true }) state: String,
-    category) {
-        let obj = {};
-        if (year) {
-            obj.Year = year;
-        }
-        else {
-            obj.Year = '2021';
-        }
-        if (disease) {
-            obj.Topic = disease;
-        }
-        else {
-            obj.Topic = 'Arthritis';
-        }
-        if (category) {
-            obj.Category = category;
-        }
-        let data = await infoGraphic_1.default.aggregate([
-            {
-                $match: obj,
-            },
-            {
-                $unwind: '$Locationabbr',
-            },
-            {
-                $group: {
-                    _id: '$Locationabbr',
-                    fullForm: { $first: '$Locationdesc' },
-                    sampleSize: { $sum: '$Sample_Size_Number' },
-                    value: { $sum: '$Actual_Data_Value_Number' },
+            let returnObj = {};
+            let sortedArray = forMatedData.sort((data1, data2) => data1.percentage - data2.percentage);
+            let length = sortedArray.length;
+            let t25 = Math.floor((25 / 100) * (length + 1));
+            let t50 = Math.floor((50 / 100) * (length + 1));
+            let t75 = Math.floor((75 / 100) * (length + 1));
+            console.log(t25);
+            console.log(t50);
+            console.log(t75);
+            let lowest = sortedArray[0];
+            let highest = sortedArray[sortedArray.length - 1];
+            for (let i = 0; i < sortedArray.length; i++) {
+                returnObj[sortedArray[i]._id] = sortedArray[i];
+                if (sortedArray[t75].percentage < sortedArray[i].percentage) {
+                    returnObj[sortedArray[i]._id].quartile = 4;
+                }
+                else if (sortedArray[t50].percentage < sortedArray[i].percentage &&
+                    sortedArray[t75].percentage <= sortedArray[i].percentage) {
+                    returnObj[sortedArray[i]._id].quartile = 3;
+                }
+                else if (sortedArray[t25].percentage < sortedArray[i].percentage &&
+                    sortedArray[t50].percentage <= sortedArray[i].percentage) {
+                    returnObj[sortedArray[i]._id].quartile = 2;
+                }
+                else {
+                    returnObj[sortedArray[i]._id].quartile = 1;
+                }
+            }
+            let returnData = {
+                quartile: {
+                    0: lowest.percentage,
+                    25: sortedArray[t25].percentage,
+                    50: sortedArray[t50].percentage,
+                    75: sortedArray[t75].percentage,
+                    100: highest.percentage,
                 },
-            },
-            {
-                $sort: {
-                    _id: 1,
-                },
-            },
-        ]);
-        let forMatedData = data.map((d) => {
-            return {
-                _id: d._id,
-                sampleSize: d.sampleSize,
-                value: d.value,
-                fullForm: d.fullForm,
-                percentage: (+d.value / +d.sampleSize) * 100
-                    ? (+d.value / +d.sampleSize) * 100
-                    : 0,
-                prevalence: 0,
+                data: returnObj,
             };
-        });
-        let returnObj = {};
-        let sortedArray = forMatedData.sort((data1, data2) => data1.percentage - data2.percentage);
-        let t25 = (25 / 100) * (55 + 1);
-        let t50 = (50 / 100) * (55 + 1);
-        let t75 = (75 / 100) * (55 + 1);
-        let lowest = sortedArray[0];
-        let highest = sortedArray[sortedArray.length - 1];
-        for (let i = 0; i < sortedArray.length; i++) {
-            returnObj[sortedArray[i]._id] = sortedArray[i];
-            if (sortedArray[t75].percentage < sortedArray[i].percentage) {
-                returnObj[sortedArray[i]._id].quartile = 4;
-            }
-            else if (sortedArray[t50].percentage < sortedArray[i].percentage &&
-                sortedArray[t75].percentage <= sortedArray[i].percentage) {
-                returnObj[sortedArray[i]._id].quartile = 3;
-            }
-            else if (sortedArray[t25].percentage < sortedArray[i].percentage &&
-                sortedArray[t50].percentage <= sortedArray[i].percentage) {
-                returnObj[sortedArray[i]._id].quartile = 2;
+            return JSON.stringify(returnData);
+        }
+        else {
+            let obj = {};
+            if (year) {
+                obj.Year = year;
             }
             else {
-                returnObj[sortedArray[i]._id].quartile = 1;
+                obj.Year = '2020';
             }
+            if (disease) {
+                obj.Topic = disease;
+            }
+            else {
+                obj.Topic = 'Alzheimer & Dementia';
+            }
+            if (race) {
+                obj.Race = race;
+            }
+            if (age) {
+                obj.ageGroup = age;
+            }
+            if (sex) {
+                obj.Gender = sex;
+            }
+            console.log(obj);
+            let data = await infoGraphicDeath_1.default.aggregate([
+                {
+                    $match: obj,
+                },
+                {
+                    $unwind: '$Locationabbr',
+                },
+                {
+                    $group: {
+                        _id: '$Locationabbr',
+                        fullForm: { $first: '$Locationdesc' },
+                        sampleSize: { $sum: '$PopulationInNumber' },
+                        value: { $sum: '$DeathsInNumber' },
+                    },
+                },
+                {
+                    $sort: {
+                        _id: 1,
+                    },
+                },
+            ]);
+            let forMatedData = data.map((d) => {
+                return {
+                    _id: d._id,
+                    sampleSize: d.sampleSize,
+                    value: d.value,
+                    fullForm: d.fullForm,
+                    percentage: (+d.value / +d.sampleSize) * 100
+                        ? (+d.value / +d.sampleSize) * 100
+                        : 0,
+                    prevalence: 0,
+                };
+            });
+            let returnObj = {};
+            // console.log(forMatedData);
+            let sortedArray = forMatedData.sort((data1, data2) => data1.percentage - data2.percentage);
+            let length = sortedArray.length;
+            let t25 = Math.floor((25 / 100) * (length + 1));
+            let t50 = Math.floor((50 / 100) * (length + 1));
+            let t75 = Math.floor((75 / 100) * (length + 1));
+            let lowest = sortedArray[0];
+            let highest = sortedArray[sortedArray.length - 1];
+            for (let i = 0; i < sortedArray.length; i++) {
+                returnObj[sortedArray[i]._id] = sortedArray[i];
+                if (sortedArray[t75].percentage < sortedArray[i].percentage) {
+                    returnObj[sortedArray[i]._id].quartile = 4;
+                }
+                else if (sortedArray[t50].percentage < sortedArray[i].percentage &&
+                    sortedArray[t75].percentage <= sortedArray[i].percentage) {
+                    returnObj[sortedArray[i]._id].quartile = 3;
+                }
+                else if (sortedArray[t25].percentage < sortedArray[i].percentage &&
+                    sortedArray[t50].percentage <= sortedArray[i].percentage) {
+                    returnObj[sortedArray[i]._id].quartile = 2;
+                }
+                else {
+                    returnObj[sortedArray[i]._id].quartile = 1;
+                }
+            }
+            let returnData = {
+                quartile: {
+                    0: lowest.percentage,
+                    25: sortedArray[t25].percentage,
+                    50: sortedArray[t50].percentage,
+                    75: sortedArray[t75].percentage,
+                    100: highest.percentage,
+                },
+                data: returnObj,
+            };
+            return JSON.stringify(returnData);
         }
-        let returnData = {
-            quartile: {
-                0: lowest.percentage,
-                25: sortedArray[t25].percentage,
-                50: sortedArray[t50].percentage,
-                75: sortedArray[t75].percentage,
-                100: highest.percentage,
-            },
-            data: returnObj,
-        };
-        return JSON.stringify(returnData);
     }
     async addClasses() {
         console.log('add classes');
@@ -1091,8 +1506,10 @@ __decorate([
     (0, type_graphql_1.Query)(() => ReturnInfoData_1.default),
     __param(0, (0, type_graphql_1.Arg)('year', { nullable: true })),
     __param(1, (0, type_graphql_1.Arg)('state', { nullable: true })),
+    __param(2, (0, type_graphql_1.Arg)('dataSet', { nullable: true })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String,
+        String,
         String]),
     __metadata("design:returntype", Promise)
 ], FoodResolver.prototype, "showInfoData", null);
@@ -1103,8 +1520,10 @@ __decorate([
     __param(2, (0, type_graphql_1.Arg)('race', { nullable: true })),
     __param(3, (0, type_graphql_1.Arg)('age', { nullable: true })),
     __param(4, (0, type_graphql_1.Arg)('sex', { nullable: true })),
+    __param(5, (0, type_graphql_1.Arg)('dataSet', { nullable: true })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String,
+        String,
         String,
         String,
         String,
@@ -1115,10 +1534,16 @@ __decorate([
     (0, type_graphql_1.Query)(() => [Compare_1.default]),
     __param(0, (0, type_graphql_1.Arg)('disease', { nullable: true })),
     __param(1, (0, type_graphql_1.Arg)('type')),
-    __param(2, (0, type_graphql_1.Arg)('category', { nullable: true })),
-    __param(3, (0, type_graphql_1.Arg)('state', { nullable: true })),
+    __param(2, (0, type_graphql_1.Arg)('race', { nullable: true })),
+    __param(3, (0, type_graphql_1.Arg)('age', { nullable: true })),
+    __param(4, (0, type_graphql_1.Arg)('sex', { nullable: true })),
+    __param(5, (0, type_graphql_1.Arg)('state', { nullable: true })),
+    __param(6, (0, type_graphql_1.Arg)('dataSet', { nullable: true })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String,
+        String,
+        String,
+        String,
         String,
         String,
         String]),
@@ -1128,9 +1553,15 @@ __decorate([
     (0, type_graphql_1.Query)(() => String),
     __param(0, (0, type_graphql_1.Arg)('year', { nullable: true })),
     __param(1, (0, type_graphql_1.Arg)('disease', { nullable: true })),
-    __param(2, (0, type_graphql_1.Arg)('category', { nullable: true })),
+    __param(2, (0, type_graphql_1.Arg)('race', { nullable: true })),
+    __param(3, (0, type_graphql_1.Arg)('age', { nullable: true })),
+    __param(4, (0, type_graphql_1.Arg)('sex', { nullable: true })),
+    __param(5, (0, type_graphql_1.Arg)('dataSet', { nullable: true })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String,
+        String,
+        String,
+        String,
         String,
         String]),
     __metadata("design:returntype", Promise)
