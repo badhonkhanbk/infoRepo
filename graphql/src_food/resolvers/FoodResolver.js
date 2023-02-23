@@ -24,6 +24,7 @@ const ReturnInfoData_1 = __importDefault(require("../schemas/ReturnInfoData"));
 const class_1 = __importDefault(require("../../../models/class"));
 const myClass_1 = __importDefault(require("../schemas/myClass"));
 const Compare_1 = __importDefault(require("../schemas/Compare"));
+//https://blending101-infographic.vercel.app/
 let FoodResolver = class FoodResolver {
     // @Query(() => String)
     // async csvConverter() {

@@ -121,6 +121,24 @@ let InfoDeathResolver = class InfoDeathResolver {
         fs_1.default.writeFileSync('./temp/infoData2.json', JSON.stringify(jsonArray));
         return 'done';
     }
+    async changeRaceParam() {
+        await infoGraphicDeath_1.default.updateMany({
+            Race: 'American Indian or Alaska Native',
+        }, {
+            Race: 'Other',
+        });
+        await infoGraphicDeath_1.default.updateMany({
+            Race: 'Asian or Pacific Islander',
+        }, {
+            Race: 'Asian',
+        });
+        await infoGraphicDeath_1.default.updateMany({
+            Race: 'Black or African American',
+        }, {
+            Race: 'Black',
+        });
+        return 'done';
+    }
     async infoDeathModification() {
         const data = JSON.parse(fs_1.default.readFileSync('./temp/infoData2.json', 'utf-8'));
         let allData = [];
@@ -298,7 +316,7 @@ let InfoDeathResolver = class InfoDeathResolver {
     // async storeData() {
     //   const data: any = JSON.parse(
     //     fs.readFileSync('./temp/infoData2.json', 'utf-8')
-    //   );
+    //   );f
     //   for (let i = 0; i < data.length; i++) {
     //     await InfoGraphic.create({
     //       Condition: data[i].Condition,
@@ -912,7 +930,6 @@ let InfoDeathResolver = class InfoDeathResolver {
                 },
             },
         ]);
-        console.log(data[0]);
         let forMatedData = data.map((d) => {
             return {
                 _id: d._id,
@@ -926,10 +943,12 @@ let InfoDeathResolver = class InfoDeathResolver {
             };
         });
         let returnObj = {};
+        // console.log(forMatedData);
         let sortedArray = forMatedData.sort((data1, data2) => data1.percentage - data2.percentage);
-        let t25 = (25 / 100) * (55 + 1);
-        let t50 = (50 / 100) * (55 + 1);
-        let t75 = (75 / 100) * (55 + 1);
+        let length = sortedArray.length;
+        let t25 = (25 / 100) * (length + 1);
+        let t50 = (50 / 100) * (length + 1);
+        let t75 = (75 / 100) * (length + 1);
         let lowest = sortedArray[0];
         let highest = sortedArray[sortedArray.length - 1];
         for (let i = 0; i < sortedArray.length; i++) {
@@ -968,6 +987,12 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], InfoDeathResolver.prototype, "csvConverter2", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => String),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], InfoDeathResolver.prototype, "changeRaceParam", null);
 __decorate([
     (0, type_graphql_1.Query)(() => String),
     __metadata("design:type", Function),
