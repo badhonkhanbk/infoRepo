@@ -291,7 +291,7 @@ let FoodResolver = class FoodResolver {
     //   // fs.writeFileSync('./temp/locationDesc.json', JSON.stringify(locationDesc));
     //   return '';
     // }
-    async showInfoData(year, state, dataSet) {
+    async showInfoData(year, state, disease, race, age, sex, dataSet) {
         if (dataSet === 'incidence' || !dataSet) {
             let obj = {};
             if (year) {
@@ -303,9 +303,29 @@ let FoodResolver = class FoodResolver {
             if (state) {
                 obj.Locationabbr = state;
             }
-            let data = await Overall_1.default.aggregate([
+            let diseaseObj = {
+                ...obj,
+            };
+            if (race) {
+                diseaseObj.Category = race;
+            }
+            if (age) {
+                diseaseObj.Category = age;
+            }
+            if (sex) {
+                diseaseObj.Category = sex;
+            }
+            let model;
+            if (diseaseObj.Category) {
+                model = infoGraphic_1.default;
+            }
+            else {
+                model = Overall_1.default;
+            }
+            console.log(diseaseObj);
+            let data = await model.aggregate([
                 {
-                    $match: obj,
+                    $match: diseaseObj,
                 },
                 {
                     $unwind: '$Topic',
@@ -323,22 +343,26 @@ let FoodResolver = class FoodResolver {
                     },
                 },
             ]);
-            let total1 = data.reduce((acc, d) => {
-                acc += d.sampleSize;
-                return acc;
-            }, 0);
             let forMatedData1 = data.map((d) => {
                 return {
                     _id: d._id,
                     sampleSize: d.sampleSize,
                     value: d.value,
-                    percentage: (100 / total1) * d.sampleSize,
+                    percentage: (+d.value / +d.sampleSize) * 100
+                        ? (+d.value / +d.sampleSize) * 100
+                        : 0,
                 };
             });
             let raceObj = {
                 ...obj,
                 Break_Out_Category: 'Race/Ethnicity',
             };
+            if (disease) {
+                raceObj.Topic = disease;
+            }
+            else {
+                raceObj.Topic = 'Arthritis';
+            }
             let data2 = await infoGraphic_1.default.aggregate([
                 {
                     $match: raceObj,
@@ -359,22 +383,26 @@ let FoodResolver = class FoodResolver {
                     },
                 },
             ]);
-            let total2 = data2.reduce((acc, d) => {
-                acc += d.sampleSize;
-                return acc;
-            }, 0);
             let forMatedData2 = data2.map((d) => {
                 return {
                     _id: d._id,
                     sampleSize: d.sampleSize,
                     value: d.value,
-                    percentage: (100 / total2) * d.sampleSize,
+                    percentage: (+d.value / +d.sampleSize) * 100
+                        ? (+d.value / +d.sampleSize) * 100
+                        : 0,
                 };
             });
             let ageObj = {
                 ...obj,
                 Break_Out_Category: 'Age Group',
             };
+            if (disease) {
+                ageObj.Topic = disease;
+            }
+            else {
+                ageObj.Topic = 'Arthritis';
+            }
             let data3 = await infoGraphic_1.default.aggregate([
                 {
                     $match: ageObj,
@@ -395,22 +423,26 @@ let FoodResolver = class FoodResolver {
                     },
                 },
             ]);
-            let total3 = data3.reduce((acc, d) => {
-                acc += d.sampleSize;
-                return acc;
-            }, 0);
             let forMatedData3 = data3.map((d) => {
                 return {
                     _id: d._id,
                     sampleSize: d.sampleSize,
                     value: d.value,
-                    percentage: (100 / total3) * d.sampleSize,
+                    percentage: (+d.value / +d.sampleSize) * 100
+                        ? (+d.value / +d.sampleSize) * 100
+                        : 0,
                 };
             });
             let genderObj = {
                 ...obj,
                 Break_Out_Category: 'Gender',
             };
+            if (disease) {
+                genderObj.Topic = disease;
+            }
+            else {
+                genderObj.Topic = 'Arthritis';
+            }
             let data4 = await infoGraphic_1.default.aggregate([
                 {
                     $match: genderObj,
@@ -431,17 +463,14 @@ let FoodResolver = class FoodResolver {
                     },
                 },
             ]);
-            let total4 = data4.reduce((acc, d) => {
-                acc += d.sampleSize;
-                return acc;
-            }, 0);
-            console.log('total4', total4);
             let forMatedData4 = data4.map((d) => {
                 return {
                     _id: d._id,
                     sampleSize: d.sampleSize,
                     value: d.value,
-                    percentage: (100 / total4) * d.sampleSize,
+                    percentage: (+d.value / +d.sampleSize) * 100
+                        ? (+d.value / +d.sampleSize) * 100
+                        : 0,
                 };
             });
             return {
@@ -461,6 +490,15 @@ let FoodResolver = class FoodResolver {
             }
             if (state) {
                 obj.Locationabbr = state;
+            }
+            if (race) {
+                obj.Race = race;
+            }
+            if (sex) {
+                obj.ageGroup = age;
+            }
+            if (sex) {
+                obj.sex = sex;
             }
             let data = await infoGraphicDeath_1.default.aggregate([
                 {
@@ -605,6 +643,9 @@ let FoodResolver = class FoodResolver {
             if (disease) {
                 obj.Topic = disease;
             }
+            else {
+                obj.Topic = 'Arthritis';
+            }
             if (state) {
                 obj.Locationabbr = state;
             }
@@ -641,16 +682,14 @@ let FoodResolver = class FoodResolver {
                         },
                     },
                 ]);
-                let total1 = data.reduce((acc, d) => {
-                    acc += d.sampleSize;
-                    return acc;
-                }, 0);
                 let forMatedData1 = data.map((d) => {
                     return {
                         _id: d._id,
                         sampleSize: d.sampleSize,
                         value: d.value,
-                        percentage: (100 / total1) * d.sampleSize,
+                        percentage: (+d.value / +d.sampleSize) * 100
+                            ? (+d.value / +d.sampleSize) * 100
+                            : 0,
                     };
                 });
                 return forMatedData1;
@@ -676,16 +715,14 @@ let FoodResolver = class FoodResolver {
                         },
                     },
                 ]);
-                let total1 = data.reduce((acc, d) => {
-                    acc += d.sampleSize;
-                    return acc;
-                }, 0);
                 let forMatedData1 = data.map((d) => {
                     return {
                         _id: d._id,
                         sampleSize: d.sampleSize,
                         value: d.value,
-                        percentage: (100 / total1) * d.sampleSize,
+                        percentage: (+d.value / +d.sampleSize) * 100
+                            ? (+d.value / +d.sampleSize) * 100
+                            : 0,
                     };
                 });
                 return forMatedData1;
@@ -1506,9 +1543,17 @@ __decorate([
     (0, type_graphql_1.Query)(() => ReturnInfoData_1.default),
     __param(0, (0, type_graphql_1.Arg)('year', { nullable: true })),
     __param(1, (0, type_graphql_1.Arg)('state', { nullable: true })),
-    __param(2, (0, type_graphql_1.Arg)('dataSet', { nullable: true })),
+    __param(2, (0, type_graphql_1.Arg)('disease', { nullable: true })),
+    __param(3, (0, type_graphql_1.Arg)('race', { nullable: true })),
+    __param(4, (0, type_graphql_1.Arg)('age', { nullable: true })),
+    __param(5, (0, type_graphql_1.Arg)('sex', { nullable: true })),
+    __param(6, (0, type_graphql_1.Arg)('dataSet', { nullable: true })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String,
+        String,
+        String,
+        String,
+        String,
         String,
         String]),
     __metadata("design:returntype", Promise)
