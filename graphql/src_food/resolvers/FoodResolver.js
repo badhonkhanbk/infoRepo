@@ -162,16 +162,6 @@ let FoodResolver = class FoodResolver {
         }
         return 'done';
     }
-    // @Query(() => String)
-    // async storeData() {
-    //   const data: any = JSON.parse(
-    //     fs.readFileSync('./temp/infoData.json', 'utf-8')
-    //   );
-    //   for (let i = 89521; i < data.length; i++) {
-    //     await InfoGraphic.create(data[i]);
-    //   }
-    //   return 'done';
-    // }
     async storeData() {
         const data = JSON.parse(fs_1.default.readFileSync('./temp/infoData2.json', 'utf-8'));
         for (let i = 0; i < data.length; i++) {
@@ -198,99 +188,6 @@ let FoodResolver = class FoodResolver {
         }
         return 'done';
     }
-    // @Mutation(() => String)
-    // async deleteData() {
-    //   await InfoGraphic.deleteMany({});
-    //   return 'done';
-    // }
-    // @Query(() => String)
-    // async filterData() {
-    //   let data = await InfoGraphic.find({
-    //     topic: 'Depression',
-    //     Year: '2011',
-    //   }).select('_id year');
-    //   console.log(data.length);
-    //   return 'done';
-    // }
-    // @Query(() => String)
-    // async readFile() {
-    //   const data = JSON.parse(fs.readFileSync('./temp/infoData.json', 'utf-8'));
-    //   let educationAttainedCategory: any[] = [];
-    //   let overAllCategory: any[] = [];
-    //   let houseHoldIncomeCategory: any[] = [];
-    //   let ageGroupCategory: any[] = [];
-    //   let raceCategory: any[] = [];
-    //   let genderCategory: any[] = [];
-    //   // [
-    //   //   "Education Attained",
-    //   //   "Overall",
-    //   //   "Household Income",
-    //   //   "Age Group",
-    //   //   "Race/Ethnicity",
-    //   //   "Gender"
-    //   // ]
-    //   for (let i = 0; i < data.length; i++) {
-    //     if (data[i].Break_Out_Category === 'Education Attained') {
-    //       if (!educationAttainedCategory.includes(data[i].Break_Out)) {
-    //         educationAttainedCategory.push(data[i].Break_Out);
-    //       }
-    //     } else if (data[i].Break_Out_Category === 'Overall') {
-    //       if (!overAllCategory.includes(data[i].Break_Out)) {
-    //         overAllCategory.push(data[i].Break_Out);
-    //       }
-    //     } else if (data[i].Break_Out_Category === 'Household Income') {
-    //       if (!houseHoldIncomeCategory.includes(data[i].Break_Out)) {
-    //         houseHoldIncomeCategory.push(data[i].Break_Out);
-    //       }
-    //     } else if (data[i].Break_Out_Category === 'Age Group') {
-    //       if (!ageGroupCategory.includes(data[i].Break_Out)) {
-    //         ageGroupCategory.push(data[i].Break_Out);
-    //       }
-    //     } else if (data[i].Break_Out_Category === 'Race/Ethnicity') {
-    //       if (!raceCategory.includes(data[i].Break_Out)) {
-    //         raceCategory.push(data[i].Break_Out);
-    //       }
-    //     } else if (data[i].Break_Out_Category === 'Gender') {
-    //       if (!genderCategory.includes(data[i].Break_Out)) {
-    //         genderCategory.push(data[i].Break_Out);
-    //       }
-    //     }
-    //   }
-    //   console.log('ea', educationAttainedCategory);
-    //   console.log('OA', overAllCategory);
-    //   console.log('HH', houseHoldIncomeCategory);
-    //   console.log('AG', ageGroupCategory);
-    //   console.log('RE', raceCategory);
-    //   console.log('G', genderCategory);
-    //   fs.writeFileSync(
-    //     './temp/educationAttainedCategory.json',
-    //     JSON.stringify(educationAttainedCategory)
-    //   );
-    //   fs.writeFileSync(
-    //     './temp/overAllCategory.json',
-    //     JSON.stringify(overAllCategory)
-    //   );
-    //   fs.writeFileSync(
-    //     './temp/houseHoldIncomeCategory.json',
-    //     JSON.stringify(houseHoldIncomeCategory)
-    //   );
-    //   fs.writeFileSync(
-    //     './temp/ageGroupCategory.json',
-    //     JSON.stringify(ageGroupCategory)
-    //   );
-    //   fs.writeFileSync('./temp/raceCategory.json', JSON.stringify(raceCategory));
-    //   fs.writeFileSync(
-    //     './temp/genderCategory.json',
-    //     JSON.stringify(genderCategory)
-    //   );
-    //   // fs.writeFileSync('./temp/years.json', JSON.stringify(years));
-    //   // fs.writeFileSync('./temp/locations.json', JSON.stringify(locations));
-    //   // fs.writeFileSync('./temp/topics.json', JSON.stringify(topics));
-    //   //fs.writeFileSync('./temp/breakOuts.json', JSON.stringify(breakOuts));
-    //   //fs.writeFileSync('./temp/breakOutsCategory.json', JSON.stringify(breakOutCategory));
-    //   // fs.writeFileSync('./temp/locationDesc.json', JSON.stringify(locationDesc));
-    //   return '';
-    // }
     async showInfoData(year, state, disease, race, age, sex, dataSet) {
         if (dataSet === 'incidence' || !dataSet) {
             let obj = {};
@@ -486,7 +383,7 @@ let FoodResolver = class FoodResolver {
                 obj.Year = year;
             }
             else {
-                obj.Year = '2021';
+                obj.Year = '2020';
             }
             if (state) {
                 obj.Locationabbr = state;
@@ -494,12 +391,13 @@ let FoodResolver = class FoodResolver {
             if (race) {
                 obj.Race = race;
             }
-            if (sex) {
+            if (age) {
                 obj.ageGroup = age;
             }
             if (sex) {
-                obj.sex = sex;
+                obj.Gender = sex;
             }
+            console.log(obj);
             let data = await infoGraphicDeath_1.default.aggregate([
                 {
                     $match: obj,
@@ -512,6 +410,18 @@ let FoodResolver = class FoodResolver {
                         _id: '$Topic',
                         sampleSize: { $sum: '$PopulationInNumber' },
                         value: { $sum: '$DeathsInNumber' },
+                        totalCrudeRate: { $sum: '$CrudeRateInNumber' },
+                        numerator: {
+                            $sum: { $multiply: ['$DeathsInNumber', '$PopulationInNumber'] },
+                        },
+                    },
+                },
+                {
+                    $project: {
+                        sampleSize: '$sampleSize',
+                        value: '$value',
+                        totalCrudeRate: '$totalCrudeRate',
+                        percentage: { $divide: ['$numerator', '$sampleSize'] },
                     },
                 },
                 {
@@ -520,18 +430,20 @@ let FoodResolver = class FoodResolver {
                     },
                 },
             ]);
-            let total1 = data.reduce((acc, d) => {
-                acc += d.sampleSize;
-                return acc;
-            }, 0);
-            let forMatedData1 = data.map((d) => {
-                return {
-                    _id: d._id,
-                    sampleSize: d.sampleSize,
-                    value: d.value,
-                    percentage: (100 / total1) * d.sampleSize,
-                };
-            });
+            // console.log(data[0]);
+            // let total1 = data.reduce((acc: any, d: any) => {
+            //   acc += d.sampleSize;
+            //   return acc;
+            // }, 0);
+            // let forMatedData1 = data.map((d: any) => {
+            //   return {
+            //     _id: d._id,
+            //     sampleSize: d.sampleSize,
+            //     value: d.value,
+            //     percentage: (d.sampleSize / total1) * d.totalCrudeRate,
+            //   };
+            // });
+            let forMatedData1 = data;
             let data2 = await infoGraphicDeath_1.default.aggregate([
                 {
                     $match: obj,
@@ -544,6 +456,18 @@ let FoodResolver = class FoodResolver {
                         _id: '$Race',
                         sampleSize: { $sum: '$PopulationInNumber' },
                         value: { $sum: '$DeathsInNumber' },
+                        totalCrudeRate: { $sum: '$CrudeRateInNumber' },
+                        numerator: {
+                            $sum: { $multiply: ['$DeathsInNumber', '$PopulationInNumber'] },
+                        },
+                    },
+                },
+                {
+                    $project: {
+                        sampleSize: '$sampleSize',
+                        value: '$value',
+                        totalCrudeRate: '$totalCrudeRate',
+                        percentage: { $divide: ['$numerator', '$sampleSize'] },
                     },
                 },
                 {
@@ -552,18 +476,19 @@ let FoodResolver = class FoodResolver {
                     },
                 },
             ]);
-            let total2 = data2.reduce((acc, d) => {
-                acc += d.sampleSize;
-                return acc;
-            }, 0);
-            let forMatedData2 = data2.map((d) => {
-                return {
-                    _id: d._id,
-                    sampleSize: d.sampleSize,
-                    value: d.value,
-                    percentage: (100 / total2) * d.sampleSize,
-                };
-            });
+            // let total2 = data2.reduce((acc: any, d: any) => {
+            //   acc += d.sampleSize;
+            //   return acc;
+            // }, 0);
+            // let forMatedData2 = data2.map((d: any) => {
+            //   return {
+            //     _id: d._id,
+            //     sampleSize: d.sampleSize,
+            //     value: d.value,
+            //     percentage: (d.sampleSize / total2) * d.totalCrudeRate,
+            //   };
+            // });
+            let forMatedData2 = data2;
             let data3 = await infoGraphicDeath_1.default.aggregate([
                 {
                     $match: obj,
@@ -576,6 +501,18 @@ let FoodResolver = class FoodResolver {
                         _id: '$ageGroup',
                         sampleSize: { $sum: '$PopulationInNumber' },
                         value: { $sum: '$DeathsInNumber' },
+                        totalCrudeRate: { $sum: '$CrudeRateInNumber' },
+                        numerator: {
+                            $sum: { $multiply: ['$DeathsInNumber', '$PopulationInNumber'] },
+                        },
+                    },
+                },
+                {
+                    $project: {
+                        sampleSize: '$sampleSize',
+                        value: '$value',
+                        totalCrudeRate: '$totalCrudeRate',
+                        percentage: { $divide: ['$numerator', '$sampleSize'] },
                     },
                 },
                 {
@@ -584,18 +521,19 @@ let FoodResolver = class FoodResolver {
                     },
                 },
             ]);
-            let total3 = data3.reduce((acc, d) => {
-                acc += d.sampleSize;
-                return acc;
-            }, 0);
-            let forMatedData3 = data3.map((d) => {
-                return {
-                    _id: d._id,
-                    sampleSize: d.sampleSize,
-                    value: d.value,
-                    percentage: (100 / total3) * d.sampleSize,
-                };
-            });
+            // let total3 = data3.reduce((acc: any, d: any) => {
+            //   acc += d.sampleSize;
+            //   return acc;
+            // }, 0);
+            // let forMatedData3 = data3.map((d: any) => {
+            //   return {
+            //     _id: d._id,
+            //     sampleSize: d.sampleSize,
+            //     value: d.value,
+            //     percentage: (d.sampleSize / total3) * d.totalCrudeRate,
+            //   };
+            // });
+            let forMatedData3 = data3;
             let data4 = await infoGraphicDeath_1.default.aggregate([
                 {
                     $match: obj,
@@ -608,6 +546,18 @@ let FoodResolver = class FoodResolver {
                         _id: '$Gender',
                         sampleSize: { $sum: '$PopulationInNumber' },
                         value: { $sum: '$DeathsInNumber' },
+                        totalCrudeRate: { $sum: '$CrudeRateInNumber' },
+                        numerator: {
+                            $sum: { $multiply: ['$DeathsInNumber', '$PopulationInNumber'] },
+                        },
+                    },
+                },
+                {
+                    $project: {
+                        sampleSize: '$sampleSize',
+                        value: '$value',
+                        totalCrudeRate: '$totalCrudeRate',
+                        percentage: { $divide: ['$numerator', '$sampleSize'] },
                     },
                 },
                 {
@@ -616,18 +566,19 @@ let FoodResolver = class FoodResolver {
                     },
                 },
             ]);
-            let total4 = data4.reduce((acc, d) => {
-                acc += d.sampleSize;
-                return acc;
-            }, 0);
-            let forMatedData4 = data4.map((d) => {
-                return {
-                    _id: d._id,
-                    sampleSize: d.sampleSize,
-                    value: d.value,
-                    percentage: (100 / total4) * d.sampleSize,
-                };
-            });
+            // let total4 = data4.reduce((acc: any, d: any) => {
+            //   acc += d.sampleSize;
+            //   return acc;
+            // }, 0);
+            // let forMatedData4 = data4.map((d: any) => {
+            //   return {
+            //     _id: d._id,
+            //     sampleSize: d.sampleSize,
+            //     value: d.value,
+            //     percentage: (d.sampleSize / total4) * d.totalCrudeRate,
+            //   };
+            // });
+            let forMatedData4 = data4;
             return {
                 diseases: forMatedData1,
                 race: forMatedData2,
@@ -764,6 +715,17 @@ let FoodResolver = class FoodResolver {
                         _id: '$Year',
                         sampleSize: { $sum: '$PopulationInNumber' },
                         value: { $sum: '$DeathsInNumber' },
+                        numerator: {
+                            $sum: { $multiply: ['$DeathsInNumber', '$PopulationInNumber'] },
+                        },
+                    },
+                },
+                {
+                    $project: {
+                        sampleSize: '$sampleSize',
+                        value: '$value',
+                        totalCrudeRate: '$totalCrudeRate',
+                        percentage: { $divide: ['$numerator', '$sampleSize'] },
                     },
                 },
                 {
@@ -772,19 +734,19 @@ let FoodResolver = class FoodResolver {
                     },
                 },
             ]);
-            let total1 = data.reduce((acc, d) => {
-                acc += d.sampleSize;
-                return acc;
-            }, 0);
-            let forMatedData1 = data.map((d) => {
-                return {
-                    _id: d._id,
-                    sampleSize: d.sampleSize,
-                    value: d.value,
-                    percentage: (100 / total1) * d.sampleSize,
-                };
-            });
-            return forMatedData1;
+            // let total1 = data.reduce((acc: any, d: any) => {
+            //   acc += d.sampleSize;
+            //   return acc;
+            // }, 0);
+            // let forMatedData1 = data.map((d: any) => {
+            //   return {
+            //     _id: d._id,
+            //     sampleSize: d.sampleSize,
+            //     value: d.value,
+            //     percentage: (100 / total1) * d.sampleSize,
+            //   };
+            // });
+            return data;
         }
     }
     async getCompareData(disease, type, race, age, sex, state, dataSet) {
@@ -983,6 +945,9 @@ let FoodResolver = class FoodResolver {
             let group = {
                 sampleSize: { $sum: '$PopulationInNumber' },
                 value: { $sum: '$DeathsInNumber' },
+                numerator: {
+                    $sum: { $multiply: ['$DeathsInNumber', '$PopulationInNumber'] },
+                },
             };
             if (state) {
                 obj.Locationabbr = state;
@@ -1030,8 +995,8 @@ let FoodResolver = class FoodResolver {
                 '2020',
             ];
             let formateData = [];
-            console.log(group);
-            console.log(obj);
+            // console.log(group);
+            // console.log(obj);
             for (let i = 0; i < years.length; i++) {
                 obj.Year = years[i];
                 let data = await infoGraphicDeath_1.default.aggregate([
@@ -1045,24 +1010,33 @@ let FoodResolver = class FoodResolver {
                         $group: group,
                     },
                     {
+                        $project: {
+                            sampleSize: '$sampleSize',
+                            value: '$value',
+                            totalCrudeRate: '$totalCrudeRate',
+                            percentage: { $divide: ['$numerator', '$sampleSize'] },
+                        },
+                    },
+                    {
                         $sort: {
                             _id: 1,
                         },
                     },
                 ]);
-                let forMatedData = data.map((d) => {
-                    return {
-                        _id: d._id,
-                        sampleSize: d.sampleSize,
-                        value: d.value,
-                        percentage: (+d.value / +d.sampleSize) * 100
-                            ? (+d.value / +d.sampleSize) * 100
-                            : 0,
-                    };
-                });
+                // let forMatedData = data.map((d: any) => {
+                //   return {
+                //     _id: d._id,
+                //     sampleSize: d.sampleSize,
+                //     value: d.value,
+                //     percentage:
+                //       (+d.value / +d.sampleSize) * 100
+                //         ? (+d.value / +d.sampleSize) * 100
+                //         : 0,
+                //   };
+                // });
                 formateData.push({
                     year: years[i],
-                    fotmatedData: forMatedData,
+                    fotmatedData: data,
                 });
             }
             return formateData;
@@ -1206,6 +1180,17 @@ let FoodResolver = class FoodResolver {
                         fullForm: { $first: '$Locationdesc' },
                         sampleSize: { $sum: '$PopulationInNumber' },
                         value: { $sum: '$DeathsInNumber' },
+                        numerator: {
+                            $sum: { $multiply: ['$DeathsInNumber', '$PopulationInNumber'] },
+                        },
+                    },
+                },
+                {
+                    $project: {
+                        sampleSize: '$sampleSize',
+                        value: '$value',
+                        totalCrudeRate: '$totalCrudeRate',
+                        percentage: { $divide: ['$numerator', '$sampleSize'] },
                     },
                 },
                 {
@@ -1214,18 +1199,20 @@ let FoodResolver = class FoodResolver {
                     },
                 },
             ]);
-            let forMatedData = data.map((d) => {
-                return {
-                    _id: d._id,
-                    sampleSize: d.sampleSize,
-                    value: d.value,
-                    fullForm: d.fullForm,
-                    percentage: (+d.value / +d.sampleSize) * 100
-                        ? (+d.value / +d.sampleSize) * 100
-                        : 0,
-                    prevalence: 0,
-                };
-            });
+            // let forMatedData = data.map((d: any) => {
+            //   return {
+            //     _id: d._id,
+            //     sampleSize: d.sampleSize,
+            //     value: d.value,
+            //     fullForm: d.fullForm,
+            //     percentage:
+            //       (+d.value / +d.sampleSize) * 100
+            //         ? (+d.value / +d.sampleSize) * 100
+            //         : 0,
+            //     prevalence: 0,
+            //   };
+            // });
+            let forMatedData = data;
             let returnObj = {};
             // console.log(forMatedData);
             let sortedArray = forMatedData.sort((data1, data2) => data1.percentage - data2.percentage);
