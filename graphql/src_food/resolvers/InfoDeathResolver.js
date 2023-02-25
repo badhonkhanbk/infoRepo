@@ -141,31 +141,39 @@ let InfoDeathResolver = class InfoDeathResolver {
     }
     async infoDeathModification() {
         const data = JSON.parse(fs_1.default.readFileSync('./temp/infoData2.json', 'utf-8'));
+        console.log(data[0]);
+        await infoGraphicDeath_1.default.deleteMany({});
         let allData = [];
         for (let i = 0; i < data.length; i++) {
             let newData = {
-                Condition: data[i].Condition,
-                Topic: data[i].Condition,
-                Year: data[i].Year,
+                Condition: data[i].Disease,
+                Topic: data[i].Disease,
+                ICD_Sub_Chapter: data[i]['ICD Sub-Chapter'],
                 ICD_Sub_Chapter_Code: data[i]['ICD Sub-Chapter Code'],
-                Locationabbr: data[i].Abbreviation,
+                Locationabbr: data[i].Abbrev,
                 Locationdesc: data[i].State,
-                State_Code: data[i]['State Code'],
+                Year: data[i].Year,
                 Year_Code: data[i]['Year Code'],
                 Ten_Year_Age_Groups: data[i]['Ten-Year Age Groups'],
-                ageGroup: data[i]['Ten-Year Age Groups Code'],
                 Gender: data[i].Gender,
+                ageGroup: data[i]['Ten-Year Age Groups Code'],
+                State_Code: data[i]['State Code'],
                 Race: data[i].Race,
                 Race_Code: data[i]['Race Code'],
                 Deaths: data[i].Deaths,
                 Population: data[i].Population,
                 Crude_Rate: data[i]['Crude Rate'],
-                Crude_Rate_Lower_95percent_Confidence_Interval: data[i]['Crude Rate Lower 95% Confidence Interval'],
-                Crude_Rate_Upper_95percent_Confidence_Interval: data[i]['Crude Rate Upper 95% Confidence Interval'],
-                Percentage_of_Total_Deaths: data[i]['% of Total Deaths'],
+                DeathsInNumber: Number(data[i].Deaths),
+                PopulationInNumber: Number(data[i].Population),
             };
-            console.log(i);
+            if (data[i]['Crude Rate'] === 'Unreliable') {
+                newData.CrudeRateInNumber = 0;
+            }
+            else {
+                newData.CrudeRateInNumber = Number(data[i]['Crude Rate']);
+            }
             allData.push(newData);
+            console.log(i);
         }
         await infoGraphicDeath_1.default.insertMany(allData);
         return 'done';

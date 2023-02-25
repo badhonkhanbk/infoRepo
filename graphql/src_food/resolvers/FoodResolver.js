@@ -412,7 +412,7 @@ let FoodResolver = class FoodResolver {
                         value: { $sum: '$DeathsInNumber' },
                         totalCrudeRate: { $sum: '$CrudeRateInNumber' },
                         numerator: {
-                            $sum: { $multiply: ['$DeathsInNumber', '$PopulationInNumber'] },
+                            $sum: { $multiply: ['$CrudeRateInNumber', '$PopulationInNumber'] },
                         },
                     },
                 },
@@ -458,7 +458,7 @@ let FoodResolver = class FoodResolver {
                         value: { $sum: '$DeathsInNumber' },
                         totalCrudeRate: { $sum: '$CrudeRateInNumber' },
                         numerator: {
-                            $sum: { $multiply: ['$DeathsInNumber', '$PopulationInNumber'] },
+                            $sum: { $multiply: ['$CrudeRateInNumber', '$PopulationInNumber'] },
                         },
                     },
                 },
@@ -489,6 +489,7 @@ let FoodResolver = class FoodResolver {
             //   };
             // });
             let forMatedData2 = data2;
+            console.log(forMatedData2);
             let data3 = await infoGraphicDeath_1.default.aggregate([
                 {
                     $match: obj,
@@ -503,7 +504,7 @@ let FoodResolver = class FoodResolver {
                         value: { $sum: '$DeathsInNumber' },
                         totalCrudeRate: { $sum: '$CrudeRateInNumber' },
                         numerator: {
-                            $sum: { $multiply: ['$DeathsInNumber', '$PopulationInNumber'] },
+                            $sum: { $multiply: ['$CrudeRateInNumber', '$PopulationInNumber'] },
                         },
                     },
                 },
@@ -548,7 +549,7 @@ let FoodResolver = class FoodResolver {
                         value: { $sum: '$DeathsInNumber' },
                         totalCrudeRate: { $sum: '$CrudeRateInNumber' },
                         numerator: {
-                            $sum: { $multiply: ['$DeathsInNumber', '$PopulationInNumber'] },
+                            $sum: { $multiply: ['$CrudeRateInNumber', '$PopulationInNumber'] },
                         },
                     },
                 },
@@ -716,7 +717,7 @@ let FoodResolver = class FoodResolver {
                         sampleSize: { $sum: '$PopulationInNumber' },
                         value: { $sum: '$DeathsInNumber' },
                         numerator: {
-                            $sum: { $multiply: ['$DeathsInNumber', '$PopulationInNumber'] },
+                            $sum: { $multiply: ['$CrudeRateInNumber', '$PopulationInNumber'] },
                         },
                     },
                 },
@@ -946,7 +947,7 @@ let FoodResolver = class FoodResolver {
                 sampleSize: { $sum: '$PopulationInNumber' },
                 value: { $sum: '$DeathsInNumber' },
                 numerator: {
-                    $sum: { $multiply: ['$DeathsInNumber', '$PopulationInNumber'] },
+                    $sum: { $multiply: ['$CrudeRateInNumber', '$PopulationInNumber'] },
                 },
             };
             if (state) {
@@ -1181,7 +1182,7 @@ let FoodResolver = class FoodResolver {
                         sampleSize: { $sum: '$PopulationInNumber' },
                         value: { $sum: '$DeathsInNumber' },
                         numerator: {
-                            $sum: { $multiply: ['$DeathsInNumber', '$PopulationInNumber'] },
+                            $sum: { $multiply: ['$CrudeRateInNumber', '$PopulationInNumber'] },
                         },
                     },
                 },

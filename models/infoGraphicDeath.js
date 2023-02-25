@@ -5,6 +5,7 @@ const infoGraphicDeathSchema = new mongoose_1.Schema({
     Condition: String,
     Topic: String,
     ICD_Sub_Chapter_Code: String,
+    ICD_Sub_Chapter: String,
     Locationdesc: String,
     Locationabbr: String,
     State_Code: String,
@@ -21,9 +22,6 @@ const infoGraphicDeathSchema = new mongoose_1.Schema({
     PopulationInNumber: Number,
     Crude_Rate: String,
     CrudeRateInNumber: Number,
-    Crude_Rate_Lower_95percent_Confidence_Interval: String,
-    Crude_Rate_Upper_95percent_Confidence_Interval: String,
-    Percentage_of_Total_Deaths: String,
 });
 const InfoGraphicDeath = (0, mongoose_1.model)('infoGraphicDeath', infoGraphicDeathSchema);
 exports.default = InfoGraphicDeath;
