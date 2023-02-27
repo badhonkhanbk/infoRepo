@@ -452,7 +452,7 @@ let FoodResolver = class FoodResolver {
             console.log(raceObj);
             let data2 = await infoGraphicDeath_1.default.aggregate([
                 {
-                    $match: obj,
+                    $match: raceObj,
                 },
                 {
                     $unwind: '$Race',
@@ -493,7 +493,7 @@ let FoodResolver = class FoodResolver {
             console.log(ageObj);
             let data3 = await infoGraphicDeath_1.default.aggregate([
                 {
-                    $match: obj,
+                    $match: ageObj,
                 },
                 {
                     $unwind: '$ageGroup',
@@ -546,7 +546,7 @@ let FoodResolver = class FoodResolver {
             console.log(genderObj);
             let data4 = await infoGraphicDeath_1.default.aggregate([
                 {
-                    $match: obj,
+                    $match: genderObj,
                 },
                 {
                     $unwind: '$Gender',
