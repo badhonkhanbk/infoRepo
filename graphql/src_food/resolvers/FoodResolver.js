@@ -444,6 +444,10 @@ let FoodResolver = class FoodResolver {
             //   };
             // });
             let forMatedData1 = data;
+            let raceObj = obj;
+            if (race) {
+                delete raceObj.Race;
+            }
             let data2 = await infoGraphicDeath_1.default.aggregate([
                 {
                     $match: obj,
@@ -480,6 +484,10 @@ let FoodResolver = class FoodResolver {
                 },
             ]);
             let forMatedData2 = data2;
+            let ageObj = obj;
+            if (age) {
+                delete ageObj.ageGroup;
+            }
             let data3 = await infoGraphicDeath_1.default.aggregate([
                 {
                     $match: obj,
@@ -528,6 +536,10 @@ let FoodResolver = class FoodResolver {
             //   };
             // });
             let forMatedData3 = data3;
+            let genderObj = obj;
+            if (genderObj.Gender) {
+                delete genderObj.Gender;
+            }
             let data4 = await infoGraphicDeath_1.default.aggregate([
                 {
                     $match: obj,

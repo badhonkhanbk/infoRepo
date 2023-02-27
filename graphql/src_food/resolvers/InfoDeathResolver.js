@@ -22,7 +22,6 @@ const fs_1 = __importDefault(require("fs"));
 const FotmatedData_1 = __importDefault(require("../schemas/FotmatedData"));
 const ReturnInfoData_1 = __importDefault(require("../schemas/ReturnInfoData"));
 const Compare_1 = __importDefault(require("../schemas/Compare"));
-const stateAndAbbreviations_1 = __importDefault(require("../../../utils/stateAndAbbreviations"));
 // topics = [
 //   "Diabetes mellitus",
 //   "Alzheimer & Dementia",
@@ -123,16 +122,21 @@ let InfoDeathResolver = class InfoDeathResolver {
         return 'done';
     }
     async changeRaceParam() {
-        let data = await infoGraphicDeath_1.default.find({
-            Locationabbr: '',
+        await infoGraphicDeath_1.default.updateMany({
+            Topic: "Alzheimer's Disease",
+        }, {
+            Topic: 'Alzheimer',
         });
-        for (let i = 0; i < data.length; i++) {
-            await infoGraphicDeath_1.default.findOneAndUpdate({
-                _id: data[i]._id,
-            }, {
-                Locationabbr: (0, stateAndAbbreviations_1.default)(data[i].Locationdesc),
-            });
-        }
+        await infoGraphicDeath_1.default.updateMany({
+            Topic: 'Cardiovascular Disease',
+        }, {
+            Topic: 'Cardiovascular',
+        });
+        await infoGraphicDeath_1.default.updateMany({
+            Topic: 'Kidney Disease',
+        }, {
+            Topic: 'Kidney',
+        });
         return 'done';
     }
     async infoDeathModification() {
