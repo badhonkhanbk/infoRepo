@@ -412,12 +412,15 @@ let FoodResolver = class FoodResolver {
                         value: { $sum: '$DeathsInNumber' },
                         totalCrudeRate: { $sum: '$CrudeRateInNumber' },
                         numerator: {
-                            $sum: { $multiply: ['$CrudeRateInNumber', '$PopulationInNumber'] },
+                            $sum: {
+                                $multiply: ['$CrudeRateInNumber', '$PopulationInNumber'],
+                            },
                         },
                     },
                 },
                 {
                     $project: {
+                        _id: '$_id',
                         sampleSize: '$sampleSize',
                         value: '$value',
                         totalCrudeRate: '$totalCrudeRate',
@@ -458,12 +461,15 @@ let FoodResolver = class FoodResolver {
                         value: { $sum: '$DeathsInNumber' },
                         totalCrudeRate: { $sum: '$CrudeRateInNumber' },
                         numerator: {
-                            $sum: { $multiply: ['$CrudeRateInNumber', '$PopulationInNumber'] },
+                            $sum: {
+                                $multiply: ['$CrudeRateInNumber', '$PopulationInNumber'],
+                            },
                         },
                     },
                 },
                 {
                     $project: {
+                        _id: "$_id",
                         sampleSize: '$sampleSize',
                         value: '$value',
                         totalCrudeRate: '$totalCrudeRate',
@@ -504,12 +510,15 @@ let FoodResolver = class FoodResolver {
                         value: { $sum: '$DeathsInNumber' },
                         totalCrudeRate: { $sum: '$CrudeRateInNumber' },
                         numerator: {
-                            $sum: { $multiply: ['$CrudeRateInNumber', '$PopulationInNumber'] },
+                            $sum: {
+                                $multiply: ['$CrudeRateInNumber', '$PopulationInNumber'],
+                            },
                         },
                     },
                 },
                 {
                     $project: {
+                        _id: "$_id",
                         sampleSize: '$sampleSize',
                         value: '$value',
                         totalCrudeRate: '$totalCrudeRate',
@@ -549,12 +558,15 @@ let FoodResolver = class FoodResolver {
                         value: { $sum: '$DeathsInNumber' },
                         totalCrudeRate: { $sum: '$CrudeRateInNumber' },
                         numerator: {
-                            $sum: { $multiply: ['$CrudeRateInNumber', '$PopulationInNumber'] },
+                            $sum: {
+                                $multiply: ['$CrudeRateInNumber', '$PopulationInNumber'],
+                            },
                         },
                     },
                 },
                 {
                     $project: {
+                        _id: "$_id",
                         sampleSize: '$sampleSize',
                         value: '$value',
                         totalCrudeRate: '$totalCrudeRate',
@@ -717,12 +729,15 @@ let FoodResolver = class FoodResolver {
                         sampleSize: { $sum: '$PopulationInNumber' },
                         value: { $sum: '$DeathsInNumber' },
                         numerator: {
-                            $sum: { $multiply: ['$CrudeRateInNumber', '$PopulationInNumber'] },
+                            $sum: {
+                                $multiply: ['$CrudeRateInNumber', '$PopulationInNumber'],
+                            },
                         },
                     },
                 },
                 {
                     $project: {
+                        _id: "$_id",
                         sampleSize: '$sampleSize',
                         value: '$value',
                         totalCrudeRate: '$totalCrudeRate',
@@ -1012,6 +1027,7 @@ let FoodResolver = class FoodResolver {
                     },
                     {
                         $project: {
+                            _id: "$_id",
                             sampleSize: '$sampleSize',
                             value: '$value',
                             totalCrudeRate: '$totalCrudeRate',
@@ -1155,9 +1171,6 @@ let FoodResolver = class FoodResolver {
             if (disease) {
                 obj.Topic = disease;
             }
-            else {
-                obj.Topic = 'Alzheimer & Dementia';
-            }
             if (race) {
                 obj.Race = race;
             }
@@ -1182,12 +1195,16 @@ let FoodResolver = class FoodResolver {
                         sampleSize: { $sum: '$PopulationInNumber' },
                         value: { $sum: '$DeathsInNumber' },
                         numerator: {
-                            $sum: { $multiply: ['$CrudeRateInNumber', '$PopulationInNumber'] },
+                            $sum: {
+                                $multiply: ['$CrudeRateInNumber', '$PopulationInNumber'],
+                            },
                         },
                     },
                 },
                 {
                     $project: {
+                        _id: '$_id',
+                        fullForm: '$fullForm',
                         sampleSize: '$sampleSize',
                         value: '$value',
                         totalCrudeRate: '$totalCrudeRate',
@@ -1215,7 +1232,7 @@ let FoodResolver = class FoodResolver {
             // });
             let forMatedData = data;
             let returnObj = {};
-            // console.log(forMatedData);
+            console.log(forMatedData[0]);
             let sortedArray = forMatedData.sort((data1, data2) => data1.percentage - data2.percentage);
             let length = sortedArray.length;
             let t25 = Math.floor((25 / 100) * (length + 1));

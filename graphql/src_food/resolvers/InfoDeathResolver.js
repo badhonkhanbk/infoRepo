@@ -22,6 +22,7 @@ const fs_1 = __importDefault(require("fs"));
 const FotmatedData_1 = __importDefault(require("../schemas/FotmatedData"));
 const ReturnInfoData_1 = __importDefault(require("../schemas/ReturnInfoData"));
 const Compare_1 = __importDefault(require("../schemas/Compare"));
+const stateAndAbbreviations_1 = __importDefault(require("../../../utils/stateAndAbbreviations"));
 // topics = [
 //   "Diabetes mellitus",
 //   "Alzheimer & Dementia",
@@ -122,21 +123,16 @@ let InfoDeathResolver = class InfoDeathResolver {
         return 'done';
     }
     async changeRaceParam() {
-        await infoGraphicDeath_1.default.updateMany({
-            Race: 'American Indian or Alaska Native',
-        }, {
-            Race: 'Other',
+        let data = await infoGraphicDeath_1.default.find({
+            Locationabbr: '',
         });
-        await infoGraphicDeath_1.default.updateMany({
-            Race: 'Asian or Pacific Islander',
-        }, {
-            Race: 'Asian',
-        });
-        await infoGraphicDeath_1.default.updateMany({
-            Race: 'Black or African American',
-        }, {
-            Race: 'Black',
-        });
+        for (let i = 0; i < data.length; i++) {
+            await infoGraphicDeath_1.default.findOneAndUpdate({
+                _id: data[i]._id,
+            }, {
+                Locationabbr: (0, stateAndAbbreviations_1.default)(data[i].Locationdesc),
+            });
+        }
         return 'done';
     }
     async infoDeathModification() {
