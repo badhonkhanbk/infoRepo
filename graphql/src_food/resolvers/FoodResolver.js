@@ -66,7 +66,6 @@ let FoodResolver = class FoodResolver {
             await infoGraphic_1.default.findByIdAndUpdate(allData[i]._id, {
                 Actual_Data_Value_Number: actualDataValueInNumber,
             });
-            console.log(i);
         }
         return 'done';
     }
@@ -137,7 +136,6 @@ let FoodResolver = class FoodResolver {
         let allData = await infoGraphic_1.default.find({
             Break_Out_Category: 'Overall',
         });
-        console.log(allData.length);
         for (let i = 0; i < allData.length; i++) {
             let data = {
                 Year: allData[i].Year,
@@ -158,7 +156,6 @@ let FoodResolver = class FoodResolver {
                 Data_value_unit: allData[i].Data_value_unit,
             };
             await Overall_1.default.create(data);
-            console.log(i);
         }
         return 'done';
     }
@@ -184,7 +181,6 @@ let FoodResolver = class FoodResolver {
                 Crude_Rate_Upper_95percent_Confidence_Interval: data[i]['Crude Rate Upper 95% Confidence Interval'],
                 Percentage_of_Total_Deaths: data[i]['% of Total Deaths'],
             });
-            console.log(i);
         }
         return 'done';
     }
@@ -219,7 +215,6 @@ let FoodResolver = class FoodResolver {
             else {
                 model = Overall_1.default;
             }
-            console.log(diseaseObj);
             let data = await model.aggregate([
                 {
                     $match: diseaseObj,
@@ -397,7 +392,6 @@ let FoodResolver = class FoodResolver {
             if (sex) {
                 obj.Gender = sex;
             }
-            console.log(obj);
             let data = await infoGraphicDeath_1.default.aggregate([
                 {
                     $match: obj,
@@ -433,6 +427,9 @@ let FoodResolver = class FoodResolver {
                     },
                 },
             ]);
+            if (disease) {
+                obj.Topic = disease;
+            }
             // console.log(data[0]);
             // let total1 = data.reduce((acc: any, d: any) => {
             //   acc += d.sampleSize;
@@ -469,7 +466,7 @@ let FoodResolver = class FoodResolver {
                 },
                 {
                     $project: {
-                        _id: "$_id",
+                        _id: '$_id',
                         sampleSize: '$sampleSize',
                         value: '$value',
                         totalCrudeRate: '$totalCrudeRate',
@@ -482,20 +479,7 @@ let FoodResolver = class FoodResolver {
                     },
                 },
             ]);
-            // let total2 = data2.reduce((acc: any, d: any) => {
-            //   acc += d.sampleSize;
-            //   return acc;
-            // }, 0);
-            // let forMatedData2 = data2.map((d: any) => {
-            //   return {
-            //     _id: d._id,
-            //     sampleSize: d.sampleSize,
-            //     value: d.value,
-            //     percentage: (d.sampleSize / total2) * d.totalCrudeRate,
-            //   };
-            // });
             let forMatedData2 = data2;
-            console.log(forMatedData2);
             let data3 = await infoGraphicDeath_1.default.aggregate([
                 {
                     $match: obj,
@@ -518,7 +502,7 @@ let FoodResolver = class FoodResolver {
                 },
                 {
                     $project: {
-                        _id: "$_id",
+                        _id: '$_id',
                         sampleSize: '$sampleSize',
                         value: '$value',
                         totalCrudeRate: '$totalCrudeRate',
@@ -566,7 +550,7 @@ let FoodResolver = class FoodResolver {
                 },
                 {
                     $project: {
-                        _id: "$_id",
+                        _id: '$_id',
                         sampleSize: '$sampleSize',
                         value: '$value',
                         totalCrudeRate: '$totalCrudeRate',
@@ -737,7 +721,7 @@ let FoodResolver = class FoodResolver {
                 },
                 {
                     $project: {
-                        _id: "$_id",
+                        _id: '$_id',
                         sampleSize: '$sampleSize',
                         value: '$value',
                         totalCrudeRate: '$totalCrudeRate',
@@ -802,7 +786,6 @@ let FoodResolver = class FoodResolver {
                 else if (age) {
                     matchObj.Category = age;
                 }
-                console.log(matchObj);
                 for (let i = 0; i < years.length; i++) {
                     matchObj.Year = years[i];
                     let data = await infoGraphic_1.default.aggregate([
@@ -853,7 +836,6 @@ let FoodResolver = class FoodResolver {
                     ...obj,
                     Break_Out_Category: 'Gender',
                 };
-                console.log(matchObj);
             }
             else if (type === 'age') {
                 if (!disease) {
@@ -1027,7 +1009,7 @@ let FoodResolver = class FoodResolver {
                     },
                     {
                         $project: {
-                            _id: "$_id",
+                            _id: '$_id',
                             sampleSize: '$sampleSize',
                             value: '$value',
                             totalCrudeRate: '$totalCrudeRate',
@@ -1063,7 +1045,6 @@ let FoodResolver = class FoodResolver {
     // @Arg('state', { nullable: true }) state: String,
     race, age, sex, dataSet) {
         if (dataSet === 'incidence' || !dataSet) {
-            console.log('incidence');
             let obj = {};
             if (year) {
                 obj.Year = year;
@@ -1086,7 +1067,6 @@ let FoodResolver = class FoodResolver {
             else if (age) {
                 obj.Category = age;
             }
-            console.log(obj);
             let data = await infoGraphic_1.default.aggregate([
                 {
                     $match: obj,
@@ -1126,9 +1106,6 @@ let FoodResolver = class FoodResolver {
             let t25 = Math.floor((25 / 100) * (length + 1));
             let t50 = Math.floor((50 / 100) * (length + 1));
             let t75 = Math.floor((75 / 100) * (length + 1));
-            console.log(t25);
-            console.log(t50);
-            console.log(t75);
             let lowest = sortedArray[0];
             let highest = sortedArray[sortedArray.length - 1];
             for (let i = 0; i < sortedArray.length; i++) {
@@ -1180,7 +1157,6 @@ let FoodResolver = class FoodResolver {
             if (sex) {
                 obj.Gender = sex;
             }
-            console.log(obj);
             let data = await infoGraphicDeath_1.default.aggregate([
                 {
                     $match: obj,
@@ -1232,7 +1208,6 @@ let FoodResolver = class FoodResolver {
             // });
             let forMatedData = data;
             let returnObj = {};
-            console.log(forMatedData[0]);
             let sortedArray = forMatedData.sort((data1, data2) => data1.percentage - data2.percentage);
             let length = sortedArray.length;
             let t25 = Math.floor((25 / 100) * (length + 1));
@@ -1271,7 +1246,6 @@ let FoodResolver = class FoodResolver {
         }
     }
     async addClasses() {
-        console.log('add classes');
         let data1 = [
             {
                 day: 'Tue',
