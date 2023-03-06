@@ -22,103 +22,13 @@ const fs_1 = __importDefault(require("fs"));
 const FotmatedData_1 = __importDefault(require("../schemas/FotmatedData"));
 const ReturnInfoData_1 = __importDefault(require("../schemas/ReturnInfoData"));
 const Compare_1 = __importDefault(require("../schemas/Compare"));
-// topics = [
-//   "Diabetes mellitus",
-//   "Alzheimer & Dementia",
-//   "Hypertension",
-//   "Ischaemic heart diseases",
-//   "Stroke",
-//   "Lung Disease",
-//   "Kidney Disease"
-//   ]
-//   state = [
-//     "AL",
-//     "AK",
-//     "AZ",
-//     "AR",
-//     "CA",
-//     "CO",
-//     "CT",
-//     "DE",
-//     "DC",
-//     "FL",
-//     "GA",
-//     "HI",
-//     "ID",
-//     "IL",
-//     "IN",
-//     "IA",
-//     "KS",
-//     "KY",
-//     "LA",
-//     "ME",
-//     "MD",
-//     "MA",
-//     "MI",
-//     "MN",
-//     "MS",
-//     "MO",
-//     "MT",
-//     "NE",
-//     "NV",
-//     "NH",
-//     "NJ",
-//     "NM",
-//     "NY",
-//     "NC",
-//     "ND",
-//     "OH",
-//     "OK",
-//     "OR",
-//     "PA",
-//     "RI",
-//     "SC",
-//     "SD",
-//     "TN",
-//     "TX",
-//     "UT",
-//     "VT",
-//     "VA",
-//     "WA",
-//     "WV",
-//     "WI",
-//     "WY"
-//   ]
-//   year : [
-//     "2011",
-//     "2012",
-//     "2013",
-//     "2014",
-//     "2015",
-//     "2016",
-//     "2017",
-//     "2018",
-//     "2019",
-//     "2020"
-//   ]
-//   age = [
-//     "1",
-//     "15-24",
-//     "25-34",
-//     "35-44",
-//     "45-54",
-//     "55-64",
-//     "65-74",
-//     "75-84",
-//     "85+"
-//   ]
-//   race =
-//     [
-//       "American Indian or Alaska Native",
-//       "Asian or Pacific Islander",
-//       "Black or African American",
-//       "White"
-//     ]
+const stateAndAbbreviations_1 = __importDefault(require("../../../utils/stateAndAbbreviations"));
+const CancerIncident_1 = __importDefault(require("../../../models/CancerIncident"));
 let InfoDeathResolver = class InfoDeathResolver {
     async csvConverter2() {
-        const csvFilePath = './temp/death.csv';
+        const csvFilePath = './temp/cancer.csv';
         const jsonArray = await (0, csvtojson_1.default)().fromFile(csvFilePath);
-        fs_1.default.writeFileSync('./temp/infoData2.json', JSON.stringify(jsonArray));
+        fs_1.default.writeFileSync('./temp/infoData3.json', JSON.stringify(jsonArray));
         return 'done';
     }
     async changeRaceParam() {
@@ -140,79 +50,126 @@ let InfoDeathResolver = class InfoDeathResolver {
         return 'done';
     }
     async infoDeathModification() {
-        const data = JSON.parse(fs_1.default.readFileSync('./temp/infoData2.json', 'utf-8'));
+        const data = JSON.parse(fs_1.default.readFileSync('./temp/infoData3.json', 'utf-8'));
         console.log(data[0]);
-        await infoGraphicDeath_1.default.deleteMany({});
+        await CancerIncident_1.default.deleteMany({});
+        //{
+        //   'Leading Cancer Sites': 'Brain and Other Nervous System',
+        //   'Leading Cancer Sites Code': '31010-31040',
+        //   States: 'California',
+        //   'States Code': '6',
+        //   Year: '2019',
+        //   'Year Code': '2019',
+        //   'Age Groups': '60-64 years',
+        //   'Age Groups Code': '60-64',
+        //   Sex: 'Female',
+        //   'Sex Code': 'F',
+        //   Count: '30',
+        //   Population: '309880',
+        //   'Crude Rate': '9.7',
+        //   Race: 'Hispanic',
+        //   'Race Code': ''
+        // }
         let allData = [];
         for (let i = 0; i < data.length; i++) {
+            if (data[i].Population === 'Not Applicable') {
+                continue;
+            }
             let newData = {
-                Condition: data[i].Disease,
-                Topic: data[i].Disease,
-                ICD_Sub_Chapter: data[i]['ICD Sub-Chapter'],
-                ICD_Sub_Chapter_Code: data[i]['ICD Sub-Chapter Code'],
-                Locationabbr: data[i].Abbrev,
-                Locationdesc: data[i].State,
                 Year: data[i].Year,
-                Year_Code: data[i]['Year Code'],
-                Ten_Year_Age_Groups: data[i]['Ten-Year Age Groups'],
-                Gender: data[i].Gender,
-                ageGroup: data[i]['Ten-Year Age Groups Code'],
-                State_Code: data[i]['State Code'],
+                Locationabbr: (0, stateAndAbbreviations_1.default)(data[i].States),
+                Locationdesc: data[i].States,
+                Topic: data[i]['Leading Cancer Sites'],
+                Gender: data[i].Sex,
+                ageGroup: data[i]['Age Groups Code'],
                 Race: data[i].Race,
-                Race_Code: data[i]['Race Code'],
-                Deaths: data[i].Deaths,
+                Count: data[i].Count,
+                CountInNumber: Number(data[i].Count),
                 Population: data[i].Population,
-                Crude_Rate: data[i]['Crude Rate'],
-                DeathsInNumber: Number(data[i].Deaths),
                 PopulationInNumber: Number(data[i].Population),
+                CrudeRate: data[i]['Crude Rate'],
+                CrudeRateInNumber: Number(data[i]['Crude Rate']),
             };
-            if (data[i]['Crude Rate'] === 'Unreliable') {
-                newData.CrudeRateInNumber = 0;
-            }
-            else {
-                newData.CrudeRateInNumber = Number(data[i]['Crude Rate']);
-            }
+            console.log(i);
             allData.push(newData);
-            console.log(i);
         }
-        await infoGraphicDeath_1.default.insertMany(allData);
+        await CancerIncident_1.default.insertMany(allData);
         return 'done';
     }
-    async modifyDeathData() {
-        let allData = await infoGraphicDeath_1.default.find().skip(29999);
-        let topics = [];
-        for (let i = 0; i < allData.length; i++) {
-            if (topics.includes(allData[i].Condition)) {
-                topics.push(allData[i].Condition);
-            }
-            let DeathsInNumber;
-            let PopulationInNumber;
-            let CrudeRateInNumber;
-            if (allData[i].Crude_Rate === 'Unreliable') {
-                DeathsInNumber = Number(allData[i].Deaths);
-                PopulationInNumber = Number(allData[i].Population);
-                CrudeRateInNumber = 0;
-            }
-            else {
-                DeathsInNumber = Number(allData[i].Deaths);
-                PopulationInNumber = Number(allData[i].Population);
-                CrudeRateInNumber = Number(allData[i].Crude_Rate);
-            }
-            await infoGraphicDeath_1.default.findByIdAndUpdate(allData[i]._id, {
-                DeathsInNumber: DeathsInNumber,
-                PopulationInNumber: PopulationInNumber,
-                CrudeRateInNumber: CrudeRateInNumber,
-            });
-            console.log(i);
-        }
-        return 'done';
-    }
+    // @Query(() => String)
+    // async modifyDeathData() {
+    //   let allData = await InfoGraphicDeathModel.find().limit(30000);
+    //   for (let i = 0; i < allData.length; i++) {
+    //     let DeathsInNumber;
+    //     let populationInNumber;
+    //     let CrudeRateInNumber;
+    //     if (allData[i].Crude_Rate === 'Unreliable') {
+    //       DeathsInNumber = Number(allData[i].Deaths);
+    //       populationInNumber = Number(allData[i].Population);
+    //       CrudeRateInNumber = 0;
+    //     } else {
+    //       DeathsInNumber = Number(allData[i].Deaths);
+    //       populationInNumber = Number(allData[i].Population);
+    //       CrudeRateInNumber = Number(allData[i].Crude_Rate)
+    //     }
+    //     await InfoGraphicDeathModel.findByIdAndUpdate(allData[i]._id, {
+    //       Locationabbr: getStateAbbreviation(data[i].States),
+    //       Locationdesc: data[i].States,
+    //       Topic: data[i]['Leading Cancer Sites'],
+    //       Gender: String,
+    //       ageGroup: String,
+    //       Race: String,
+    //       Count: String,
+    //       CountInNumber: Number,
+    //       Population: String,
+    //       PopulationInNumber: Number,
+    //       CrudeRate: String,
+    //       CrudeRateInNumber: Number,
+    //     };
+    //     if (data[i]['Crude Rate'] === 'Unreliable') {
+    //       newData.CrudeRateInNumber = 0;
+    //     } else {
+    //       newData.CrudeRateInNumber = Number(data[i]['Crude Rate']);
+    //     }
+    //   }
+    //   // await InfoGraphicDeathModel.insertMany(allData);
+    //   return 'done';
+    // }
+    // @Query(() => String)
+    // async modifyDeathData() {
+    //   let allData = await InfoGraphicDeathModel.find().skip(29999);
+    //   let topics: any[] = [];
+    //   for (let i = 0; i < allData.length; i++) {
+    //     if (topics.includes(allData[i].Condition)) {
+    //       topics.push(allData[i].Condition);
+    //     }
+    //     let DeathsInNumber;
+    //     let PopulationInNumber;
+    //     let CrudeRateInNumber;
+    //     if (allData[i].Crude_Rate === 'Unreliable') {
+    //       DeathsInNumber = Number(allData[i].Deaths);
+    //       PopulationInNumber = Number(allData[i].Population);
+    //       CrudeRateInNumber = 0;
+    //     } else {
+    //       DeathsInNumber = Number(allData[i].Deaths);
+    //       PopulationInNumber = Number(allData[i].Population);
+    //       CrudeRateInNumber = Number(allData[i].Crude_Rate);
+    //     }
+    //     await InfoGraphicDeathModel.findByIdAndUpdate(allData[i]._id, {
+    //       DeathsInNumber: DeathsInNumber,
+    //       PopulationInNumber: PopulationInNumber,
+    //       CrudeRateInNumber: CrudeRateInNumber,
+    //     });
+    //     console.log(i);
+    //   }
+    //   return 'done';
+    // }
     async getAllTopics() {
         let topics = [];
-        const data = JSON.parse(fs_1.default.readFileSync('./temp/infoData2.json', 'utf-8'));
+        const data = JSON.parse(fs_1.default.readFileSync('./temp/infoData3.json', 'utf-8'));
         for (let i = 0; i < data.length; i++) {
-            if (!topics.includes(data[i].Race)) {
-                topics.push(data[i].Race);
+            if (!topics.includes(data[i]['Age Groups Code'])) {
+                topics.push(data[i]['Age Groups Code']);
             }
         }
         return topics.sort();
@@ -1007,12 +964,6 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], InfoDeathResolver.prototype, "infoDeathModification", null);
-__decorate([
-    (0, type_graphql_1.Query)(() => String),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], InfoDeathResolver.prototype, "modifyDeathData", null);
 __decorate([
     (0, type_graphql_1.Query)(() => [String]),
     __metadata("design:type", Function),

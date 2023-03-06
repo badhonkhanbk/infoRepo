@@ -16,6 +16,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
+const csvtojson_1 = __importDefault(require("csvtojson"));
 const infoGraphic_1 = __importDefault(require("../../../models/infoGraphic"));
 const Overall_1 = __importDefault(require("../../../models/Overall"));
 const fs_1 = __importDefault(require("fs"));
@@ -27,13 +28,12 @@ const Compare_1 = __importDefault(require("../schemas/Compare"));
 const infoGraphicDeath_1 = __importDefault(require("../../../models/infoGraphicDeath"));
 //https://blending101-infographic.vercel.app/
 let FoodResolver = class FoodResolver {
-    // @Query(() => String)
-    // async csvConverter() {
-    //   const csvFilePath = './temp/info.csv';
-    //   const jsonArray = await csv().fromFile(csvFilePath);
-    //   fs.writeFileSync('./temp/infoData.json', JSON.stringify(jsonArray));
-    //   return 'done';
-    // }
+    async csvConverter() {
+        const csvFilePath = './temp/cancer.csv';
+        const jsonArray = await (0, csvtojson_1.default)().fromFile(csvFilePath);
+        fs_1.default.writeFileSync('./temp/infoData3.json', JSON.stringify(jsonArray));
+        return 'done';
+    }
     async modifyData() {
         let allData = await infoGraphic_1.default.find().skip(50000);
         for (let i = 0; i < allData.length; i++) {
@@ -160,28 +160,31 @@ let FoodResolver = class FoodResolver {
         return 'done';
     }
     async storeData() {
-        const data = JSON.parse(fs_1.default.readFileSync('./temp/infoData2.json', 'utf-8'));
-        for (let i = 0; i < data.length; i++) {
-            await infoGraphic_1.default.create({
-                Condition: data[i].Condition,
-                ICD_Sub_Chapter_Code: data[i]['ICD Sub-Chapter Code'],
-                State: data[i].State,
-                State_Code: data[i]['State Code'],
-                Year: data[i].Year,
-                Year_Code: data[i]['Year Code'],
-                Ten_Year_Age_Groups: data[i]['Ten-Year Age Groups'],
-                Ten_Year_Age_Groups_Code: data[i]['Ten-Year Age Groups Code'],
-                Gender: data[i].Gender,
-                Race: data[i].Race,
-                Race_Code: data[i]['Race Code'],
-                Deaths: data[i].Deaths,
-                Population: data[i].Population,
-                Crude_Rate: data[i]['Crude Rate'],
-                Crude_Rate_Lower_95percent_Confidence_Interval: data[i]['Crude Rate Lower 95% Confidence Interval'],
-                Crude_Rate_Upper_95percent_Confidence_Interval: data[i]['Crude Rate Upper 95% Confidence Interval'],
-                Percentage_of_Total_Deaths: data[i]['% of Total Deaths'],
-            });
-        }
+        const data = JSON.parse(fs_1.default.readFileSync('./temp/infoData3.json', 'utf-8'));
+        console.log(data[0]);
+        // for (let i = 0; i < data.length; i++) {
+        //   await InfoGraphic.create({
+        //     Condition: data[i].Condition,
+        //     ICD_Sub_Chapter_Code: data[i]['ICD Sub-Chapter Code'],
+        //     State: data[i].State,
+        //     State_Code: data[i]['State Code'],
+        //     Year: data[i].Year,
+        //     Year_Code: data[i]['Year Code'],
+        //     Ten_Year_Age_Groups: data[i]['Ten-Year Age Groups'],
+        //     Ten_Year_Age_Groups_Code: data[i]['Ten-Year Age Groups Code'],
+        //     Gender: data[i].Gender,
+        //     Race: data[i].Race,
+        //     Race_Code: data[i]['Race Code'],
+        //     Deaths: data[i].Deaths,
+        //     Population: data[i].Population,
+        //     Crude_Rate: data[i]['Crude Rate'],
+        //     Crude_Rate_Lower_95percent_Confidence_Interval:
+        //       data[i]['Crude Rate Lower 95% Confidence Interval'],
+        //     Crude_Rate_Upper_95percent_Confidence_Interval:
+        //       data[i]['Crude Rate Upper 95% Confidence Interval'],
+        //     Percentage_of_Total_Deaths: data[i]['% of Total Deaths'],
+        //   });
+        // }
         return 'done';
     }
     async showInfoData(year, state, disease, race, age, sex, dataSet) {
@@ -1516,6 +1519,12 @@ let FoodResolver = class FoodResolver {
         return data;
     }
 };
+__decorate([
+    (0, type_graphql_1.Query)(() => String),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], FoodResolver.prototype, "csvConverter", null);
 __decorate([
     (0, type_graphql_1.Query)(() => String),
     __metadata("design:type", Function),
