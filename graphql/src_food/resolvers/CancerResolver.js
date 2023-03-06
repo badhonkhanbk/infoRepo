@@ -141,15 +141,9 @@ let CancerResolver = class CancerResolver {
             throw new Error('Unknown data set');
         }
     }
-    async getRaceData(year, state, disease, age, dataSet) {
+    async getRaceData(year, state, maleDisease, femaleDisease, age, dataSet) {
         if (dataSet === 'Incidence') {
             let obj = {};
-            if (disease) {
-                obj.Topic = disease;
-            }
-            else {
-                obj.Topic = 'Brain';
-            }
             if (year) {
                 obj.Year = year;
             }
@@ -163,10 +157,22 @@ let CancerResolver = class CancerResolver {
                 ...obj,
                 Gender: 'Male',
             };
+            if (maleDisease) {
+                objMale.Topic = maleDisease;
+            }
+            else {
+                objMale.Topic = 'Brain';
+            }
             let objFemale = {
                 ...obj,
                 Gender: 'Female',
             };
+            if (femaleDisease) {
+                objFemale.Topic = femaleDisease;
+            }
+            else {
+                objFemale.Topic = 'Brain';
+            }
             let maleData = await this.getRaceDataByGender(objMale, true);
             let femaleData = await this.getRaceDataByGender(objFemale, false);
             return {
@@ -178,16 +184,10 @@ let CancerResolver = class CancerResolver {
             throw new Error('Unknown data set');
         }
     }
-    async getStateDataForCancer(year, disease, race, age, dataSet) {
+    async getStateDataForCancer(year, race, maleDisease, femaleDisease, age, dataSet) {
         if (dataSet === 'Incidence') {
             console.log(dataSet);
             let obj = {};
-            if (disease) {
-                obj.Topic = disease;
-            }
-            else {
-                obj.Topic = 'Brain';
-            }
             if (year) {
                 obj.Year = year;
             }
@@ -201,10 +201,22 @@ let CancerResolver = class CancerResolver {
                 ...obj,
                 Gender: 'Male',
             };
+            if (maleDisease) {
+                objMale.Topic = maleDisease;
+            }
+            else {
+                objMale.Topic = 'Brain';
+            }
             let objFemale = {
                 ...obj,
                 Gender: 'Female',
             };
+            if (maleDisease) {
+                objFemale.Topic = femaleDisease;
+            }
+            else {
+                objFemale.Topic = 'Brain';
+            }
             let maleData = await this.getStateDataByGender(objMale, true);
             let femaleData = await this.getStateDataByGender(objFemale, false);
             return {
@@ -553,11 +565,13 @@ __decorate([
     (0, type_graphql_1.Query)(() => ProportionGender_1.default),
     __param(0, (0, type_graphql_1.Arg)('year', { nullable: true })),
     __param(1, (0, type_graphql_1.Arg)('state', { nullable: true })),
-    __param(2, (0, type_graphql_1.Arg)('disease', { nullable: true })),
-    __param(3, (0, type_graphql_1.Arg)('age', { nullable: true })),
-    __param(4, (0, type_graphql_1.Arg)('dataSet', { nullable: true })),
+    __param(2, (0, type_graphql_1.Arg)('maleDisease', { nullable: true })),
+    __param(3, (0, type_graphql_1.Arg)('femaleDisease', { nullable: true })),
+    __param(4, (0, type_graphql_1.Arg)('age', { nullable: true })),
+    __param(5, (0, type_graphql_1.Arg)('dataSet', { nullable: true })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String,
+        String,
         String,
         String,
         String,
@@ -567,12 +581,14 @@ __decorate([
 __decorate([
     (0, type_graphql_1.Query)(() => ProportionGenderString_1.default),
     __param(0, (0, type_graphql_1.Arg)('year', { nullable: true })),
-    __param(1, (0, type_graphql_1.Arg)('disease', { nullable: true })),
-    __param(2, (0, type_graphql_1.Arg)('race', { nullable: true })),
-    __param(3, (0, type_graphql_1.Arg)('age', { nullable: true })),
-    __param(4, (0, type_graphql_1.Arg)('dataSet', { nullable: true })),
+    __param(1, (0, type_graphql_1.Arg)('race', { nullable: true })),
+    __param(2, (0, type_graphql_1.Arg)('maleDisease', { nullable: true })),
+    __param(3, (0, type_graphql_1.Arg)('femaleDisease', { nullable: true })),
+    __param(4, (0, type_graphql_1.Arg)('age', { nullable: true })),
+    __param(5, (0, type_graphql_1.Arg)('dataSet', { nullable: true })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String,
+        String,
         String,
         String,
         String,
