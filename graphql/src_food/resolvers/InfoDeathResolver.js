@@ -168,8 +168,8 @@ let InfoDeathResolver = class InfoDeathResolver {
         let topics = [];
         const data = JSON.parse(fs_1.default.readFileSync('./temp/infoData3.json', 'utf-8'));
         for (let i = 0; i < data.length; i++) {
-            if (!topics.includes(data[i]['Age Groups Code'])) {
-                topics.push(data[i]['Age Groups Code']);
+            if (!topics.includes(data[i]["Age Groups Code"])) {
+                topics.push(data[i]["Age Groups Code"]);
             }
         }
         return topics.sort();

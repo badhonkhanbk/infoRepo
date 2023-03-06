@@ -192,7 +192,7 @@ let CancerResolver = class CancerResolver {
                 obj.Year = year;
             }
             if (race) {
-                obj.race = race;
+                obj.Race = race;
             }
             if (age) {
                 obj.ageGroup = age;
@@ -228,7 +228,8 @@ let CancerResolver = class CancerResolver {
             throw new Error('Unknown data set');
         }
     }
-    async getStateDataByGender(obj, male) {
+    async getStateDataByGender(obj, isMale) {
+        console.log(obj);
         let data = await CancerIncident_1.default.aggregate([
             {
                 $match: obj,
@@ -266,6 +267,7 @@ let CancerResolver = class CancerResolver {
                 },
             },
         ]);
+        console.log(data);
         let total = data.reduce((acc, d) => {
             acc += d.totalCount;
             return acc;
@@ -273,6 +275,9 @@ let CancerResolver = class CancerResolver {
         for (let i = 0; i < data.length; i++) {
             let percentage = (100 * data[i].totalCount) / total;
             data[i].percentage = percentage;
+        }
+        if (data.length === 0) {
+            return JSON.stringify({});
         }
         let forMatedData = data;
         let returnObj = {};
@@ -348,6 +353,9 @@ let CancerResolver = class CancerResolver {
                 },
             },
         ]);
+        if (data.length === 0) {
+            return [];
+        }
         let total = data.reduce((acc, d) => {
             acc += d.totalCount;
             return acc;
@@ -394,6 +402,9 @@ let CancerResolver = class CancerResolver {
                 },
             },
         ]);
+        if (data.length === 0) {
+            return [];
+        }
         let total = data.reduce((acc, d) => {
             acc += d.totalCount;
             return acc;
@@ -478,6 +489,9 @@ let CancerResolver = class CancerResolver {
                 },
             },
         ]);
+        if (maleData.length === 0) {
+            return [];
+        }
         let maleTotal = maleData.reduce((acc, d) => {
             acc += d.totalCount;
             return acc;
