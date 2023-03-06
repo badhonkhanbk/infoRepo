@@ -74,7 +74,7 @@ let age = [
 ];
 let CancerResolver = class CancerResolver {
     async getProportionMatrix(year, state, race, age, dataSet) {
-        if (dataSet === 'incidence') {
+        if (dataSet === 'Incidence') {
             let obj = {};
             if (year) {
                 obj.Year = year;
@@ -108,7 +108,7 @@ let CancerResolver = class CancerResolver {
         }
     }
     async getCancerTypes(year, state, race, age, dataSet) {
-        if (dataSet === 'incidence') {
+        if (dataSet === 'Incidence') {
             let obj = {};
             if (year) {
                 obj.Year = year;
@@ -142,7 +142,7 @@ let CancerResolver = class CancerResolver {
         }
     }
     async getRaceData(year, state, disease, age, dataSet) {
-        if (dataSet === 'incidence') {
+        if (dataSet === 'Incidence') {
             let obj = {};
             if (disease) {
                 obj.Topic = disease;
@@ -179,7 +179,7 @@ let CancerResolver = class CancerResolver {
         }
     }
     async getStateDataForCancer(year, disease, race, age, dataSet) {
-        if (dataSet === 'incidence') {
+        if (dataSet === 'Incidence') {
             console.log(dataSet);
             let obj = {};
             if (disease) {
