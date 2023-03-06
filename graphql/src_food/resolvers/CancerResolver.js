@@ -184,6 +184,49 @@ let CancerResolver = class CancerResolver {
             throw new Error('Unknown data set');
         }
     }
+    async getAgeData(year, state, maleDisease, femaleDisease, race, dataSet) {
+        if (dataSet === 'Incidence') {
+            let obj = {};
+            if (year) {
+                obj.Year = year;
+            }
+            if (state) {
+                obj.State = state;
+            }
+            if (race) {
+                obj.Race = race;
+            }
+            let objMale = {
+                ...obj,
+                Gender: 'Male',
+            };
+            if (maleDisease) {
+                objMale.Topic = maleDisease;
+            }
+            else {
+                objMale.Topic = 'Brain';
+            }
+            let objFemale = {
+                ...obj,
+                Gender: 'Female',
+            };
+            if (femaleDisease) {
+                objFemale.Topic = femaleDisease;
+            }
+            else {
+                objFemale.Topic = 'Brain';
+            }
+            let maleData = await this.getAgeDataByGender(objMale, true);
+            let femaleData = await this.getAgeDataByGender(objFemale, false);
+            return {
+                maleData,
+                femaleData,
+            };
+        }
+        else {
+            throw new Error('Unknown data set');
+        }
+    }
     async getStateDataForCancer(year, race, maleDisease, femaleDisease, age, dataSet) {
         if (dataSet === 'Incidence') {
             console.log(dataSet);
@@ -227,6 +270,56 @@ let CancerResolver = class CancerResolver {
         else {
             throw new Error('Unknown data set');
         }
+    }
+    async getAgeDataByGender(obj, male) {
+        obj._id = { $nin: ['01-04', '05-09', '1-4', '10-14', '15-19'] };
+        let data = await CancerIncident_1.default.aggregate([
+            {
+                $match: obj,
+            },
+            {
+                $unwind: '$ageGroup',
+            },
+            {
+                $group: {
+                    _id: '$ageGroup',
+                    totalPopulation: { $sum: '$PopulationInNumber' },
+                    totalCount: { $sum: '$CountInNumber' },
+                    totalCrudeRate: { $sum: '$CrudeRateInNumber' },
+                    numerator: {
+                        $sum: {
+                            $multiply: ['$CrudeRateInNumber', '$PopulationInNumber'],
+                        },
+                    },
+                },
+            },
+            {
+                $project: {
+                    _id: '$_id',
+                    totalPopulation: '$totalPopulation',
+                    totalCount: '$totalCount',
+                    totalCrudeRate: '$totalCrudeRate',
+                    weightedAverage: { $divide: ['$numerator', '$totalPopulation'] },
+                },
+            },
+            {
+                $sort: {
+                    sort: 1,
+                },
+            },
+        ]);
+        if (data.length === 0) {
+            return [];
+        }
+        let total = data.reduce((acc, d) => {
+            acc += d.totalCount;
+            return acc;
+        }, 0);
+        for (let i = 0; i < data.length; i++) {
+            let percentage = (100 * data[i].totalCount) / total;
+            data[i].percentage = percentage;
+        }
+        return data;
     }
     async getStateDataByGender(obj, isMale) {
         console.log(obj);
@@ -592,6 +685,23 @@ __decorate([
         String]),
     __metadata("design:returntype", Promise)
 ], CancerResolver.prototype, "getRaceData", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => ProportionGender_1.default),
+    __param(0, (0, type_graphql_1.Arg)('year', { nullable: true })),
+    __param(1, (0, type_graphql_1.Arg)('state', { nullable: true })),
+    __param(2, (0, type_graphql_1.Arg)('maleDisease', { nullable: true })),
+    __param(3, (0, type_graphql_1.Arg)('femaleDisease', { nullable: true })),
+    __param(4, (0, type_graphql_1.Arg)('race', { nullable: true })),
+    __param(5, (0, type_graphql_1.Arg)('dataSet', { nullable: true })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String,
+        String,
+        String,
+        String,
+        String,
+        String]),
+    __metadata("design:returntype", Promise)
+], CancerResolver.prototype, "getAgeData", null);
 __decorate([
     (0, type_graphql_1.Query)(() => ProportionGenderString_1.default),
     __param(0, (0, type_graphql_1.Arg)('year', { nullable: true })),
