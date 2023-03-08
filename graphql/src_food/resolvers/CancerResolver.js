@@ -38,7 +38,7 @@ let maleDisease = [
     'Prostate',
     'Stomach',
     'Thyroid',
-    'Other'
+    'Other',
 ];
 let femaleDisease = [
     'Breast',
@@ -51,7 +51,7 @@ let femaleDisease = [
     'Pancreas',
     'Stomach',
     'Thyroid',
-    'Other'
+    'Other',
 ];
 let age = [
     '01-04',
@@ -169,10 +169,10 @@ let CancerResolver = class CancerResolver {
                 Gender: 'Male',
             };
             if (maleDisease) {
-                objMale.diseaseMaleLabel = maleDisease;
+                objMale.diseaseLabelMale = maleDisease;
             }
             else {
-                objMale.diseaseMaleLabel = 'Colorectal';
+                objMale.diseaseLabelMale = 'Colorectal';
             }
             let objFemale = {
                 ...obj,
@@ -255,20 +255,20 @@ let CancerResolver = class CancerResolver {
                 Gender: 'Male',
             };
             if (maleDisease) {
-                objMale.diseaseMaleLabel = maleDisease;
+                objMale.diseaseLabelMale = maleDisease;
             }
             else {
-                objMale.diseaseMaleLabel = 'Colorectal';
+                objMale.diseaseLabelMale = 'Colorectal';
             }
             let objFemale = {
                 ...obj,
                 Gender: 'Female',
             };
             if (femaleDisease) {
-                objFemale.diseaseFemaleLabel = femaleDisease;
+                objFemale.diseaseLabelFemale = femaleDisease;
             }
             else {
-                objFemale.diseaseFemaleLabel = 'Breast';
+                objFemale.diseaseLabelFemale = 'Breast';
             }
             let maleData = await this.getAgeDataByGender(objMale, true);
             let femaleData = await this.getAgeDataByGender(objFemale, false);
@@ -299,10 +299,10 @@ let CancerResolver = class CancerResolver {
                 Gender: 'Male',
             };
             if (maleDisease) {
-                objMale.diseaseMaleLabel = maleDisease;
+                objMale.diseaseLabelMale = maleDisease;
             }
             else {
-                objMale.diseaseMaleLabel = 'Colorectal';
+                objMale.diseaseLabelMale = 'Colorectal';
             }
             let objFemale = {
                 ...obj,
