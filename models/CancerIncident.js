@@ -8,6 +8,7 @@ const infoGraphicCancerIncidentSchema = new mongoose_1.Schema({
     Topic: String,
     Gender: String,
     ageGroup: String,
+    ageLabel: String,
     Race: String,
     Count: String,
     CountInNumber: Number,
@@ -15,6 +16,8 @@ const infoGraphicCancerIncidentSchema = new mongoose_1.Schema({
     PopulationInNumber: Number,
     CrudeRate: String,
     CrudeRateInNumber: Number,
+    diseaseLabelMale: String,
+    diseaseLabelFemale: String,
 });
 const InfoGraphicCancerIncident = (0, mongoose_1.model)('infoGraphicCancerIncident', infoGraphicCancerIncidentSchema);
 exports.default = InfoGraphicCancerIncident;

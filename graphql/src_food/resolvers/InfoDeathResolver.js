@@ -90,6 +90,14 @@ let InfoDeathResolver = class InfoDeathResolver {
                 CrudeRate: data[i]['Crude Rate'],
                 CrudeRateInNumber: Number(data[i]['Crude Rate']),
             };
+            if (data[i].Sex === 'Male') {
+                newData.diseaseLabelMale = data[i]['Leading Cancer Sites'];
+                newData.diseaseLabelFemale = null;
+            }
+            else {
+                newData.diseaseLabelMale = null;
+                newData.diseaseLabelFemale = data[i]['Leading Cancer Sites'];
+            }
             console.log(i);
             allData.push(newData);
         }
@@ -168,8 +176,8 @@ let InfoDeathResolver = class InfoDeathResolver {
         let topics = [];
         const data = JSON.parse(fs_1.default.readFileSync('./temp/infoData3.json', 'utf-8'));
         for (let i = 0; i < data.length; i++) {
-            if (!topics.includes(data[i]["Age Groups Code"])) {
-                topics.push(data[i]["Age Groups Code"]);
+            if (!topics.includes(data[i]['Age Groups Code'])) {
+                topics.push(data[i]['Age Groups Code']);
             }
         }
         return topics.sort();

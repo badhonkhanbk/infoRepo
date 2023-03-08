@@ -38,10 +38,11 @@ let maleDisease = [
     'Prostate',
     'Stomach',
     'Thyroid',
+    'Other'
 ];
 let femaleDisease = [
     'Breast',
-    'Cervix Uteri',
+    'Cervix',
     'Colorectal',
     'Kidney',
     'Liver',
@@ -49,7 +50,8 @@ let femaleDisease = [
     'Ovary',
     'Pancreas',
     'Stomach',
-    'Thyroid', //done
+    'Thyroid',
+    'Other'
 ];
 let age = [
     '01-04',
@@ -73,6 +75,15 @@ let age = [
     '85+',
 ];
 let CancerResolver = class CancerResolver {
+    async changeSystemInfoAge() {
+        await CancerIncident_1.default.updateMany({
+            Gender: 'Female',
+            Topic: 'Cervix',
+        }, {
+            diseaseLabelFemale: 'Cervix',
+        });
+        return ['done'];
+    }
     async getProportionMatrix(year, state, race, age, dataSet) {
         if (dataSet === 'Incidence') {
             let obj = {};
@@ -86,7 +97,7 @@ let CancerResolver = class CancerResolver {
                 obj.Race = race;
             }
             if (age) {
-                obj.ageGroup = age;
+                obj.ageLabel = age;
             }
             let objMale = {
                 ...obj,
@@ -120,7 +131,7 @@ let CancerResolver = class CancerResolver {
                 obj.Race = race;
             }
             if (age) {
-                obj.ageGroup = age;
+                obj.ageLabel = age;
             }
             let objMale = {
                 ...obj,
@@ -141,6 +152,49 @@ let CancerResolver = class CancerResolver {
             throw new Error('Unknown data set');
         }
     }
+    async getYearBasedAggregationForCancer(state, race, age, dataSet, maleDisease, femaleDisease) {
+        if (dataSet === 'Incidence') {
+            let obj = {};
+            if (state) {
+                obj.State = state;
+            }
+            if (race) {
+                obj.Race = race;
+            }
+            if (age) {
+                obj.Label = age;
+            }
+            let objMale = {
+                ...obj,
+                Gender: 'Male',
+            };
+            if (maleDisease) {
+                objMale.diseaseMaleLabel = maleDisease;
+            }
+            else {
+                objMale.diseaseMaleLabel = 'Colorectal';
+            }
+            let objFemale = {
+                ...obj,
+                Gender: 'Female',
+            };
+            if (femaleDisease) {
+                objFemale.diseaseFemaleLabel = femaleDisease;
+            }
+            else {
+                objFemale.diseaseFemaleLabel = 'Breast';
+            }
+            let maleData = await this.getYearData(objMale);
+            let femaleData = await this.getYearData(objFemale);
+            return {
+                maleData,
+                femaleData,
+            };
+        }
+        else {
+            throw new Error('Unknown data set');
+        }
+    }
     async getRaceData(year, state, maleDisease, femaleDisease, age, dataSet) {
         if (dataSet === 'Incidence') {
             let obj = {};
@@ -151,27 +205,27 @@ let CancerResolver = class CancerResolver {
                 obj.State = state;
             }
             if (age) {
-                obj.ageGroup = age;
+                obj.ageLabel = age;
             }
             let objMale = {
                 ...obj,
                 Gender: 'Male',
             };
             if (maleDisease) {
-                objMale.Topic = maleDisease;
+                objMale.diseaseLabelMale = maleDisease;
             }
             else {
-                objMale.Topic = 'Brain';
+                objMale.diseaseLabelMale = 'Colorectal';
             }
             let objFemale = {
                 ...obj,
                 Gender: 'Female',
             };
             if (femaleDisease) {
-                objFemale.Topic = femaleDisease;
+                objFemale.diseaseFemaleLabel = femaleDisease;
             }
             else {
-                objFemale.Topic = 'Brain';
+                objFemale.diseaseFemaleLabel = 'Breast';
             }
             let maleData = await this.getRaceDataByGender(objMale, true);
             let femaleData = await this.getRaceDataByGender(objFemale, false);
@@ -201,20 +255,20 @@ let CancerResolver = class CancerResolver {
                 Gender: 'Male',
             };
             if (maleDisease) {
-                objMale.Topic = maleDisease;
+                objMale.diseaseMaleLabel = maleDisease;
             }
             else {
-                objMale.Topic = 'Brain';
+                objMale.diseaseMaleLabel = 'Colorectal';
             }
             let objFemale = {
                 ...obj,
                 Gender: 'Female',
             };
             if (femaleDisease) {
-                objFemale.Topic = femaleDisease;
+                objFemale.diseaseFemaleLabel = femaleDisease;
             }
             else {
-                objFemale.Topic = 'Brain';
+                objFemale.diseaseFemaleLabel = 'Breast';
             }
             let maleData = await this.getAgeDataByGender(objMale, true);
             let femaleData = await this.getAgeDataByGender(objFemale, false);
@@ -238,27 +292,27 @@ let CancerResolver = class CancerResolver {
                 obj.Race = race;
             }
             if (age) {
-                obj.ageGroup = age;
+                obj.ageLabel = age;
             }
             let objMale = {
                 ...obj,
                 Gender: 'Male',
             };
             if (maleDisease) {
-                objMale.Topic = maleDisease;
+                objMale.diseaseMaleLabel = maleDisease;
             }
             else {
-                objMale.Topic = 'Brain';
+                objMale.diseaseMaleLabel = 'Colorectal';
             }
             let objFemale = {
                 ...obj,
                 Gender: 'Female',
             };
             if (maleDisease) {
-                objFemale.Topic = femaleDisease;
+                objFemale.diseaseFemaleLabel = femaleDisease;
             }
             else {
-                objFemale.Topic = 'Brain';
+                objFemale.diseaseFemaleLabel = 'Breast';
             }
             let maleData = await this.getStateDataByGender(objMale, true);
             let femaleData = await this.getStateDataByGender(objFemale, false);
@@ -271,18 +325,62 @@ let CancerResolver = class CancerResolver {
             throw new Error('Unknown data set');
         }
     }
-    async getAgeDataByGender(obj, male) {
-        obj._id = { $nin: ['01-04', '05-09', '1-4', '10-14', '15-19'] };
+    async getYearData(obj) {
+        console.log(obj);
         let data = await CancerIncident_1.default.aggregate([
             {
                 $match: obj,
             },
             {
-                $unwind: '$ageGroup',
+                $group: {
+                    _id: '$Year',
+                    totalPopulation: { $sum: '$PopulationInNumber' },
+                    totalCount: { $sum: '$CountInNumber' },
+                    totalCrudeRate: { $sum: '$CrudeRateInNumber' },
+                    numerator: {
+                        $sum: {
+                            $multiply: ['$CrudeRateInNumber', '$PopulationInNumber'],
+                        },
+                    },
+                },
+            },
+            {
+                $project: {
+                    _id: '$_id',
+                    totalPopulation: '$totalPopulation',
+                    totalCount: '$totalCount',
+                    totalCrudeRate: '$totalCrudeRate',
+                    weightedAverage: {
+                        $divide: ['$numerator', '$totalPopulation'],
+                    },
+                },
+            },
+        ]);
+        if (data.length === 0) {
+            return [];
+        }
+        let total = data.reduce((acc, d) => {
+            acc += d.totalCount;
+            return acc;
+        }, 0);
+        for (let i = 0; i < data.length; i++) {
+            let percentage = (100 * data[i].totalCount) / total;
+            data[i].percentage = percentage;
+        }
+        return data;
+    }
+    async getAgeDataByGender(obj, male) {
+        // obj._id = { $nin: ['01-04', '05-09', '1-4', '10-14', '15-19'] };
+        let data = await CancerIncident_1.default.aggregate([
+            {
+                $match: obj,
+            },
+            {
+                $unwind: '$ageLabel',
             },
             {
                 $group: {
-                    _id: '$ageGroup',
+                    _id: '$ageLabel',
                     totalPopulation: { $sum: '$PopulationInNumber' },
                     totalCount: { $sum: '$CountInNumber' },
                     totalCrudeRate: { $sum: '$CrudeRateInNumber' },
@@ -304,7 +402,7 @@ let CancerResolver = class CancerResolver {
             },
             {
                 $sort: {
-                    sort: 1,
+                    _id: 1,
                 },
             },
         ]);
@@ -544,19 +642,27 @@ let CancerResolver = class CancerResolver {
             let percentage = (100 * data[i].totalCount) / total;
             data[i].percentage = percentage;
         }
+        data = data.sort((a, b) => a.percentage - b.percentage);
         return data;
     }
     async getProportionByGender(obj) {
+        let unwindValue = '';
+        if (obj.Gender === 'Male') {
+            unwindValue = '$diseaseLabelMale';
+        }
+        else {
+            unwindValue = '$diseaseLabelFemale';
+        }
         let maleData = await CancerIncident_1.default.aggregate([
             {
                 $match: obj,
             },
             {
-                $unwind: '$Topic',
+                $unwind: unwindValue,
             },
             {
                 $group: {
-                    _id: '$Topic',
+                    _id: unwindValue,
                     totalPopulation: { $sum: '$PopulationInNumber' },
                     totalCount: { $sum: '$CountInNumber' },
                     totalCrudeRate: { $sum: '$CrudeRateInNumber' },
@@ -576,11 +682,6 @@ let CancerResolver = class CancerResolver {
                     weightedAverage: { $divide: ['$numerator', '$totalPopulation'] },
                 },
             },
-            {
-                $sort: {
-                    weightedAverage: -1,
-                },
-            },
         ]);
         if (maleData.length === 0) {
             return [];
@@ -589,48 +690,6 @@ let CancerResolver = class CancerResolver {
             acc += d.totalCount;
             return acc;
         }, 0);
-        if (maleData.length > 10) {
-            let maleOther = maleData.slice(9);
-            let otherMaleDisEases = maleOther.map((maleD) => maleD._id);
-            obj.Topic = { $in: otherMaleDisEases };
-            let otherData = await CancerIncident_1.default.aggregate([
-                {
-                    $match: obj,
-                },
-                {
-                    $unwind: '$Gender',
-                },
-                {
-                    $group: {
-                        _id: '$Gender',
-                        totalPopulation: { $sum: '$PopulationInNumber' },
-                        totalCount: { $sum: '$CountInNumber' },
-                        totalCrudeRate: { $sum: '$CrudeRateInNumber' },
-                        numerator: {
-                            $sum: {
-                                $multiply: ['$CrudeRateInNumber', '$PopulationInNumber'],
-                            },
-                        },
-                    },
-                },
-                {
-                    $project: {
-                        _id: 'Other',
-                        totalPopulation: '$totalPopulation',
-                        totalCount: '$totalCount',
-                        totalCrudeRate: '$totalCrudeRate',
-                        weightedAverage: { $divide: ['$numerator', '$totalPopulation'] },
-                    },
-                },
-                {
-                    $sort: {
-                        weightedAverage: -1,
-                    },
-                },
-            ]);
-            maleData.splice(9, otherMaleDisEases.length);
-            maleData.push(otherData[0]);
-        }
         for (let i = 0; i < maleData.length; i++) {
             let percentage = (100 * maleData[i].totalCount) / maleTotal;
             maleData[i].percentage = percentage;
@@ -638,6 +697,12 @@ let CancerResolver = class CancerResolver {
         return maleData;
     }
 };
+__decorate([
+    (0, type_graphql_1.Query)(() => [String]),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], CancerResolver.prototype, "changeSystemInfoAge", null);
 __decorate([
     (0, type_graphql_1.Query)(() => ProportionGender_1.default),
     __param(0, (0, type_graphql_1.Arg)('year', { nullable: true })),
@@ -668,6 +733,23 @@ __decorate([
         String]),
     __metadata("design:returntype", Promise)
 ], CancerResolver.prototype, "getCancerTypes", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => ProportionGender_1.default),
+    __param(0, (0, type_graphql_1.Arg)('state', { nullable: true })),
+    __param(1, (0, type_graphql_1.Arg)('race', { nullable: true })),
+    __param(2, (0, type_graphql_1.Arg)('age', { nullable: true })),
+    __param(3, (0, type_graphql_1.Arg)('dataSet', { nullable: true })),
+    __param(4, (0, type_graphql_1.Arg)('maleDisease', { nullable: true })),
+    __param(5, (0, type_graphql_1.Arg)('femaleDisease', { nullable: true })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String,
+        String,
+        String,
+        String,
+        String,
+        String]),
+    __metadata("design:returntype", Promise)
+], CancerResolver.prototype, "getYearBasedAggregationForCancer", null);
 __decorate([
     (0, type_graphql_1.Query)(() => ProportionGender_1.default),
     __param(0, (0, type_graphql_1.Arg)('year', { nullable: true })),
