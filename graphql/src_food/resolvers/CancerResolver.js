@@ -179,10 +179,10 @@ let CancerResolver = class CancerResolver {
                 Gender: 'Female',
             };
             if (femaleDisease) {
-                objFemale.diseaseFemaleLabel = femaleDisease;
+                objFemale.diseaseLabelFemale = femaleDisease;
             }
             else {
-                objFemale.diseaseFemaleLabel = 'Breast';
+                objFemale.diseaseLabelFemale = 'Breast';
             }
             let maleData = await this.getYearData(objMale);
             let femaleData = await this.getYearData(objFemale);
@@ -222,10 +222,10 @@ let CancerResolver = class CancerResolver {
                 Gender: 'Female',
             };
             if (femaleDisease) {
-                objFemale.diseaseFemaleLabel = femaleDisease;
+                objFemale.diseaseLabelFemale = femaleDisease;
             }
             else {
-                objFemale.diseaseFemaleLabel = 'Breast';
+                objFemale.diseaseLabelFemale = 'Breast';
             }
             let maleData = await this.getRaceDataByGender(objMale, true);
             let femaleData = await this.getRaceDataByGender(objFemale, false);
@@ -309,10 +309,10 @@ let CancerResolver = class CancerResolver {
                 Gender: 'Female',
             };
             if (maleDisease) {
-                objFemale.diseaseFemaleLabel = femaleDisease;
+                objFemale.diseaseLabelFemale = femaleDisease;
             }
             else {
-                objFemale.diseaseFemaleLabel = 'Breast';
+                objFemale.diseaseLabelFemale = 'Breast';
             }
             let maleData = await this.getStateDataByGender(objMale, true);
             let femaleData = await this.getStateDataByGender(objFemale, false);
