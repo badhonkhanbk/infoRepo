@@ -20,6 +20,7 @@ const CancerIncident_1 = __importDefault(require("../../../models/CancerIncident
 const CancerDeath_1 = __importDefault(require("../../../models/CancerDeath"));
 const ProportionGender_1 = __importDefault(require("../schemas/ProportionGender"));
 const ProportionGenderString_1 = __importDefault(require("../schemas/ProportionGenderString"));
+const stateAndAbbreviations_1 = __importDefault(require("../../../utils/stateAndAbbreviations"));
 let race = [
     'American Indian or Alaska Native',
     'Asian or Pacific Islander',
@@ -165,14 +166,14 @@ let selectedFemaleDiseases = [
 ];
 let CancerResolver = class CancerResolver {
     async changeSystemInfoAge() {
-        await CancerDeath_1.default.updateMany({
-            Gender: 'Female',
-            Topic: {
-                $nin: selectedFemaleDisesasesForCancer,
-            },
-        }, {
-            diseaseLabelFemale: 'Other',
-        });
+        let data = await CancerDeath_1.default.find({ Locationabbr: '' });
+        for (let i = 0; i < data.length; i++) {
+            await CancerDeath_1.default.findOneAndUpdate({
+                _id: data[i]._id
+            }, {
+                Locationabbr: (0, stateAndAbbreviations_1.default)(data[i].Locationdesc)
+            });
+        }
         return ['done'];
     }
     async getProportionMatrix(year, state, race, age, dataSet) {
@@ -438,6 +439,8 @@ let CancerResolver = class CancerResolver {
         if (!isIncident) {
             model = CancerDeath_1.default;
         }
+        console.log(model);
+        console.log(obj);
         let data = await model.aggregate([
             {
                 $match: obj,

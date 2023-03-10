@@ -28,6 +28,7 @@ let InfoDeathResolver = class InfoDeathResolver {
         const csvFilePath = './temp/cancer2.csv';
         const jsonArray = await (0, csvtojson_1.default)().fromFile(csvFilePath);
         fs_1.default.writeFileSync('./temp/infoData4.json', JSON.stringify(jsonArray));
+        console.log('');
         return 'done';
     }
     async csvConverter3() {
