@@ -22,13 +22,18 @@ const fs_1 = __importDefault(require("fs"));
 const FotmatedData_1 = __importDefault(require("../schemas/FotmatedData"));
 const ReturnInfoData_1 = __importDefault(require("../schemas/ReturnInfoData"));
 const Compare_1 = __importDefault(require("../schemas/Compare"));
-const stateAndAbbreviations_1 = __importDefault(require("../../../utils/stateAndAbbreviations"));
-const CancerIncident_1 = __importDefault(require("../../../models/CancerIncident"));
+const CancerDeath_1 = __importDefault(require("../../../models/CancerDeath"));
 let InfoDeathResolver = class InfoDeathResolver {
     async csvConverter2() {
-        const csvFilePath = './temp/cancer.csv';
+        const csvFilePath = './temp/cancer2.csv';
         const jsonArray = await (0, csvtojson_1.default)().fromFile(csvFilePath);
-        fs_1.default.writeFileSync('./temp/infoData3.json', JSON.stringify(jsonArray));
+        fs_1.default.writeFileSync('./temp/infoData4.json', JSON.stringify(jsonArray));
+        return 'done';
+    }
+    async csvConverter3() {
+        const csvFilePath = './temp/cancer_death.csv';
+        const jsonArray = await (0, csvtojson_1.default)().fromFile(csvFilePath);
+        fs_1.default.writeFileSync('./temp/infoData5.json', JSON.stringify(jsonArray));
         return 'done';
     }
     async changeRaceParam() {
@@ -50,10 +55,10 @@ let InfoDeathResolver = class InfoDeathResolver {
         return 'done';
     }
     async infoDeathModification() {
-        const data = JSON.parse(fs_1.default.readFileSync('./temp/infoData3.json', 'utf-8'));
+        const data = JSON.parse(fs_1.default.readFileSync('./temp/infoData4.json', 'utf-8'));
         console.log(data[0]);
-        await CancerIncident_1.default.deleteMany({});
-        //{
+        // await InfoGraphicCancerIncidentModel.deleteMany({});
+        // {
         //   'Leading Cancer Sites': 'Brain and Other Nervous System',
         //   'Leading Cancer Sites Code': '31010-31040',
         //   States: 'California',
@@ -70,38 +75,77 @@ let InfoDeathResolver = class InfoDeathResolver {
         //   Race: 'Hispanic',
         //   'Race Code': ''
         // }
+        // let allData = [];
+        // for (let i = 0; i < data.length; i++) {
+        //   if (data[i].Population === 'Not Applicable') {
+        //     continue;
+        //   }
+        //   let newData: any = {
+        //     Year: data[i].Year,
+        //     Locationabbr: getStateAbbreviation(data[i].States),
+        //     Locationdesc: data[i].States,
+        //     Topic: data[i].cer,
+        //     Gender: data[i].Sex,
+        //     ageGroup: data[i]['Age UI'],
+        //     ageLabel: data[i]['Age UI'],
+        //     Race: data[i].Race,
+        //     Count: data[i].Count,
+        //     CountInNumber: Number(data[i].Count),
+        //     Population: data[i].Population,
+        //     PopulationInNumber: Number(data[i].Population.replace(',', '')),
+        //     CrudeRate: data[i]['Crude Rate'],
+        //     CrudeRateInNumber: Number(data[i]['Crude Rate'].replace(',', '')),
+        //   };
+        //   if (data[i].Sex === 'Male') {
+        //     newData.diseaseLabelMale = data[i].cer;
+        //     newData.diseaseLabelFemale = null;
+        //   } else {
+        //     newData.diseaseLabelMale = null;
+        //     newData.diseaseLabelFemale = data[i].cer;
+        //   }
+        //   allData.push(newData);
+        // }
+        // await InfoGraphicCancerIncidentModel.insertMany(allData);
+        return 'done';
+    }
+    async infoDeathModification2() {
+        const data = JSON.parse(fs_1.default.readFileSync('./temp/infoData5.json', 'utf-8'));
+        console.log(data[0]);
+        await CancerDeath_1.default.deleteMany({});
         let allData = [];
         for (let i = 0; i < data.length; i++) {
-            if (data[i].Population === 'Not Applicable') {
+            if (data[i].Population === 'Not Applicable' || !data[i].Population) {
                 continue;
             }
+            console.log(data[i].Population);
             let newData = {
                 Year: data[i].Year,
-                Locationabbr: (0, stateAndAbbreviations_1.default)(data[i].States),
-                Locationdesc: data[i].States,
-                Topic: data[i]['Leading Cancer Sites'],
+                Locationabbr: data[i].Abbrev,
+                Locationdesc: data[i].State,
+                Topic: data[i]['Cancer UI'],
                 Gender: data[i].Sex,
-                ageGroup: data[i]['Age Groups Code'],
-                Race: data[i].Race,
-                Count: data[i].Count,
-                CountInNumber: Number(data[i].Count),
+                ageGroup: data[i]['Age UI'],
+                ageLabel: data[i]['Age UI'],
+                Race: data[i]['Race UI'],
+                Count: data[i].Deaths,
+                CountInNumber: Number(data[i].Deaths),
                 Population: data[i].Population,
                 PopulationInNumber: Number(data[i].Population),
                 CrudeRate: data[i]['Crude Rate'],
                 CrudeRateInNumber: Number(data[i]['Crude Rate']),
             };
             if (data[i].Sex === 'Male') {
-                newData.diseaseLabelMale = data[i]['Leading Cancer Sites'];
+                newData.diseaseLabelMale = data[i]['Cancer UI'];
                 newData.diseaseLabelFemale = null;
             }
             else {
                 newData.diseaseLabelMale = null;
-                newData.diseaseLabelFemale = data[i]['Leading Cancer Sites'];
+                newData.diseaseLabelFemale = data[i]['Cancer UI'];
             }
             console.log(i);
             allData.push(newData);
         }
-        await CancerIncident_1.default.insertMany(allData);
+        await CancerDeath_1.default.insertMany(allData);
         return 'done';
     }
     // @Query(() => String)
@@ -174,10 +218,12 @@ let InfoDeathResolver = class InfoDeathResolver {
     // }
     async getAllTopics() {
         let topics = [];
-        const data = JSON.parse(fs_1.default.readFileSync('./temp/infoData3.json', 'utf-8'));
+        const data = JSON.parse(fs_1.default.readFileSync('./temp/infoData5.json', 'utf-8'));
         for (let i = 0; i < data.length; i++) {
-            if (!topics.includes(data[i]['Age Groups Code'])) {
-                topics.push(data[i]['Age Groups Code']);
+            if (data[i].Sex === 'Male') {
+                if (!topics.includes(data[i]['Cancer UI'])) {
+                    topics.push(data[i]['Cancer UI']);
+                }
             }
         }
         return topics.sort();
@@ -965,6 +1011,12 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
+], InfoDeathResolver.prototype, "csvConverter3", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => String),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
 ], InfoDeathResolver.prototype, "changeRaceParam", null);
 __decorate([
     (0, type_graphql_1.Query)(() => String),
@@ -972,6 +1024,12 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], InfoDeathResolver.prototype, "infoDeathModification", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => String),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], InfoDeathResolver.prototype, "infoDeathModification2", null);
 __decorate([
     (0, type_graphql_1.Query)(() => [String]),
     __metadata("design:type", Function),

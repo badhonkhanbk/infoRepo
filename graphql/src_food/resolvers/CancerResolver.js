@@ -17,6 +17,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
 const CancerIncident_1 = __importDefault(require("../../../models/CancerIncident"));
+const CancerDeath_1 = __importDefault(require("../../../models/CancerDeath"));
 const ProportionGender_1 = __importDefault(require("../schemas/ProportionGender"));
 const ProportionGenderString_1 = __importDefault(require("../schemas/ProportionGenderString"));
 let race = [
@@ -27,307 +28,417 @@ let race = [
     'Other Races and Unknown combined',
     'White',
 ];
-let maleDisease = [
+let maleDiseasesForCancer = [
+    'Bladder',
+    'Brain',
     'Colorectal',
     'Esophagus',
     'Gallbladder',
     'Kidney',
+    'Leukemias',
     'Liver',
     'Lung',
+    'Lymphoma',
+    'Myeloma',
+    'Oral',
+    'Pancreas',
+    'Prostate',
+    'Skin',
+    'Stomach',
+    'Throat',
+    'Thyroid',
+];
+let selectedMaleDisesasesForCancer = [
+    'Bladder',
+    'Brain',
+    'Colorectal',
+    'Esophagus',
+    'Leukemias',
+    'Liver',
+    'Lung',
+    'Lymphoma',
+    'Pancreas',
+    'Prostate', // include
+];
+let femaleDiseasesForCancer = [
+    'Bladder',
+    'Brain',
+    'Breast',
+    'Cervix',
+    'Colorectal',
+    'Corpus',
+    'Esophagus',
+    'Gallbladder',
+    'Kidney',
+    'Leukemias',
+    'Liver',
+    'Lung',
+    'Lymphoma',
+    'Myeloma',
+    'Oral',
+    'Ovary',
+    'Pancreas',
+    'Skin',
+    'Stomach',
+    'Thyroid',
+];
+let selectedFemaleDisesasesForCancer = [
+    'Brain',
+    'Breast',
+    'Cervix',
+    'Colorectal',
+    'Leukemias',
+    'Liver',
+    'Lung',
+    'Lymphoma',
+    'Ovary',
+    'Pancreas', // include
+];
+let maleDisease = [
+    'Brain',
+    'Breast',
+    'Colorectal',
+    'Esophagus',
+    'Gallbladder',
+    'Kidney',
+    'Larynx',
+    'Leukemias',
+    'Liver',
+    'Lung',
+    'Melanoma of the Skin',
+    'Myeloma',
+    'Non-Hodgkin Lymphoma',
+    'Oral Cavity and Pharynx',
     'Pancreas',
     'Prostate',
     'Stomach',
     'Thyroid',
-    'Other',
+    'Urinary Bladder', //include
+];
+let selectedMaleDiseases = [
+    'Colorectal',
+    'Kidney',
+    'Leukemias',
+    'Lung',
+    'Melanoma of the Skin',
+    'Non-Hodgkin Lymphoma',
+    'Oral Cavity and Pharynx',
+    'Pancreas',
+    'Prostate',
+    'Urinary Bladder', //include
 ];
 let femaleDisease = [
+    'Brain',
     'Breast',
     'Cervix',
     'Colorectal',
+    'Corpus Uteri',
+    'Esophagus',
+    'Gallbladder',
     'Kidney',
+    'Larynx',
+    'Leukemias',
     'Liver',
     'Lung',
+    'Melanoma of the Skin',
+    'Myeloma',
+    'Non-Hodgkin Lymphoma',
+    'Oral Cavity and Pharynx',
     'Ovary',
     'Pancreas',
     'Stomach',
     'Thyroid',
-    'Other',
+    'Urinary Bladder', //include
 ];
-let age = [
-    '01-04',
-    '05-09',
-    '1-4',
-    '10-14',
-    '15-19',
-    '20-24',
-    '25-29',
-    '30-34',
-    '35-39',
-    '40-44',
-    '45-49',
-    '50-54',
-    '55-59',
-    '60-64',
-    '65-69',
-    '70-74',
-    '75-79',
-    '80-84',
-    '85+',
+let selectedFemaleDiseases = [
+    'Breast',
+    'Colorectal',
+    'Kidney',
+    'Leukemias',
+    'Lung',
+    'Melanoma of the Skin',
+    'Non-Hodgkin Lymphoma',
+    'Oral Cavity and Pharynx',
+    'Pancreas',
+    'Thyroid',
+    'Urinary Bladder', //include
 ];
 let CancerResolver = class CancerResolver {
     async changeSystemInfoAge() {
-        await CancerIncident_1.default.updateMany({
+        await CancerDeath_1.default.updateMany({
             Gender: 'Female',
-            Topic: 'Cervix',
+            Topic: {
+                $nin: selectedFemaleDisesasesForCancer,
+            },
         }, {
-            diseaseLabelFemale: 'Cervix',
+            diseaseLabelFemale: 'Other',
         });
         return ['done'];
     }
     async getProportionMatrix(year, state, race, age, dataSet) {
+        let maleData;
+        let femaleData;
+        let obj = {};
+        if (year) {
+            obj.Year = year;
+        }
+        if (state) {
+            obj.State = state;
+        }
+        if (race) {
+            obj.Race = race;
+        }
+        if (age) {
+            obj.ageLabel = age;
+        }
+        let objMale = {
+            ...obj,
+            Gender: 'Male',
+        };
+        let objFemale = {
+            ...obj,
+            Gender: 'Female',
+        };
         if (dataSet === 'Incidence') {
-            let obj = {};
-            if (year) {
-                obj.Year = year;
-            }
-            if (state) {
-                obj.State = state;
-            }
-            if (race) {
-                obj.Race = race;
-            }
-            if (age) {
-                obj.ageLabel = age;
-            }
-            let objMale = {
-                ...obj,
-                Gender: 'Male',
-            };
-            let objFemale = {
-                ...obj,
-                Gender: 'Female',
-            };
-            let maleData = await this.getProportionByGender(objMale);
-            let femaleData = await this.getProportionByGender(objFemale);
-            return {
-                maleData,
-                femaleData,
-            };
+            maleData = await this.getProportionByGender(objMale, true);
+            femaleData = await this.getProportionByGender(objFemale, true);
         }
         else {
-            throw new Error('Unknown data set');
+            maleData = await this.getProportionByGender(objMale, false);
+            femaleData = await this.getProportionByGender(objFemale, false);
         }
+        return {
+            maleData,
+            femaleData,
+        };
     }
     async getCancerTypes(year, state, race, age, dataSet) {
+        let maleData;
+        let femaleData;
+        let obj = {};
+        if (year) {
+            obj.Year = year;
+        }
+        if (state) {
+            obj.State = state;
+        }
+        if (race) {
+            obj.Race = race;
+        }
+        if (age) {
+            obj.ageLabel = age;
+        }
+        let objMale = {
+            ...obj,
+            Gender: 'Male',
+        };
+        let objFemale = {
+            ...obj,
+            Gender: 'Female',
+        };
         if (dataSet === 'Incidence') {
-            let obj = {};
-            if (year) {
-                obj.Year = year;
-            }
-            if (state) {
-                obj.State = state;
-            }
-            if (race) {
-                obj.Race = race;
-            }
-            if (age) {
-                obj.ageLabel = age;
-            }
-            let objMale = {
-                ...obj,
-                Gender: 'Male',
-            };
-            let objFemale = {
-                ...obj,
-                Gender: 'Female',
-            };
-            let maleData = await this.getCancerTypesByGender(objMale, true);
-            let femaleData = await this.getCancerTypesByGender(objFemale, false);
-            return {
-                maleData,
-                femaleData,
-            };
+            let maleData = await this.getCancerTypesByGender(objMale, true, true);
+            let femaleData = await this.getCancerTypesByGender(objFemale, false, true);
         }
         else {
-            throw new Error('Unknown data set');
+            maleData = await this.getCancerTypesByGender(objMale, true, false);
+            femaleData = await this.getCancerTypesByGender(objFemale, false, false);
         }
+        return {
+            maleData,
+            femaleData,
+        };
     }
     async getYearBasedAggregationForCancer(state, race, age, dataSet, maleDisease, femaleDisease) {
-        if (dataSet === 'Incidence') {
-            let obj = {};
-            if (state) {
-                obj.State = state;
-            }
-            if (race) {
-                obj.Race = race;
-            }
-            if (age) {
-                obj.Label = age;
-            }
-            let objMale = {
-                ...obj,
-                Gender: 'Male',
-            };
-            if (maleDisease) {
-                objMale.diseaseLabelMale = maleDisease;
-            }
-            else {
-                objMale.diseaseLabelMale = 'Colorectal';
-            }
-            let objFemale = {
-                ...obj,
-                Gender: 'Female',
-            };
-            if (femaleDisease) {
-                objFemale.diseaseLabelFemale = femaleDisease;
-            }
-            else {
-                objFemale.diseaseLabelFemale = 'Breast';
-            }
-            let maleData = await this.getYearData(objMale);
-            let femaleData = await this.getYearData(objFemale);
-            return {
-                maleData,
-                femaleData,
-            };
+        let maleData;
+        let femaleData;
+        let obj = {};
+        if (state) {
+            obj.State = state;
+        }
+        if (race) {
+            obj.Race = race;
+        }
+        if (age) {
+            obj.Label = age;
+        }
+        let objMale = {
+            ...obj,
+            Gender: 'Male',
+        };
+        if (maleDisease) {
+            objMale.diseaseLabelMale = maleDisease;
         }
         else {
-            throw new Error('Unknown data set');
+            objMale.diseaseLabelMale = 'Colorectal';
         }
+        let objFemale = {
+            ...obj,
+            Gender: 'Female',
+        };
+        if (femaleDisease) {
+            objFemale.diseaseLabelFemale = femaleDisease;
+        }
+        else {
+            objFemale.diseaseLabelFemale = 'Breast';
+        }
+        if (dataSet === 'Incidence') {
+            maleData = await this.getYearData(objMale, true);
+            femaleData = await this.getYearData(objFemale, true);
+        }
+        else {
+            maleData = await this.getYearData(objMale, false);
+            femaleData = await this.getYearData(objFemale, false);
+        }
+        return {
+            maleData,
+            femaleData,
+        };
     }
     async getRaceData(year, state, maleDisease, femaleDisease, age, dataSet) {
-        if (dataSet === 'Incidence') {
-            let obj = {};
-            if (year) {
-                obj.Year = year;
-            }
-            if (state) {
-                obj.State = state;
-            }
-            if (age) {
-                obj.ageLabel = age;
-            }
-            let objMale = {
-                ...obj,
-                Gender: 'Male',
-            };
-            if (maleDisease) {
-                objMale.diseaseLabelMale = maleDisease;
-            }
-            else {
-                objMale.diseaseLabelMale = 'Colorectal';
-            }
-            let objFemale = {
-                ...obj,
-                Gender: 'Female',
-            };
-            if (femaleDisease) {
-                objFemale.diseaseLabelFemale = femaleDisease;
-            }
-            else {
-                objFemale.diseaseLabelFemale = 'Breast';
-            }
-            let maleData = await this.getRaceDataByGender(objMale, true);
-            let femaleData = await this.getRaceDataByGender(objFemale, false);
-            return {
-                maleData,
-                femaleData,
-            };
+        let maleData;
+        let femaleData;
+        let obj = {};
+        if (year) {
+            obj.Year = year;
+        }
+        if (state) {
+            obj.State = state;
+        }
+        if (age) {
+            obj.ageLabel = age;
+        }
+        let objMale = {
+            ...obj,
+            Gender: 'Male',
+        };
+        if (maleDisease) {
+            objMale.diseaseLabelMale = maleDisease;
         }
         else {
-            throw new Error('Unknown data set');
+            objMale.diseaseLabelMale = 'Colorectal';
         }
+        let objFemale = {
+            ...obj,
+            Gender: 'Female',
+        };
+        if (femaleDisease) {
+            objFemale.diseaseLabelFemale = femaleDisease;
+        }
+        else {
+            objFemale.diseaseLabelFemale = 'Breast';
+        }
+        if (dataSet === 'Incidence') {
+            maleData = await this.getRaceDataByGender(objMale, true, true);
+            femaleData = await this.getRaceDataByGender(objFemale, false, true);
+        }
+        else {
+            maleData = await this.getRaceDataByGender(objMale, true, false);
+            femaleData = await this.getRaceDataByGender(objFemale, false, false);
+        }
+        return {
+            maleData,
+            femaleData,
+        };
     }
     async getAgeData(year, state, maleDisease, femaleDisease, race, dataSet) {
-        if (dataSet === 'Incidence') {
-            let obj = {};
-            if (year) {
-                obj.Year = year;
-            }
-            if (state) {
-                obj.State = state;
-            }
-            if (race) {
-                obj.Race = race;
-            }
-            let objMale = {
-                ...obj,
-                Gender: 'Male',
-            };
-            if (maleDisease) {
-                objMale.diseaseLabelMale = maleDisease;
-            }
-            else {
-                objMale.diseaseLabelMale = 'Colorectal';
-            }
-            let objFemale = {
-                ...obj,
-                Gender: 'Female',
-            };
-            if (femaleDisease) {
-                objFemale.diseaseLabelFemale = femaleDisease;
-            }
-            else {
-                objFemale.diseaseLabelFemale = 'Breast';
-            }
-            let maleData = await this.getAgeDataByGender(objMale, true);
-            let femaleData = await this.getAgeDataByGender(objFemale, false);
-            return {
-                maleData,
-                femaleData,
-            };
+        let maleData;
+        let femaleData;
+        let obj = {};
+        if (year) {
+            obj.Year = year;
+        }
+        if (state) {
+            obj.State = state;
+        }
+        if (race) {
+            obj.Race = race;
+        }
+        let objMale = {
+            ...obj,
+            Gender: 'Male',
+        };
+        if (maleDisease) {
+            objMale.diseaseLabelMale = maleDisease;
         }
         else {
-            throw new Error('Unknown data set');
+            objMale.diseaseLabelMale = 'Colorectal';
         }
+        let objFemale = {
+            ...obj,
+            Gender: 'Female',
+        };
+        if (femaleDisease) {
+            objFemale.diseaseLabelFemale = femaleDisease;
+        }
+        else {
+            objFemale.diseaseLabelFemale = 'Breast';
+        }
+        if (dataSet === 'Incidence') {
+            maleData = await this.getAgeDataByGender(objMale, true, true);
+            femaleData = await this.getAgeDataByGender(objFemale, false, true);
+        }
+        else {
+            maleData = await this.getAgeDataByGender(objMale, true, false);
+            femaleData = await this.getAgeDataByGender(objFemale, false, false);
+        }
+        return {
+            maleData,
+            femaleData,
+        };
     }
     async getStateDataForCancer(year, race, maleDisease, femaleDisease, age, dataSet) {
-        if (dataSet === 'Incidence') {
-            console.log(dataSet);
-            let obj = {};
-            if (year) {
-                obj.Year = year;
-            }
-            if (race) {
-                obj.Race = race;
-            }
-            if (age) {
-                obj.ageLabel = age;
-            }
-            let objMale = {
-                ...obj,
-                Gender: 'Male',
-            };
-            if (maleDisease) {
-                objMale.diseaseLabelMale = maleDisease;
-            }
-            else {
-                objMale.diseaseLabelMale = 'Colorectal';
-            }
-            let objFemale = {
-                ...obj,
-                Gender: 'Female',
-            };
-            if (maleDisease) {
-                objFemale.diseaseLabelFemale = femaleDisease;
-            }
-            else {
-                objFemale.diseaseLabelFemale = 'Breast';
-            }
-            let maleData = await this.getStateDataByGender(objMale, true);
-            let femaleData = await this.getStateDataByGender(objFemale, false);
-            return {
-                maleData,
-                femaleData,
-            };
+        let maleData;
+        let femaleData;
+        let obj = {};
+        if (year) {
+            obj.Year = year;
+        }
+        if (race) {
+            obj.Race = race;
+        }
+        if (age) {
+            obj.ageLabel = age;
+        }
+        let objMale = {
+            ...obj,
+            Gender: 'Male',
+        };
+        if (maleDisease) {
+            objMale.diseaseLabelMale = maleDisease;
         }
         else {
-            throw new Error('Unknown data set');
+            objMale.diseaseLabelMale = 'Colorectal';
         }
+        let objFemale = {
+            ...obj,
+            Gender: 'Female',
+        };
+        if (maleDisease) {
+            objFemale.diseaseLabelFemale = femaleDisease;
+        }
+        else {
+            objFemale.diseaseLabelFemale = 'Breast';
+        }
+        if (dataSet === 'Incidence') {
+            maleData = await this.getStateDataByGender(objMale, true, true);
+            femaleData = await this.getStateDataByGender(objFemale, false, true);
+        }
+        else {
+            maleData = await this.getStateDataByGender(objMale, true, false);
+            femaleData = await this.getStateDataByGender(objFemale, false, false);
+        }
+        return {
+            maleData,
+            femaleData,
+        };
     }
-    async getYearData(obj) {
-        console.log(obj);
-        let data = await CancerIncident_1.default.aggregate([
+    async getYearData(obj, isIncident) {
+        let model = CancerIncident_1.default;
+        if (!isIncident) {
+            model = CancerDeath_1.default;
+        }
+        let data = await model.aggregate([
             {
                 $match: obj,
             },
@@ -355,6 +466,11 @@ let CancerResolver = class CancerResolver {
                     },
                 },
             },
+            {
+                $sort: {
+                    _id: 1,
+                },
+            },
         ]);
         if (data.length === 0) {
             return [];
@@ -369,9 +485,12 @@ let CancerResolver = class CancerResolver {
         }
         return data;
     }
-    async getAgeDataByGender(obj, male) {
-        // obj._id = { $nin: ['01-04', '05-09', '1-4', '10-14', '15-19'] };
-        let data = await CancerIncident_1.default.aggregate([
+    async getAgeDataByGender(obj, male, isIncident) {
+        let model = CancerIncident_1.default;
+        if (!isIncident) {
+            model = CancerDeath_1.default;
+        }
+        let data = await model.aggregate([
             {
                 $match: obj,
             },
@@ -419,9 +538,13 @@ let CancerResolver = class CancerResolver {
         }
         return data;
     }
-    async getStateDataByGender(obj, isMale) {
+    async getStateDataByGender(obj, isMale, isIncident) {
+        let model = CancerIncident_1.default;
+        if (!isIncident) {
+            model = CancerDeath_1.default;
+        }
         console.log(obj);
-        let data = await CancerIncident_1.default.aggregate([
+        let data = await model.aggregate([
             {
                 $match: obj,
             },
@@ -458,7 +581,6 @@ let CancerResolver = class CancerResolver {
                 },
             },
         ]);
-        console.log(data);
         let total = data.reduce((acc, d) => {
             acc += d.totalCount;
             return acc;
@@ -508,8 +630,13 @@ let CancerResolver = class CancerResolver {
         };
         return JSON.stringify(returnData);
     }
-    async getRaceDataByGender(obj, male) {
-        let data = await CancerIncident_1.default.aggregate([
+    async getRaceDataByGender(obj, male, isIncident) {
+        let model = CancerIncident_1.default;
+        if (!isIncident) {
+            model = CancerDeath_1.default;
+            console.log(obj);
+        }
+        let data = await model.aggregate([
             {
                 $match: obj,
             },
@@ -557,95 +684,11 @@ let CancerResolver = class CancerResolver {
         }
         return data;
     }
-    async getCancerTypesByGender(obj, male) {
-        let data = await CancerIncident_1.default.aggregate([
-            {
-                $match: obj,
-            },
-            {
-                $unwind: '$Topic',
-            },
-            {
-                $group: {
-                    _id: '$Topic',
-                    totalPopulation: { $sum: '$PopulationInNumber' },
-                    totalCount: { $sum: '$CountInNumber' },
-                    totalCrudeRate: { $sum: '$CrudeRateInNumber' },
-                    numerator: {
-                        $sum: {
-                            $multiply: ['$CrudeRateInNumber', '$PopulationInNumber'],
-                        },
-                    },
-                },
-            },
-            {
-                $project: {
-                    _id: '$_id',
-                    totalPopulation: '$totalPopulation',
-                    totalCount: '$totalCount',
-                    totalCrudeRate: '$totalCrudeRate',
-                    weightedAverage: { $divide: ['$numerator', '$totalPopulation'] },
-                },
-            },
-            {
-                $sort: {
-                    weightedAverage: -1,
-                },
-            },
-        ]);
-        if (data.length === 0) {
-            return [];
+    async getProportionByGender(obj, isIncident) {
+        let model = CancerIncident_1.default;
+        if (!isIncident) {
+            model = CancerDeath_1.default;
         }
-        let total = data.reduce((acc, d) => {
-            acc += d.totalCount;
-            return acc;
-        }, 0);
-        let maleDisease = [
-            'Colorectal',
-            'Esophagus',
-            'Gallbladder',
-            'Kidney',
-            'Liver',
-            'Lung',
-            'Pancreas',
-            'Prostate',
-            'Stomach',
-            'Thyroid',
-        ];
-        let femaleDisease = [
-            'Breast',
-            'Cervix',
-            'Colorectal',
-            'Kidney',
-            'Liver',
-            'Lung',
-            'Ovary',
-            'Pancreas',
-            'Stomach',
-            'Thyroid',
-        ];
-        for (let i = 0; i < data.length; i++) {
-            if (male) {
-                if (!maleDisease.includes(data[i]._id)) {
-                    data.splice(i, 1);
-                    i--;
-                    continue;
-                }
-            }
-            else {
-                if (!femaleDisease.includes(data[i]._id)) {
-                    data.splice(i, 1);
-                    i--;
-                    continue;
-                }
-            }
-            let percentage = (100 * data[i].totalCount) / total;
-            data[i].percentage = percentage;
-        }
-        data = data.sort((a, b) => a.percentage - b.percentage);
-        return data;
-    }
-    async getProportionByGender(obj) {
         let unwindValue = '';
         if (obj.Gender === 'Male') {
             unwindValue = '$diseaseLabelMale';
@@ -653,7 +696,7 @@ let CancerResolver = class CancerResolver {
         else {
             unwindValue = '$diseaseLabelFemale';
         }
-        let maleData = await CancerIncident_1.default.aggregate([
+        let maleData = await model.aggregate([
             {
                 $match: obj,
             },
@@ -695,6 +738,136 @@ let CancerResolver = class CancerResolver {
             maleData[i].percentage = percentage;
         }
         return maleData;
+    }
+    async getCancerTypesByGender(obj, male, isIncident) {
+        let model = CancerIncident_1.default;
+        if (!isIncident) {
+            model = CancerDeath_1.default;
+        }
+        let unwindValue = '';
+        if (obj.Gender === 'Male') {
+            unwindValue = '$diseaseLabelMale';
+        }
+        else {
+            unwindValue = '$diseaseLabelFemale';
+        }
+        let data = await model.aggregate([
+            {
+                $match: obj,
+            },
+            {
+                $unwind: '$Topic',
+            },
+            {
+                $group: {
+                    _id: '$Topic',
+                    totalPopulation: { $sum: '$PopulationInNumber' },
+                    totalCount: { $sum: '$CountInNumber' },
+                    totalCrudeRate: { $sum: '$CrudeRateInNumber' },
+                    numerator: {
+                        $sum: {
+                            $multiply: ['$CrudeRateInNumber', '$PopulationInNumber'],
+                        },
+                    },
+                },
+            },
+            {
+                $project: {
+                    _id: '$_id',
+                    totalPopulation: '$totalPopulation',
+                    totalCount: '$totalCount',
+                    totalCrudeRate: '$totalCrudeRate',
+                    weightedAverage: { $divide: ['$numerator', '$totalPopulation'] },
+                },
+            },
+            {
+                $sort: {
+                    weightedAverage: -1,
+                },
+            },
+        ]);
+        if (data.length === 0) {
+            return [];
+        }
+        let total = data.reduce((acc, d) => {
+            acc += d.totalCount;
+            return acc;
+        }, 0);
+        let maleDisease = [];
+        let femaleDisease = [];
+        if (isIncident) {
+            maleDisease = [
+                'Colorectal',
+                'Kidney',
+                'Leukemias',
+                'Lung',
+                'Melanoma of the Skin',
+                'Non-Hodgkin Lymphoma',
+                'Oral Cavity and Pharynx',
+                'Pancreas',
+                'Prostate',
+                'Urinary Bladder', //include
+            ];
+            femaleDisease = [
+                'Breast',
+                'Colorectal',
+                'Kidney',
+                'Leukemias',
+                'Lung',
+                'Melanoma of the Skin',
+                'Non-Hodgkin Lymphoma',
+                'Oral Cavity and Pharynx',
+                'Pancreas',
+                'Thyroid',
+                'Urinary Bladder', //include
+            ];
+        }
+        else {
+            maleDisease = [
+                'Bladder',
+                'Brain',
+                'Colorectal',
+                'Esophagus',
+                'Leukemias',
+                'Liver',
+                'Lung',
+                'Lymphoma',
+                'Pancreas',
+                'Prostate', // include
+            ];
+            femaleDisease = [
+                'Brain',
+                'Breast',
+                'Cervix',
+                'Colorectal',
+                'Leukemias',
+                'Liver',
+                'Lung',
+                'Lymphoma',
+                'Ovary',
+                'Pancreas', // include
+            ];
+        }
+        for (let i = 0; i < data.length; i++) {
+            if (male) {
+                if (!maleDisease.includes(data[i]._id)) {
+                    data.splice(i, 1);
+                    i--;
+                    continue;
+                }
+            }
+            else {
+                if (!femaleDisease.includes(data[i]._id)) {
+                    data.splice(i, 1);
+                    i--;
+                    continue;
+                }
+            }
+            let percentage = (100 * data[i].totalCount) / total;
+            data[i].percentage = percentage;
+        }
+        data = data.sort((a, b) => a.percentage - b.percentage);
+        return data;
     }
 };
 __decorate([
