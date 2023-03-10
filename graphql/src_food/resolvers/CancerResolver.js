@@ -20,7 +20,6 @@ const CancerIncident_1 = __importDefault(require("../../../models/CancerIncident
 const CancerDeath_1 = __importDefault(require("../../../models/CancerDeath"));
 const ProportionGender_1 = __importDefault(require("../schemas/ProportionGender"));
 const ProportionGenderString_1 = __importDefault(require("../schemas/ProportionGenderString"));
-const stateAndAbbreviations_1 = __importDefault(require("../../../utils/stateAndAbbreviations"));
 let race = [
     'American Indian or Alaska Native',
     'Asian or Pacific Islander',
@@ -121,12 +120,12 @@ let selectedMaleDiseases = [
     'Kidney',
     'Leukemias',
     'Lung',
-    'Melanoma of the Skin',
-    'Non-Hodgkin Lymphoma',
-    'Oral Cavity and Pharynx',
+    'Skin',
+    'Lymphoma',
+    'Oral',
     'Pancreas',
     'Prostate',
-    'Urinary Bladder', //include
+    'Bladder',
 ];
 let femaleDisease = [
     'Brain',
@@ -162,18 +161,16 @@ let selectedFemaleDiseases = [
     'Oral Cavity and Pharynx',
     'Pancreas',
     'Thyroid',
-    'Urinary Bladder', //include
+    'Urinary Bladder', //include Cervix
 ];
 let CancerResolver = class CancerResolver {
     async changeSystemInfoAge() {
-        let data = await CancerDeath_1.default.find({ Locationabbr: '' });
-        for (let i = 0; i < data.length; i++) {
-            await CancerDeath_1.default.findOneAndUpdate({
-                _id: data[i]._id
-            }, {
-                Locationabbr: (0, stateAndAbbreviations_1.default)(data[i].Locationdesc)
-            });
-        }
+        await CancerIncident_1.default.updateMany({
+            Topic: 'Oral',
+            Gender: 'Female',
+        }, {
+            diseaseLabelFemale: 'Other',
+        });
         return ['done'];
     }
     async getProportionMatrix(year, state, race, age, dataSet) {
@@ -804,12 +801,12 @@ let CancerResolver = class CancerResolver {
                 'Kidney',
                 'Leukemias',
                 'Lung',
-                'Melanoma of the Skin',
-                'Non-Hodgkin Lymphoma',
-                'Oral Cavity and Pharynx',
+                'Skin',
+                'Lymphoma',
+                'Oral',
                 'Pancreas',
                 'Prostate',
-                'Urinary Bladder', //include
+                'Bladder', //include
             ];
             femaleDisease = [
                 'Breast',
@@ -817,12 +814,11 @@ let CancerResolver = class CancerResolver {
                 'Kidney',
                 'Leukemias',
                 'Lung',
-                'Melanoma of the Skin',
-                'Non-Hodgkin Lymphoma',
-                'Oral Cavity and Pharynx',
+                'Skin',
+                'Lymphoma',
                 'Pancreas',
                 'Thyroid',
-                'Urinary Bladder', //include
+                'Cervix', //include
             ];
         }
         else {
