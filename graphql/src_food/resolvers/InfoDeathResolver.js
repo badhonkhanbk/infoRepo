@@ -221,10 +221,8 @@ let InfoDeathResolver = class InfoDeathResolver {
         let topics = [];
         const data = JSON.parse(fs_1.default.readFileSync('./temp/infoData5.json', 'utf-8'));
         for (let i = 0; i < data.length; i++) {
-            if (data[i].Sex === 'Male') {
-                if (!topics.includes(data[i]['Cancer UI'])) {
-                    topics.push(data[i]['Cancer UI']);
-                }
+            if (!topics.includes(data[i]['Race UI'])) {
+                topics.push(data[i]['Race UI']);
             }
         }
         return topics.sort();

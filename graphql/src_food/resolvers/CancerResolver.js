@@ -163,13 +163,66 @@ let selectedFemaleDiseases = [
     'Thyroid',
     'Urinary Bladder', //include Cervix
 ];
+let age = [
+    '20-24',
+    '30-39',
+    '40-44',
+    '40-49',
+    '45-49',
+    '50-54',
+    '50-59',
+    '55-59',
+    '60-64',
+    '60-69',
+    '65-69',
+    '70-74',
+    '70-79',
+    '75-79',
+    '80+',
+    '80-84',
+    '85+',
+];
 let CancerResolver = class CancerResolver {
     async changeSystemInfoAge() {
-        await CancerIncident_1.default.updateMany({
-            Topic: 'Oral',
-            Gender: 'Female',
+        await CancerDeath_1.default.updateMany({
+            ageGroup: '20-24',
         }, {
-            diseaseLabelFemale: 'Other',
+            ageLabel: '20-29',
+        });
+        await CancerDeath_1.default.updateMany({
+            ageGroup: {
+                $in: ['40-44', '40-49', '45-49'],
+            },
+        }, {
+            ageLabel: '40-49',
+        });
+        await CancerDeath_1.default.updateMany({
+            ageGroup: {
+                $in: ['50-54', '50-59', '55-59'],
+            },
+        }, {
+            ageLabel: '50-59',
+        });
+        await CancerDeath_1.default.updateMany({
+            ageGroup: {
+                $in: ['60-64', '60-69', '65-69'],
+            },
+        }, {
+            ageLabel: '60-69',
+        });
+        await CancerDeath_1.default.updateMany({
+            ageGroup: {
+                $in: ['70-74', '70-79', '75-79'],
+            },
+        }, {
+            ageLabel: '70-79',
+        });
+        await CancerDeath_1.default.updateMany({
+            ageGroup: {
+                $in: ['80-84', '85+', '80+'],
+            },
+        }, {
+            ageLabel: '80+',
         });
         return ['done'];
     }
@@ -589,7 +642,7 @@ let CancerResolver = class CancerResolver {
             let percentage = (100 * data[i].totalCount) / total;
             data[i].percentage = percentage;
         }
-        if (data.length === 0) {
+        if (data.length === 0 || data.length < 5) {
             return JSON.stringify({});
         }
         let forMatedData = data;
@@ -601,7 +654,7 @@ let CancerResolver = class CancerResolver {
         let t75 = Math.floor((75 / 100) * (length + 1));
         let lowest = sortedArray[0];
         let highest = sortedArray[sortedArray.length - 1];
-        for (let i = 0; i < sortedArray.length; i++) {
+        for (let i = 1; i < sortedArray.length - 1; i++) {
             returnObj[sortedArray[i]._id] = sortedArray[i];
             if (sortedArray[t75].percentage < sortedArray[i].percentage) {
                 returnObj[sortedArray[i]._id].quartile = 4;
