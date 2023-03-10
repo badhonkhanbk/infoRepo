@@ -238,8 +238,8 @@ let CancerResolver = class CancerResolver {
             Gender: 'Female',
         };
         if (dataSet === 'Incidence') {
-            let maleData = await this.getCancerTypesByGender(objMale, true, true);
-            let femaleData = await this.getCancerTypesByGender(objFemale, false, true);
+            maleData = await this.getCancerTypesByGender(objMale, true, true);
+            femaleData = await this.getCancerTypesByGender(objFemale, false, true);
         }
         else {
             maleData = await this.getCancerTypesByGender(objMale, true, false);
