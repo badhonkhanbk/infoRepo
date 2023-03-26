@@ -22,19 +22,25 @@ const fs_1 = __importDefault(require("fs"));
 const FotmatedData_1 = __importDefault(require("../schemas/FotmatedData"));
 const ReturnInfoData_1 = __importDefault(require("../schemas/ReturnInfoData"));
 const Compare_1 = __importDefault(require("../schemas/Compare"));
-const CancerDeath_1 = __importDefault(require("../../../models/CancerDeath"));
+const stateAndAbbreviations_1 = __importDefault(require("../../../utils/stateAndAbbreviations"));
+const allcancer_1 = __importDefault(require("../../../models/allcancer"));
 let InfoDeathResolver = class InfoDeathResolver {
+    async hJKNBd() {
+        let a = await allcancer_1.default.find().skip(876295);
+        console.log(a);
+        return 's';
+    }
     async csvConverter2() {
-        const csvFilePath = './temp/cancer2.csv';
+        const csvFilePath = './temp/x.csv';
         const jsonArray = await (0, csvtojson_1.default)().fromFile(csvFilePath);
-        fs_1.default.writeFileSync('./temp/infoData4.json', JSON.stringify(jsonArray));
+        fs_1.default.writeFileSync('./temp/all/x.json', JSON.stringify(jsonArray));
         console.log('');
         return 'done';
     }
     async csvConverter3() {
-        const csvFilePath = './temp/cancer_death.csv';
+        const csvFilePath = './temp/cancer_death2.csv';
         const jsonArray = await (0, csvtojson_1.default)().fromFile(csvFilePath);
-        fs_1.default.writeFileSync('./temp/infoData5.json', JSON.stringify(jsonArray));
+        fs_1.default.writeFileSync('./temp/infoData7.json', JSON.stringify(jsonArray));
         return 'done';
     }
     async changeRaceParam() {
@@ -110,44 +116,88 @@ let InfoDeathResolver = class InfoDeathResolver {
         return 'done';
     }
     async infoDeathModification2() {
-        const data = JSON.parse(fs_1.default.readFileSync('./temp/infoData5.json', 'utf-8'));
-        console.log(data[0]);
-        await CancerDeath_1.default.deleteMany({});
+        const data = JSON.parse(fs_1.default.readFileSync('./temp/all/x.json', 'utf-8'));
+        // console.log(data[0]);
+        // {
+        //   AREA: 'Alabama',
+        //   AGE_ADJUSTED_CI_LOWER: '359.7',
+        //   AGE_ADJUSTED_CI_UPPER: '374.7',
+        //   AGE_ADJUSTED_RATE: '367.2',
+        //   COUNT: '9299',
+        //   EVENT_TYPE: 'Incidence',
+        //   POPULATION: '2293259',
+        //   RACE: 'All Races',
+        //   SEX: 'Female',
+        //   SITE: 'All Cancer',
+        //   YEAR: '1999',
+        //   CRUDE_CI_LOWER: '397.3',
+        //   CRUDE_CI_UPPER: '413.8',
+        //   CRUDE_RATE: '405.5'
+        // }
+        // await AllCancerModel.deleteMany({});
         let allData = [];
-        for (let i = 0; i < data.length; i++) {
-            if (data[i].Population === 'Not Applicable' || !data[i].Population) {
-                continue;
-            }
-            console.log(data[i].Population);
+        //959075
+        for (let i = 558198; i < data.length; i++) {
             let newData = {
-                Year: data[i].Year,
-                Locationabbr: data[i].Abbrev,
-                Locationdesc: data[i].State,
-                Topic: data[i]['Cancer UI'],
-                Gender: data[i].Sex,
-                ageGroup: data[i]['Age UI'],
-                ageLabel: data[i]['Age UI'],
-                Race: data[i]['Race UI'],
-                Count: data[i].Deaths,
-                CountInNumber: Number(data[i].Deaths),
-                Population: data[i].Population,
-                PopulationInNumber: Number(data[i].Population),
-                CrudeRate: data[i]['Crude Rate'],
-                CrudeRateInNumber: Number(data[i]['Crude Rate']),
+                Year: data[i].YEAR,
+                Locationabbr: (0, stateAndAbbreviations_1.default)(data[i].AREA),
+                Locationdesc: data[i].AREA,
+                Topic: data[i].SITE,
+                Gender: data[i].SEX,
+                Race: data[i].RACE,
+                Count: data[i].COUNT,
+                CountInNumber: Number(data[i].COUNT) ? Number(data[i].COUNT) : 0,
+                Population: data[i].POPULATION,
+                PopulationInNumber: Number(data[i].POPULATION)
+                    ? Number(data[i].POPULATION)
+                    : 0,
+                CrudeRate: data[i].CRUDE_RATE,
+                CrudeRateInNumber: Number(data[i].CRUDE_RATE)
+                    ? Number(data[i].CRUDE_RATE)
+                    : 0,
+                cnt: i,
             };
-            if (data[i].Sex === 'Male') {
-                newData.diseaseLabelMale = data[i]['Cancer UI'];
+            if (data[i].SEX === 'Male') {
+                newData.diseaseLabelMale = data[i].SITE;
                 newData.diseaseLabelFemale = null;
             }
             else {
                 newData.diseaseLabelMale = null;
-                newData.diseaseLabelFemale = data[i]['Cancer UI'];
+                newData.diseaseLabelFemale = data[i].SITE;
+            }
+            if (data[i].EVENT_TYPE === 'Incidence') {
+                newData.type = data[i].EVENT_TYPE;
+            }
+            else {
+                newData.type = 'Death';
             }
             console.log(i);
             allData.push(newData);
         }
-        await CancerDeath_1.default.insertMany(allData);
+        await allcancer_1.default.insertMany(allData);
         return 'done';
+    }
+    async getAllTopics() {
+        let topics = [];
+        let maleTopics = [];
+        let femaleTopics = [];
+        const data = JSON.parse(fs_1.default.readFileSync('./temp/all/x.json', 'utf-8'));
+        for (let i = 0; i < data.length; i++) {
+            if (!topics.includes(data[i].RACE)) {
+                topics.push(data[i].RACE);
+            }
+            // if (data[i].SEX === 'Male') {
+            //   if (!maleTopics.includes(data[i].SITE)) {
+            //     maleTopics.push(data[i].SITE);
+            //   }
+            // } else if (data[i].SEX === 'Female') {
+            //   if (!femaleTopics.includes(data[i].SITE)) {
+            //     femaleTopics.push(data[i].SITE);
+            //   }
+            // }
+        }
+        console.log(topics.length);
+        return topics.sort();
     }
     // @Query(() => String)
     // async modifyDeathData() {
@@ -217,16 +267,6 @@ let InfoDeathResolver = class InfoDeathResolver {
     //   }
     //   return 'done';
     // }
-    async getAllTopics() {
-        let topics = [];
-        const data = JSON.parse(fs_1.default.readFileSync('./temp/infoData5.json', 'utf-8'));
-        for (let i = 0; i < data.length; i++) {
-            if (!topics.includes(data[i]['Race UI'])) {
-                topics.push(data[i]['Race UI']);
-            }
-        }
-        return topics.sort();
-    }
     // @Query(() => String)
     // async modifyData2() {
     //   let allData = await InfoGraphic.find();
@@ -999,6 +1039,12 @@ let InfoDeathResolver = class InfoDeathResolver {
         return JSON.stringify(returnData);
     }
 };
+__decorate([
+    (0, type_graphql_1.Query)(() => String),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], InfoDeathResolver.prototype, "hJKNBd", null);
 __decorate([
     (0, type_graphql_1.Query)(() => String),
     __metadata("design:type", Function),

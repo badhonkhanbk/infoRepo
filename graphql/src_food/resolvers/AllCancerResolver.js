@@ -16,236 +16,141 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
-const CancerIncident_1 = __importDefault(require("../../../models/CancerIncident"));
-const CancerDeath_1 = __importDefault(require("../../../models/CancerDeath"));
+const allcancer_1 = __importDefault(require("../../../models/allcancer"));
 const ProportionGender_1 = __importDefault(require("../schemas/ProportionGender"));
 const ProportionGenderString_1 = __importDefault(require("../schemas/ProportionGenderString"));
-let race = [
-    'American Indian or Alaska Native',
-    'Asian or Pacific Islander',
-    'Black or African American',
-    'Hispanic',
-    'Other Races and Unknown combined',
-    'White',
+let ALLYEAR = [
+    '1999',
+    '2000',
+    '2001',
+    '2002',
+    '2003',
+    '2004',
+    '2005',
+    '2006',
+    '2007',
+    '2008',
+    '2009',
+    '2010',
+    '2011',
+    '2012',
+    '2013',
+    '2014',
+    '2015',
+    // '2015-2019',
+    '2016',
+    '2017',
+    '2018',
+    '2019',
 ];
-let maleDiseasesForCancer = [
+let allState = [
+    'Alabama',
+    'Alaska',
+    'Arizona',
+    'Arkansas',
+    'California',
+    'Colorado',
+    'Connecticut',
+    'Delaware',
+    'District of Columbia',
+    'Florida',
+    'Georgia',
+    'Hawaii',
+    'Idaho',
+    'Illinois',
+    'Indiana',
+    'Iowa',
+    'Kansas',
+    'Kentucky',
+    'Louisiana',
+    'Maine',
+    'Maryland',
+    'Massachusetts',
+    'Michigan',
+    'Minnesota',
+    'Mississippi',
+    'Missouri',
+    'Montana',
+    'Nebraska',
+    'Nevada',
+    'New Hampshire',
+    'New Jersey',
+    'New Mexico',
+    'New York',
+    'North Carolina',
+    'North Dakota',
+    'Ohio',
+    'Oklahoma',
+    'Oregon',
+    'Pennsylvania',
+    'Rhode Island',
+    'South Carolina',
+    'South Dakota',
+    'Tennessee',
+    'Texas',
+    'United States (comparable to ICD-O-2)',
+    'Utah',
+    'Vermont',
+    'Virginia',
+    'Washington',
+    'West Virginia',
+    'Wisconsin',
+    'Wyoming',
+];
+let maleDiseases = [
+    'All Cancer',
     'Bladder',
     'Brain',
     'Colorectal',
     'Esophagus',
-    'Gallbladder',
-    'Kidney',
-    'Leukemias',
-    'Liver',
-    'Lung',
-    'Lymphoma',
-    'Myeloma',
-    'Oral',
-    'Pancreas',
-    'Prostate',
-    'Skin',
-    'Stomach',
-    'Throat',
-    'Thyroid',
-];
-let selectedMaleDisesasesForCancer = [
-    'Bladder',
-    'Brain',
-    'Colorectal',
-    'Esophagus',
-    'Leukemias',
-    'Liver',
-    'Lung',
-    'Lymphoma',
-    'Pancreas',
-    'Prostate', // include
-];
-let femaleDiseasesForCancer = [
-    'Bladder',
-    'Brain',
-    'Breast',
-    'Cervix',
-    'Colorectal',
-    'Corpus',
-    'Esophagus',
-    'Gallbladder',
-    'Kidney',
-    'Leukemias',
-    'Liver',
-    'Lung',
-    'Lymphoma',
-    'Myeloma',
-    'Oral',
-    'Ovary',
-    'Pancreas',
-    'Skin',
-    'Stomach',
-    'Thyroid',
-];
-let selectedFemaleDisesasesForCancer = [
-    'Brain',
-    'Breast',
-    'Cervix',
-    'Colorectal',
-    'Leukemias',
-    'Liver',
-    'Lung',
-    'Lymphoma',
-    'Ovary',
-    'Pancreas', // include
-];
-let maleDisease = [
-    'Brain',
-    'Breast',
-    'Colorectal',
-    'Esophagus',
-    'Gallbladder',
+    'H Lymphoma',
+    'Kaposi Sarcoma',
     'Kidney',
     'Larynx',
-    'Leukemias',
+    'Leukemia',
     'Liver',
     'Lung',
-    'Melanoma of the Skin',
+    'Mesothelioma',
+    'Mouth & Throat',
     'Myeloma',
-    'Non-Hodgkin Lymphoma',
-    'Oral Cavity and Pharynx',
+    'NH Lymphoma',
     'Pancreas',
     'Prostate',
-    'Stomach',
-    'Thyroid',
-    'Urinary Bladder', //include
-];
-let selectedMaleDiseases = [
-    'Colorectal',
-    'Kidney',
-    'Leukemias',
-    'Lung',
     'Skin',
-    'Lymphoma',
-    'Oral',
-    'Pancreas',
-    'Prostate',
-    'Bladder',
+    'Stomach',
+    'Testis',
+    'Thyroid',
 ];
 let femaleDisease = [
+    'All Cancer',
+    'Bladder',
     'Brain',
-    'Breast',
     'Cervix',
     'Colorectal',
-    'Corpus Uteri',
+    'Corpus and Uterus, NOS',
     'Esophagus',
-    'Gallbladder',
+    'Female Breast',
+    'Female Breast, in situ',
+    'H Lymphoma',
+    'Kaposi Sarcoma',
     'Kidney',
     'Larynx',
-    'Leukemias',
+    'Leukemia',
     'Liver',
     'Lung',
-    'Melanoma of the Skin',
+    'Mesothelioma',
+    'Mouth & Throat',
     'Myeloma',
-    'Non-Hodgkin Lymphoma',
-    'Oral Cavity and Pharynx',
+    'NH Lymphoma',
     'Ovary',
     'Pancreas',
+    'Skin',
     'Stomach',
     'Thyroid',
-    'Urinary Bladder', //include
 ];
-let selectedFemaleDiseases = [
-    'Breast',
-    'Colorectal',
-    'Kidney',
-    'Leukemias',
-    'Lung',
-    'Melanoma of the Skin',
-    'Non-Hodgkin Lymphoma',
-    'Oral Cavity and Pharynx',
-    'Pancreas',
-    'Thyroid',
-    'Urinary Bladder', //include Cervix
-];
-let age = [
-    '20-24',
-    '30-39',
-    '40-44',
-    '40-49',
-    '45-49',
-    '50-54',
-    '50-59',
-    '55-59',
-    '60-64',
-    '60-69',
-    '65-69',
-    '70-74',
-    '70-79',
-    '75-79',
-    '80+',
-    '80-84',
-    '85+',
-];
-let CancerResolver = class CancerResolver {
-    async badhon() {
-        await CancerDeath_1.default.updateMany({
-            Gender: 'Male',
-            Topic: {
-                $nin: selectedMaleDisesasesForCancer,
-            },
-        }, {
-            diseaseLabelMale: 'Other',
-        });
-        await CancerDeath_1.default.updateMany({
-            Gender: 'Female',
-            Topic: {
-                $nin: selectedFemaleDisesasesForCancer,
-            },
-        }, {
-            diseaseLabelFemale: 'Other',
-        });
-        return 'done';
-    }
-    async changeSystemInfoAge() {
-        await CancerDeath_1.default.updateMany({
-            ageGroup: '20-24',
-        }, {
-            ageLabel: '20-29',
-        });
-        await CancerDeath_1.default.updateMany({
-            ageGroup: {
-                $in: ['40-44', '40-49', '45-49'],
-            },
-        }, {
-            ageLabel: '40-49',
-        });
-        await CancerDeath_1.default.updateMany({
-            ageGroup: {
-                $in: ['50-54', '50-59', '55-59'],
-            },
-        }, {
-            ageLabel: '50-59',
-        });
-        await CancerDeath_1.default.updateMany({
-            ageGroup: {
-                $in: ['60-64', '60-69', '65-69'],
-            },
-        }, {
-            ageLabel: '60-69',
-        });
-        await CancerDeath_1.default.updateMany({
-            ageGroup: {
-                $in: ['70-74', '70-79', '75-79'],
-            },
-        }, {
-            ageLabel: '70-79',
-        });
-        await CancerDeath_1.default.updateMany({
-            ageGroup: {
-                $in: ['80-84', '85+', '80+'],
-            },
-        }, {
-            ageLabel: '80+',
-        });
-        return ['done'];
-    }
-    async getProportionMatrix(year, state, race, age, dataSet) {
+let race = ['All Races', 'Asian', 'Black', 'Hispanic', 'Other', 'White'];
+let AllCancerResolver = class AllCancerResolver {
+    async getallCancerProportionMatrix(year, state, race, dataSet) {
         let maleData;
         let femaleData;
         let obj = {};
@@ -258,8 +163,8 @@ let CancerResolver = class CancerResolver {
         if (race) {
             obj.Race = race;
         }
-        if (age) {
-            obj.ageLabel = age;
+        else {
+            obj.Race = 'All Races';
         }
         let objMale = {
             ...obj,
@@ -282,7 +187,7 @@ let CancerResolver = class CancerResolver {
             femaleData,
         };
     }
-    async getCancerTypes(year, state, race, age, dataSet) {
+    async getAllCancerTypes(year, state, race, dataSet) {
         let maleData;
         let femaleData;
         let obj = {};
@@ -295,8 +200,8 @@ let CancerResolver = class CancerResolver {
         if (race) {
             obj.Race = race;
         }
-        if (age) {
-            obj.ageLabel = age;
+        else {
+            obj.Race = 'All Races';
         }
         let objMale = {
             ...obj,
@@ -319,53 +224,7 @@ let CancerResolver = class CancerResolver {
             femaleData,
         };
     }
-    async getYearBasedAggregationForCancer(state, race, age, dataSet, maleDisease, femaleDisease) {
-        let maleData;
-        let femaleData;
-        let obj = {};
-        if (state) {
-            obj.State = state;
-        }
-        if (race) {
-            obj.Race = race;
-        }
-        if (age) {
-            obj.Label = age;
-        }
-        let objMale = {
-            ...obj,
-            Gender: 'Male',
-        };
-        if (maleDisease) {
-            objMale.diseaseLabelMale = maleDisease;
-        }
-        else {
-            objMale.diseaseLabelMale = 'Colorectal';
-        }
-        let objFemale = {
-            ...obj,
-            Gender: 'Female',
-        };
-        if (femaleDisease) {
-            objFemale.diseaseLabelFemale = femaleDisease;
-        }
-        else {
-            objFemale.diseaseLabelFemale = 'Breast';
-        }
-        if (dataSet === 'Incidence') {
-            maleData = await this.getYearData(objMale, true);
-            femaleData = await this.getYearData(objFemale, true);
-        }
-        else {
-            maleData = await this.getYearData(objMale, false);
-            femaleData = await this.getYearData(objFemale, false);
-        }
-        return {
-            maleData,
-            femaleData,
-        };
-    }
-    async getRaceData(year, state, maleDisease, femaleDisease, age, dataSet) {
+    async getAllCancerRaceData(year, state, maleDisease, femaleDisease, dataSet) {
         let maleData;
         let femaleData;
         let obj = {};
@@ -375,9 +234,9 @@ let CancerResolver = class CancerResolver {
         if (state) {
             obj.State = state;
         }
-        if (age) {
-            obj.ageLabel = age;
-        }
+        // if (age) {
+        //   obj.ageLabel = age;
+        // }
         let objMale = {
             ...obj,
             Gender: 'Male',
@@ -386,7 +245,7 @@ let CancerResolver = class CancerResolver {
             objMale.diseaseLabelMale = maleDisease;
         }
         else {
-            objMale.diseaseLabelMale = 'Colorectal';
+            objMale.diseaseLabelMale = 'All Cancer';
         }
         let objFemale = {
             ...obj,
@@ -396,7 +255,7 @@ let CancerResolver = class CancerResolver {
             objFemale.diseaseLabelFemale = femaleDisease;
         }
         else {
-            objFemale.diseaseLabelFemale = 'Breast';
+            objFemale.diseaseLabelFemale = 'All Cancer';
         }
         if (dataSet === 'Incidence') {
             maleData = await this.getRaceDataByGender(objMale, true, true);
@@ -411,18 +270,18 @@ let CancerResolver = class CancerResolver {
             femaleData,
         };
     }
-    async getAgeData(year, state, maleDisease, femaleDisease, race, dataSet) {
+    async getYearBasedAggregationForAllCancer(state, race, dataSet, maleDisease, femaleDisease) {
         let maleData;
         let femaleData;
         let obj = {};
-        if (year) {
-            obj.Year = year;
-        }
         if (state) {
             obj.State = state;
         }
         if (race) {
             obj.Race = race;
+        }
+        else {
+            obj.Race = 'All Races';
         }
         let objMale = {
             ...obj,
@@ -432,7 +291,7 @@ let CancerResolver = class CancerResolver {
             objMale.diseaseLabelMale = maleDisease;
         }
         else {
-            objMale.diseaseLabelMale = 'Colorectal';
+            objMale.diseaseLabelMale = 'All Cancer';
         }
         let objFemale = {
             ...obj,
@@ -442,22 +301,22 @@ let CancerResolver = class CancerResolver {
             objFemale.diseaseLabelFemale = femaleDisease;
         }
         else {
-            objFemale.diseaseLabelFemale = 'Breast';
+            objFemale.diseaseLabelFemale = 'All Cancer';
         }
         if (dataSet === 'Incidence') {
-            maleData = await this.getAgeDataByGender(objMale, true, true);
-            femaleData = await this.getAgeDataByGender(objFemale, false, true);
+            maleData = await this.getYearData(objMale, true);
+            femaleData = await this.getYearData(objFemale, true);
         }
         else {
-            maleData = await this.getAgeDataByGender(objMale, true, false);
-            femaleData = await this.getAgeDataByGender(objFemale, false, false);
+            maleData = await this.getYearData(objMale, false);
+            femaleData = await this.getYearData(objFemale, false);
         }
         return {
             maleData,
             femaleData,
         };
     }
-    async getStateDataForCancer(year, race, maleDisease, femaleDisease, age, dataSet) {
+    async getStateDataForAllCancer(year, race, maleDisease, femaleDisease, dataSet) {
         let maleData;
         let femaleData;
         let obj = {};
@@ -467,9 +326,12 @@ let CancerResolver = class CancerResolver {
         if (race) {
             obj.Race = race;
         }
-        if (age) {
-            obj.ageLabel = age;
+        else {
+            obj.Race = 'All Races';
         }
+        // if (age) {
+        //   obj.ageLabel = age;
+        // }
         let objMale = {
             ...obj,
             Gender: 'Male',
@@ -478,7 +340,7 @@ let CancerResolver = class CancerResolver {
             objMale.diseaseLabelMale = maleDisease;
         }
         else {
-            objMale.diseaseLabelMale = 'Colorectal';
+            objMale.diseaseLabelMale = 'All Cancer';
         }
         let objFemale = {
             ...obj,
@@ -488,7 +350,7 @@ let CancerResolver = class CancerResolver {
             objFemale.diseaseLabelFemale = femaleDisease;
         }
         else {
-            objFemale.diseaseLabelFemale = 'Breast';
+            objFemale.diseaseLabelFemale = 'All Cancer';
         }
         if (dataSet === 'Incidence') {
             maleData = await this.getStateDataByGender(objMale, true, true);
@@ -503,120 +365,14 @@ let CancerResolver = class CancerResolver {
             femaleData,
         };
     }
-    async getYearData(obj, isIncident) {
-        let model = CancerIncident_1.default;
-        if (!isIncident) {
-            model = CancerDeath_1.default;
-        }
-        console.log(model);
-        console.log(obj);
-        let data = await model.aggregate([
-            {
-                $match: obj,
-            },
-            {
-                $group: {
-                    _id: '$Year',
-                    totalPopulation: { $sum: '$PopulationInNumber' },
-                    totalCount: { $sum: '$CountInNumber' },
-                    totalCrudeRate: { $sum: '$CrudeRateInNumber' },
-                    numerator: {
-                        $sum: {
-                            $multiply: ['$CrudeRateInNumber', '$PopulationInNumber'],
-                        },
-                    },
-                },
-            },
-            {
-                $project: {
-                    _id: '$_id',
-                    totalPopulation: '$totalPopulation',
-                    totalCount: '$totalCount',
-                    totalCrudeRate: '$totalCrudeRate',
-                    weightedAverage: {
-                        $divide: ['$numerator', '$totalPopulation'],
-                    },
-                },
-            },
-            {
-                $sort: {
-                    _id: 1,
-                },
-            },
-        ]);
-        if (data.length === 0) {
-            return [];
-        }
-        let total = data.reduce((acc, d) => {
-            acc += d.totalCount;
-            return acc;
-        }, 0);
-        for (let i = 0; i < data.length; i++) {
-            let percentage = (100 * data[i].totalCount) / total;
-            data[i].percentage = percentage;
-        }
-        return data;
-    }
-    async getAgeDataByGender(obj, male, isIncident) {
-        let model = CancerIncident_1.default;
-        if (!isIncident) {
-            model = CancerDeath_1.default;
-        }
-        let data = await model.aggregate([
-            {
-                $match: obj,
-            },
-            {
-                $unwind: '$ageLabel',
-            },
-            {
-                $group: {
-                    _id: '$ageLabel',
-                    totalPopulation: { $sum: '$PopulationInNumber' },
-                    totalCount: { $sum: '$CountInNumber' },
-                    totalCrudeRate: { $sum: '$CrudeRateInNumber' },
-                    numerator: {
-                        $sum: {
-                            $multiply: ['$CrudeRateInNumber', '$PopulationInNumber'],
-                        },
-                    },
-                },
-            },
-            {
-                $project: {
-                    _id: '$_id',
-                    totalPopulation: '$totalPopulation',
-                    totalCount: '$totalCount',
-                    totalCrudeRate: '$totalCrudeRate',
-                    weightedAverage: { $divide: ['$numerator', '$totalPopulation'] },
-                },
-            },
-            {
-                $sort: {
-                    _id: 1,
-                },
-            },
-        ]);
-        if (data.length === 0) {
-            return [];
-        }
-        let total = data.reduce((acc, d) => {
-            acc += d.totalCount;
-            return acc;
-        }, 0);
-        for (let i = 0; i < data.length; i++) {
-            let percentage = (100 * data[i].totalCount) / total;
-            data[i].percentage = percentage;
-        }
-        return data;
-    }
     async getStateDataByGender(obj, isMale, isIncident) {
-        let model = CancerIncident_1.default;
+        obj.type = 'Incidence';
+        obj.Locationabbr = { $ne: null };
         if (!isIncident) {
-            model = CancerDeath_1.default;
+            obj.type = 'Death';
         }
         console.log(obj);
-        let data = await model.aggregate([
+        let data = await allcancer_1.default.aggregate([
             {
                 $match: obj,
             },
@@ -702,13 +458,66 @@ let CancerResolver = class CancerResolver {
         };
         return JSON.stringify(returnData);
     }
-    async getRaceDataByGender(obj, male, isIncident) {
-        let model = CancerIncident_1.default;
+    async getYearData(obj, isIncident) {
+        obj.type = 'Incidence';
+        obj.Year = { $ne: '2015-2019' };
         if (!isIncident) {
-            model = CancerDeath_1.default;
-            console.log(obj);
+            obj.type = 'Death';
         }
-        let data = await model.aggregate([
+        let data = await allcancer_1.default.aggregate([
+            {
+                $match: obj,
+            },
+            {
+                $group: {
+                    _id: '$Year',
+                    totalPopulation: { $sum: '$PopulationInNumber' },
+                    totalCount: { $sum: '$CountInNumber' },
+                    totalCrudeRate: { $sum: '$CrudeRateInNumber' },
+                    numerator: {
+                        $sum: {
+                            $multiply: ['$CrudeRateInNumber', '$PopulationInNumber'],
+                        },
+                    },
+                },
+            },
+            {
+                $project: {
+                    _id: '$_id',
+                    totalPopulation: '$totalPopulation',
+                    totalCount: '$totalCount',
+                    totalCrudeRate: '$totalCrudeRate',
+                    weightedAverage: {
+                        $divide: ['$numerator', '$totalPopulation'],
+                    },
+                },
+            },
+            {
+                $sort: {
+                    _id: 1,
+                },
+            },
+        ]);
+        if (data.length === 0) {
+            return [];
+        }
+        let total = data.reduce((acc, d) => {
+            acc += d.totalCount;
+            return acc;
+        }, 0);
+        for (let i = 0; i < data.length; i++) {
+            let percentage = (100 * data[i].totalCount) / total;
+            data[i].percentage = percentage;
+        }
+        return data;
+    }
+    async getRaceDataByGender(obj, male, isIncident) {
+        obj.type = 'Incidence';
+        obj.Race = { $ne: 'All Races' };
+        if (!isIncident) {
+            obj.type = 'Death';
+        }
+        let data = await allcancer_1.default.aggregate([
             {
                 $match: obj,
             },
@@ -756,65 +565,11 @@ let CancerResolver = class CancerResolver {
         }
         return data;
     }
-    async getProportionByGender(obj, isIncident) {
-        let model = CancerIncident_1.default;
-        if (!isIncident) {
-            model = CancerDeath_1.default;
-        }
-        let unwindValue = '';
-        if (obj.Gender === 'Male') {
-            unwindValue = '$diseaseLabelMale';
-        }
-        else {
-            unwindValue = '$diseaseLabelFemale';
-        }
-        let maleData = await model.aggregate([
-            {
-                $match: obj,
-            },
-            {
-                $unwind: unwindValue,
-            },
-            {
-                $group: {
-                    _id: unwindValue,
-                    totalPopulation: { $sum: '$PopulationInNumber' },
-                    totalCount: { $sum: '$CountInNumber' },
-                    totalCrudeRate: { $sum: '$CrudeRateInNumber' },
-                    numerator: {
-                        $sum: {
-                            $multiply: ['$CrudeRateInNumber', '$PopulationInNumber'],
-                        },
-                    },
-                },
-            },
-            {
-                $project: {
-                    _id: '$_id',
-                    totalPopulation: '$totalPopulation',
-                    totalCount: '$totalCount',
-                    totalCrudeRate: '$totalCrudeRate',
-                    weightedAverage: { $divide: ['$numerator', '$totalPopulation'] },
-                },
-            },
-        ]);
-        if (maleData.length === 0) {
-            return [];
-        }
-        let maleTotal = maleData.reduce((acc, d) => {
-            acc += d.totalCount;
-            return acc;
-        }, 0);
-        for (let i = 0; i < maleData.length; i++) {
-            let percentage = (100 * maleData[i].totalCount) / maleTotal;
-            maleData[i].percentage = percentage;
-        }
-        return maleData;
-    }
     async getCancerTypesByGender(obj, male, isIncident) {
-        let model = CancerIncident_1.default;
+        obj.type = 'Incidence';
+        obj.Topic = { $ne: 'All Cancer' };
         if (!isIncident) {
-            model = CancerDeath_1.default;
+            obj.type = 'Death';
         }
         let unwindValue = '';
         if (obj.Gender === 'Male') {
@@ -823,7 +578,7 @@ let CancerResolver = class CancerResolver {
         else {
             unwindValue = '$diseaseLabelFemale';
         }
-        let data = await model.aggregate([
+        let data = await allcancer_1.default.aggregate([
             {
                 $match: obj,
             },
@@ -871,23 +626,23 @@ let CancerResolver = class CancerResolver {
             maleDisease = [
                 'Colorectal',
                 'Kidney',
-                'Leukemias',
+                'Leukemia',
                 'Lung',
                 'Skin',
-                'Lymphoma',
-                'Oral',
+                'H Lymphoma',
+                'Mouth & Throat',
                 'Pancreas',
                 'Prostate',
                 'Bladder', //include
             ];
             femaleDisease = [
-                'Breast',
+                'Female Breast, in situ',
                 'Colorectal',
                 'Kidney',
-                'Leukemias',
+                'Leukemia',
                 'Lung',
                 'Skin',
-                'Lymphoma',
+                'NH Lymphoma',
                 'Pancreas',
                 'Thyroid',
                 'Cervix', //include
@@ -899,22 +654,22 @@ let CancerResolver = class CancerResolver {
                 'Brain',
                 'Colorectal',
                 'Esophagus',
-                'Leukemias',
+                'Leukemia',
                 'Liver',
                 'Lung',
-                'Lymphoma',
+                'H Lymphoma',
                 'Pancreas',
                 'Prostate', // include
             ];
             femaleDisease = [
                 'Brain',
-                'Breast',
+                'Female Breast, in situ',
                 'Cervix',
                 'Colorectal',
-                'Leukemias',
+                'Leukemia',
                 'Liver',
                 'Lung',
-                'Lymphoma',
+                'NH Lymphoma',
                 'Ovary',
                 'Pancreas', // include
             ];
@@ -940,25 +695,95 @@ let CancerResolver = class CancerResolver {
         data = data.sort((a, b) => a.percentage - b.percentage);
         return data;
     }
+    async getProportionByGender(obj, isIncident) {
+        obj.type = 'Incidence';
+        obj.Topic = { $ne: 'All Cancer' };
+        if (!isIncident) {
+            obj.type = 'Death';
+        }
+        let unwindValue = '';
+        if (obj.Gender === 'Male') {
+            unwindValue = '$diseaseLabelMale';
+        }
+        else {
+            unwindValue = '$diseaseLabelFemale';
+        }
+        let maleData = await allcancer_1.default.aggregate([
+            {
+                $match: obj,
+            },
+            {
+                $unwind: unwindValue,
+            },
+            {
+                $group: {
+                    _id: unwindValue,
+                    totalPopulation: { $sum: '$PopulationInNumber' },
+                    totalCount: { $sum: '$CountInNumber' },
+                    totalCrudeRate: { $sum: '$CrudeRateInNumber' },
+                    numerator: {
+                        $sum: {
+                            $multiply: ['$CrudeRateInNumber', '$PopulationInNumber'],
+                        },
+                    },
+                },
+            },
+            {
+                $project: {
+                    _id: '$_id',
+                    totalPopulation: '$totalPopulation',
+                    totalCount: '$totalCount',
+                    totalCrudeRate: '$totalCrudeRate',
+                    weightedAverage: { $divide: ['$numerator', '$totalPopulation'] },
+                },
+            },
+        ]);
+        if (maleData.length === 0) {
+            return [];
+        }
+        let maleTotal = maleData.reduce((acc, d) => {
+            acc += d.totalCount;
+            return acc;
+        }, 0);
+        for (let i = 0; i < maleData.length; i++) {
+            let percentage = (100 * maleData[i].totalCount) / maleTotal;
+            maleData[i].percentage = percentage;
+        }
+        return maleData;
+    }
 };
 __decorate([
-    (0, type_graphql_1.Query)(() => String),
+    (0, type_graphql_1.Query)(() => ProportionGender_1.default),
+    __param(0, (0, type_graphql_1.Arg)('year', { nullable: true })),
+    __param(1, (0, type_graphql_1.Arg)('state', { nullable: true })),
+    __param(2, (0, type_graphql_1.Arg)('race', { nullable: true })),
+    __param(3, (0, type_graphql_1.Arg)('dataSet', { nullable: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [String,
+        String,
+        String,
+        String]),
     __metadata("design:returntype", Promise)
-], CancerResolver.prototype, "badhon", null);
-__decorate([
-    (0, type_graphql_1.Query)(() => [String]),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], CancerResolver.prototype, "changeSystemInfoAge", null);
+], AllCancerResolver.prototype, "getallCancerProportionMatrix", null);
 __decorate([
     (0, type_graphql_1.Query)(() => ProportionGender_1.default),
     __param(0, (0, type_graphql_1.Arg)('year', { nullable: true })),
     __param(1, (0, type_graphql_1.Arg)('state', { nullable: true })),
     __param(2, (0, type_graphql_1.Arg)('race', { nullable: true })),
-    __param(3, (0, type_graphql_1.Arg)('age', { nullable: true })),
+    __param(3, (0, type_graphql_1.Arg)('dataSet', { nullable: true })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String,
+        String,
+        String,
+        String]),
+    __metadata("design:returntype", Promise)
+], AllCancerResolver.prototype, "getAllCancerTypes", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => ProportionGender_1.default),
+    __param(0, (0, type_graphql_1.Arg)('year', { nullable: true })),
+    __param(1, (0, type_graphql_1.Arg)('state', { nullable: true })),
+    __param(2, (0, type_graphql_1.Arg)('maleDisease', { nullable: true })),
+    __param(3, (0, type_graphql_1.Arg)('femaleDisease', { nullable: true })),
     __param(4, (0, type_graphql_1.Arg)('dataSet', { nullable: true })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String,
@@ -967,91 +792,38 @@ __decorate([
         String,
         String]),
     __metadata("design:returntype", Promise)
-], CancerResolver.prototype, "getProportionMatrix", null);
-__decorate([
-    (0, type_graphql_1.Query)(() => ProportionGender_1.default),
-    __param(0, (0, type_graphql_1.Arg)('year', { nullable: true })),
-    __param(1, (0, type_graphql_1.Arg)('state', { nullable: true })),
-    __param(2, (0, type_graphql_1.Arg)('race', { nullable: true })),
-    __param(3, (0, type_graphql_1.Arg)('age', { nullable: true })),
-    __param(4, (0, type_graphql_1.Arg)('dataSet', { nullable: true })),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String,
-        String,
-        String,
-        String,
-        String]),
-    __metadata("design:returntype", Promise)
-], CancerResolver.prototype, "getCancerTypes", null);
+], AllCancerResolver.prototype, "getAllCancerRaceData", null);
 __decorate([
     (0, type_graphql_1.Query)(() => ProportionGender_1.default),
     __param(0, (0, type_graphql_1.Arg)('state', { nullable: true })),
     __param(1, (0, type_graphql_1.Arg)('race', { nullable: true })),
-    __param(2, (0, type_graphql_1.Arg)('age', { nullable: true })),
-    __param(3, (0, type_graphql_1.Arg)('dataSet', { nullable: true })),
-    __param(4, (0, type_graphql_1.Arg)('maleDisease', { nullable: true })),
-    __param(5, (0, type_graphql_1.Arg)('femaleDisease', { nullable: true })),
+    __param(2, (0, type_graphql_1.Arg)('dataSet', { nullable: true })),
+    __param(3, (0, type_graphql_1.Arg)('maleDisease', { nullable: true })),
+    __param(4, (0, type_graphql_1.Arg)('femaleDisease', { nullable: true })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String,
         String,
         String,
         String,
-        String,
         String]),
     __metadata("design:returntype", Promise)
-], CancerResolver.prototype, "getYearBasedAggregationForCancer", null);
-__decorate([
-    (0, type_graphql_1.Query)(() => ProportionGender_1.default),
-    __param(0, (0, type_graphql_1.Arg)('year', { nullable: true })),
-    __param(1, (0, type_graphql_1.Arg)('state', { nullable: true })),
-    __param(2, (0, type_graphql_1.Arg)('maleDisease', { nullable: true })),
-    __param(3, (0, type_graphql_1.Arg)('femaleDisease', { nullable: true })),
-    __param(4, (0, type_graphql_1.Arg)('age', { nullable: true })),
-    __param(5, (0, type_graphql_1.Arg)('dataSet', { nullable: true })),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String,
-        String,
-        String,
-        String,
-        String,
-        String]),
-    __metadata("design:returntype", Promise)
-], CancerResolver.prototype, "getRaceData", null);
-__decorate([
-    (0, type_graphql_1.Query)(() => ProportionGender_1.default),
-    __param(0, (0, type_graphql_1.Arg)('year', { nullable: true })),
-    __param(1, (0, type_graphql_1.Arg)('state', { nullable: true })),
-    __param(2, (0, type_graphql_1.Arg)('maleDisease', { nullable: true })),
-    __param(3, (0, type_graphql_1.Arg)('femaleDisease', { nullable: true })),
-    __param(4, (0, type_graphql_1.Arg)('race', { nullable: true })),
-    __param(5, (0, type_graphql_1.Arg)('dataSet', { nullable: true })),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String,
-        String,
-        String,
-        String,
-        String,
-        String]),
-    __metadata("design:returntype", Promise)
-], CancerResolver.prototype, "getAgeData", null);
+], AllCancerResolver.prototype, "getYearBasedAggregationForAllCancer", null);
 __decorate([
     (0, type_graphql_1.Query)(() => ProportionGenderString_1.default),
     __param(0, (0, type_graphql_1.Arg)('year', { nullable: true })),
     __param(1, (0, type_graphql_1.Arg)('race', { nullable: true })),
     __param(2, (0, type_graphql_1.Arg)('maleDisease', { nullable: true })),
     __param(3, (0, type_graphql_1.Arg)('femaleDisease', { nullable: true })),
-    __param(4, (0, type_graphql_1.Arg)('age', { nullable: true })),
-    __param(5, (0, type_graphql_1.Arg)('dataSet', { nullable: true })),
+    __param(4, (0, type_graphql_1.Arg)('dataSet', { nullable: true })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String,
         String,
         String,
         String,
-        String,
         String]),
     __metadata("design:returntype", Promise)
-], CancerResolver.prototype, "getStateDataForCancer", null);
-CancerResolver = __decorate([
+], AllCancerResolver.prototype, "getStateDataForAllCancer", null);
+AllCancerResolver = __decorate([
     (0, type_graphql_1.Resolver)()
-], CancerResolver);
-exports.default = CancerResolver;
+], AllCancerResolver);
+exports.default = AllCancerResolver;
