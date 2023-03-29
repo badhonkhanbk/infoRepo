@@ -97,6 +97,19 @@ let allState = [
     'Wisconsin',
     'Wyoming',
 ];
+let selectedFemaleDiseases1 = [
+    'Breast',
+    'Colorectal',
+    'Kidney',
+    'Leukemias',
+    'Lung',
+    'Melanoma of the Skin',
+    'Non-Hodgkin Lymphoma',
+    'Oral Cavity and Pharynx',
+    'Pancreas',
+    'Thyroid',
+    'Urinary Bladder', //include Cervix
+];
 let maleDiseases = [
     'All Cancer',
     'Bladder',
@@ -120,6 +133,29 @@ let maleDiseases = [
     'Stomach',
     'Testis',
     'Thyroid',
+];
+let femaleDisease1 = [
+    'Brain',
+    'Breast',
+    'Cervix',
+    'Colorectal',
+    'Corpus Uteri',
+    'Esophagus',
+    'Gallbladder',
+    'Kidney',
+    'Larynx',
+    'Leukemias',
+    'Liver',
+    'Lung',
+    'Melanoma of the Skin',
+    'Myeloma',
+    'Non-Hodgkin Lymphoma',
+    'Oral Cavity and Pharynx',
+    'Ovary',
+    'Pancreas',
+    'Stomach',
+    'Thyroid',
+    'Urinary Bladder', //include
 ];
 let femaleDisease = [
     'All Cancer',
@@ -626,26 +662,26 @@ let AllCancerResolver = class AllCancerResolver {
             maleDisease = [
                 'Colorectal',
                 'Kidney',
-                'Leukemia',
+                'Leukemias',
                 'Lung',
                 'Skin',
-                'H Lymphoma',
-                'Mouth & Throat',
+                'Lymphoma',
+                'Oral',
                 'Pancreas',
                 'Prostate',
-                'Bladder', //include
+                'Bladder',
             ];
             femaleDisease = [
-                'Female Breast, in situ',
+                'Breast',
                 'Colorectal',
                 'Kidney',
-                'Leukemia',
+                'Leukemias',
                 'Lung',
                 'Skin',
-                'NH Lymphoma',
+                'Lymphoma',
                 'Pancreas',
                 'Thyroid',
-                'Cervix', //include
+                'Cervix',
             ];
         }
         else {
@@ -654,24 +690,24 @@ let AllCancerResolver = class AllCancerResolver {
                 'Brain',
                 'Colorectal',
                 'Esophagus',
-                'Leukemia',
+                'Leukemias',
                 'Liver',
                 'Lung',
-                'H Lymphoma',
+                'Lymphoma',
                 'Pancreas',
-                'Prostate', // include
+                'Prostate',
             ];
             femaleDisease = [
                 'Brain',
-                'Female Breast, in situ',
+                'Breast',
                 'Cervix',
                 'Colorectal',
-                'Leukemia',
+                'Leukemias',
                 'Liver',
                 'Lung',
-                'NH Lymphoma',
+                'Lymphoma',
                 'Ovary',
-                'Pancreas', // include
+                'Pancreas',
             ];
         }
         for (let i = 0; i < data.length; i++) {
@@ -694,6 +730,51 @@ let AllCancerResolver = class AllCancerResolver {
         }
         data = data.sort((a, b) => a.percentage - b.percentage);
         return data;
+    }
+    async tuttrus() {
+        await allcancer_1.default.updateMany({
+            diseaseLabelMale: 'Leukemias',
+            Gender: 'Male',
+        }, {
+            Topic: 'Leukemias',
+        });
+        await allcancer_1.default.updateMany({
+            diseaseLabelFemale: 'Leukemias',
+            Gender: 'Female',
+        }, {
+            Topic: 'Leukemias',
+        });
+        await allcancer_1.default.updateMany({
+            diseaseLabelMale: 'Lymphoma',
+            Gender: 'Male',
+        }, {
+            Topic: 'Lymphoma',
+        });
+        await allcancer_1.default.updateMany({
+            diseaseLabelFemale: 'Lymphoma',
+            Gender: 'Female',
+        }, {
+            Topic: 'Lymphoma',
+        });
+        await allcancer_1.default.updateMany({
+            diseaseLabelMale: 'Oral',
+            Gender: 'Male',
+        }, {
+            Topic: 'Oral',
+        });
+        await allcancer_1.default.updateMany({
+            Gender: 'Female',
+            diseaseLabelFemale: 'Oral',
+        }, {
+            Topic: 'Oral',
+        });
+        await allcancer_1.default.updateMany({
+            diseaseLabelFemale: 'Breast',
+            Gender: 'Female',
+        }, {
+            Topic: 'Breast',
+        });
+        return 'Done';
     }
     async getProportionByGender(obj, isIncident) {
         obj.type = 'Incidence';
@@ -823,6 +904,12 @@ __decorate([
         String]),
     __metadata("design:returntype", Promise)
 ], AllCancerResolver.prototype, "getStateDataForAllCancer", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => String),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], AllCancerResolver.prototype, "tuttrus", null);
 AllCancerResolver = __decorate([
     (0, type_graphql_1.Resolver)()
 ], AllCancerResolver);
