@@ -253,7 +253,7 @@ let CancerResolver = class CancerResolver {
             obj.Year = year;
         }
         if (state) {
-            obj.State = state;
+            obj.Locationabbr = state;
         }
         if (race) {
             obj.Race = race;
@@ -290,7 +290,7 @@ let CancerResolver = class CancerResolver {
             obj.Year = year;
         }
         if (state) {
-            obj.State = state;
+            obj.Locationabbr = state;
         }
         if (race) {
             obj.Race = race;
@@ -324,7 +324,7 @@ let CancerResolver = class CancerResolver {
         let femaleData;
         let obj = {};
         if (state) {
-            obj.State = state;
+            obj.Locationabbr = state;
         }
         if (race) {
             obj.Race = race;
@@ -373,7 +373,7 @@ let CancerResolver = class CancerResolver {
             obj.Year = year;
         }
         if (state) {
-            obj.State = state;
+            obj.Locationabbr = state;
         }
         if (age) {
             obj.ageLabel = age;
@@ -419,7 +419,7 @@ let CancerResolver = class CancerResolver {
             obj.Year = year;
         }
         if (state) {
-            obj.State = state;
+            obj.Locationabbr = state;
         }
         if (race) {
             obj.Race = race;

@@ -194,7 +194,7 @@ let AllCancerResolver = class AllCancerResolver {
             obj.Year = year;
         }
         if (state) {
-            obj.State = state;
+            obj.Locationabbr = state;
         }
         if (race) {
             obj.Race = race;
@@ -231,7 +231,7 @@ let AllCancerResolver = class AllCancerResolver {
             obj.Year = year;
         }
         if (state) {
-            obj.State = state;
+            obj.Locationabbr = state;
         }
         if (race) {
             obj.Race = race;
@@ -268,7 +268,7 @@ let AllCancerResolver = class AllCancerResolver {
             obj.Year = year;
         }
         if (state) {
-            obj.State = state;
+            obj.Locationabbr = state;
         }
         // if (age) {
         //   obj.ageLabel = age;
@@ -311,7 +311,7 @@ let AllCancerResolver = class AllCancerResolver {
         let femaleData;
         let obj = {};
         if (state) {
-            obj.State = state;
+            obj.Locationabbr = state;
         }
         if (race) {
             obj.Race = race;
