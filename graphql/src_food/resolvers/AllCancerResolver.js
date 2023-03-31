@@ -778,7 +778,7 @@ let AllCancerResolver = class AllCancerResolver {
     }
     async getProportionByGender(obj, isIncident) {
         obj.type = 'Incidence';
-        obj.Topic = { $ne: 'All Cancer' };
+        obj.Topic = 'All Cancer';
         if (!isIncident) {
             obj.type = 'Death';
         }
