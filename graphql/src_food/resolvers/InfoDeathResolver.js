@@ -26,9 +26,12 @@ const stateAndAbbreviations_1 = __importDefault(require("../../../utils/stateAnd
 const allcancer_1 = __importDefault(require("../../../models/allcancer"));
 let InfoDeathResolver = class InfoDeathResolver {
     async hJKNBd() {
-        let a = await allcancer_1.default.find().skip(876295);
-        console.log(a);
-        return 's';
+        await allcancer_1.default.updateMany({
+            Locationdesc: 'United States (comparable to ICD-O-2)',
+        }, {
+            Locationabbr: 'United States',
+        });
+        return 'done';
     }
     async csvConverter2() {
         const csvFilePath = './temp/x.csv';

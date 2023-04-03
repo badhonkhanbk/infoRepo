@@ -196,6 +196,9 @@ let AllCancerResolver = class AllCancerResolver {
         if (state) {
             obj.Locationabbr = state;
         }
+        else {
+            obj.Locationabbr = 'United States';
+        }
         if (race) {
             obj.Race = race;
         }
@@ -233,6 +236,9 @@ let AllCancerResolver = class AllCancerResolver {
         if (state) {
             obj.Locationabbr = state;
         }
+        else {
+            obj.Locationabbr = 'United States';
+        }
         if (race) {
             obj.Race = race;
         }
@@ -269,6 +275,9 @@ let AllCancerResolver = class AllCancerResolver {
         }
         if (state) {
             obj.Locationabbr = state;
+        }
+        else {
+            obj.Locationabbr = 'United States';
         }
         // if (age) {
         //   obj.ageLabel = age;
@@ -313,6 +322,9 @@ let AllCancerResolver = class AllCancerResolver {
         if (state) {
             obj.Locationabbr = state;
         }
+        else {
+            obj.Locationabbr = 'United States';
+        }
         if (race) {
             obj.Race = race;
         }
@@ -339,6 +351,8 @@ let AllCancerResolver = class AllCancerResolver {
         else {
             objFemale.diseaseLabelFemale = 'All Cancer';
         }
+        console.log(objMale);
+        console.log(objFemale);
         if (dataSet === 'Incidence') {
             maleData = await this.getYearData(objMale, true);
             femaleData = await this.getYearData(objFemale, true);
@@ -407,7 +421,6 @@ let AllCancerResolver = class AllCancerResolver {
         if (!isIncident) {
             obj.type = 'Death';
         }
-        console.log(obj);
         let data = await allcancer_1.default.aggregate([
             {
                 $match: obj,
