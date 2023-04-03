@@ -429,7 +429,7 @@ let AllCancerResolver = class AllCancerResolver {
     }
     async getStateDataByGender(obj, isMale, isIncident) {
         obj.type = 'Incidence';
-        obj.Locationabbr = { $ne: null };
+        obj.Locationabbr = { $ne: 'United States' };
         if (!isIncident) {
             obj.type = 'Death';
         }
@@ -509,14 +509,16 @@ let AllCancerResolver = class AllCancerResolver {
         }
         let returnData = {
             quartile: {
-                0: lowest.percentage,
-                25: sortedArray[t25].percentage,
-                50: sortedArray[t50].percentage,
-                75: sortedArray[t75].percentage,
-                100: highest.percentage,
+                0: lowest.weightedAverage,
+                25: sortedArray[t25].weightedAverage,
+                50: sortedArray[t50].weightedAverage,
+                75: sortedArray[t75].weightedAverage,
+                100: highest.weightedAverage,
             },
             data: returnObj,
         };
+        // console.log(Object.keys(returnData.data));
+        console.log(returnData.data.AL);
         return JSON.stringify(returnData);
     }
     async getYearData(obj, isIncident) {
