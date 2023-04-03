@@ -197,7 +197,9 @@ let AllCancerResolver = class AllCancerResolver {
             obj.Locationabbr = state;
         }
         else {
-            obj.Locationabbr = 'United States';
+            if (dataSet === 'Incidence') {
+                obj.Locationabbr = 'United States';
+            }
         }
         if (race) {
             obj.Race = race;
@@ -213,6 +215,8 @@ let AllCancerResolver = class AllCancerResolver {
             ...obj,
             Gender: 'Female',
         };
+        console.log(objMale);
+        console.log(objFemale);
         if (dataSet === 'Incidence') {
             maleData = await this.getProportionByGender(objMale, true);
             femaleData = await this.getProportionByGender(objFemale, true);
@@ -237,7 +241,9 @@ let AllCancerResolver = class AllCancerResolver {
             obj.Locationabbr = state;
         }
         else {
-            obj.Locationabbr = 'United States';
+            if (dataSet === 'Incidence') {
+                obj.Locationabbr = 'United States';
+            }
         }
         if (race) {
             obj.Race = race;
@@ -277,7 +283,9 @@ let AllCancerResolver = class AllCancerResolver {
             obj.Locationabbr = state;
         }
         else {
-            obj.Locationabbr = 'United States';
+            if (dataSet === 'Incidence') {
+                obj.Locationabbr = 'United States';
+            }
         }
         // if (age) {
         //   obj.ageLabel = age;
@@ -323,7 +331,11 @@ let AllCancerResolver = class AllCancerResolver {
             obj.Locationabbr = state;
         }
         else {
-            obj.Locationabbr = 'United States';
+            if (dataSet === 'Incidence') {
+                if (dataSet === 'Incidence') {
+                    obj.Locationabbr = 'United States';
+                }
+            }
         }
         if (race) {
             obj.Race = race;
@@ -791,7 +803,7 @@ let AllCancerResolver = class AllCancerResolver {
     }
     async getProportionByGender(obj, isIncident) {
         obj.type = 'Incidence';
-        obj.Topic = 'All Cancer';
+        // obj.Topic = 'All Cancer';
         if (!isIncident) {
             obj.type = 'Death';
         }
