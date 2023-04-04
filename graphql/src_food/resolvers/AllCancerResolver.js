@@ -483,7 +483,7 @@ let AllCancerResolver = class AllCancerResolver {
         }
         let forMatedData = data;
         let returnObj = {};
-        let sortedArray = forMatedData.sort((data1, data2) => data1.percentage - data2.percentage);
+        let sortedArray = forMatedData.sort((data1, data2) => data1.weightedAverage - data2.weightedAverage);
         let length = sortedArray.length;
         let t25 = Math.floor((25 / 100) * (length + 1));
         let t50 = Math.floor((50 / 100) * (length + 1));
@@ -518,7 +518,7 @@ let AllCancerResolver = class AllCancerResolver {
             data: returnObj,
         };
         // console.log(Object.keys(returnData.data));
-        console.log(returnData.data.AL);
+        // console.log(returnData.quartile);
         return JSON.stringify(returnData);
     }
     async getYearData(obj, isIncident) {
