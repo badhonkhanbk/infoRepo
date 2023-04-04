@@ -492,15 +492,15 @@ let AllCancerResolver = class AllCancerResolver {
         let highest = sortedArray[sortedArray.length - 1];
         for (let i = 1; i < sortedArray.length - 1; i++) {
             returnObj[sortedArray[i]._id] = sortedArray[i];
-            if (sortedArray[t75].percentage < sortedArray[i].percentage) {
+            if (sortedArray[t75].weightedAverage < sortedArray[i].weightedAverage) {
                 returnObj[sortedArray[i]._id].quartile = 4;
             }
-            else if (sortedArray[t50].percentage < sortedArray[i].percentage &&
-                sortedArray[t75].percentage <= sortedArray[i].percentage) {
+            else if (sortedArray[t50].weightedAverage < sortedArray[i].weightedAverage &&
+                sortedArray[t75].weightedAverage <= sortedArray[i].weightedAverage) {
                 returnObj[sortedArray[i]._id].quartile = 3;
             }
-            else if (sortedArray[t25].percentage < sortedArray[i].percentage &&
-                sortedArray[t50].percentage <= sortedArray[i].percentage) {
+            else if (sortedArray[t25].weightedAverage < sortedArray[i].weightedAverage &&
+                sortedArray[t50].weightedAverage <= sortedArray[i].weightedAverage) {
                 returnObj[sortedArray[i]._id].quartile = 2;
             }
             else {
