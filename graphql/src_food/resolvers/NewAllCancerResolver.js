@@ -19,6 +19,7 @@ const type_graphql_1 = require("type-graphql");
 const newAllCancer_1 = __importDefault(require("../../../models/newAllCancer"));
 const ProportionGender_1 = __importDefault(require("../schemas/ProportionGender"));
 const ProportionGenderString_1 = __importDefault(require("../schemas/ProportionGenderString"));
+const newAllCancer_2 = __importDefault(require("../../../models/newAllCancer"));
 let ALLYEAR = [
     '1999',
     '2000',
@@ -196,11 +197,11 @@ let AllCancerResolver = class AllCancerResolver {
         if (state) {
             obj.Locationabbr = state;
         }
-        else {
-            if (dataSet === 'Incidence') {
-                obj.Locationabbr = 'United States';
-            }
-        }
+        // } else {
+        //   if (dataSet === 'Incidence') {
+        //     obj.Locationabbr = 'United States';
+        //   }
+        // }
         if (race) {
             obj.Race = race;
         }
@@ -823,7 +824,7 @@ let AllCancerResolver = class AllCancerResolver {
     }
     async getProportionByGender(obj, isIncident) {
         obj.type = 'Incidence';
-        obj.Topic = 'All Cancer';
+        // obj.Topic = 'All Cancer';
         if (!isIncident) {
             obj.type = 'Mortality';
         }
@@ -917,16 +918,18 @@ let AllCancerResolver = class AllCancerResolver {
         //   allData.push(obj);
         // }
         // await NewAllCancer.insertMany(allData);
-        // let data = await NewAllCancer.find();
-        // for (let i = 0; i < data.length; i++) {
-        //   await NewAllCancer.findOneAndUpdate(
-        //     { _id: data[i]._id },
-        //     {
-        //       Race: data[i].RACE_UI,
-        //     }
-        //   );
-        // }
-        // await NewAllCancer.updateMany({}, { RACE_ORIGIN: '' });
+        let data = await newAllCancer_2.default.find({
+            CountInNumber: 0,
+            Count: { $ne: '0' },
+        });
+        for (let i = 0; i < data.length; i++) {
+            await newAllCancer_2.default.findOneAndUpdate({ _id: data[i]._id }, {
+                CountInNumber: +data[i].Count,
+            });
+        }
+        // let count = await NewAllCancer.find({ Count: '+' });
+        // console.log(count.length);
+        // await NewAllCancer.updateMany({ Count: '+' }, { Count: '0' });
         return 'done';
     }
 };
