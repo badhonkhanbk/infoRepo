@@ -19,7 +19,6 @@ const type_graphql_1 = require("type-graphql");
 const newAllCancer_1 = __importDefault(require("../../../models/newAllCancer"));
 const ProportionGender_1 = __importDefault(require("../schemas/ProportionGender"));
 const ProportionGenderString_1 = __importDefault(require("../schemas/ProportionGenderString"));
-const newAllCancer_2 = __importDefault(require("../../../models/newAllCancer"));
 let ALLYEAR = [
     '1999',
     '2000',
@@ -824,7 +823,7 @@ let AllCancerResolver = class AllCancerResolver {
     }
     async getProportionByGender(obj, isIncident) {
         obj.type = 'Incidence';
-        // obj.Topic = 'All Cancer';
+        obj.Topic = 'All Cancer';
         if (!isIncident) {
             obj.type = 'Mortality';
         }
@@ -883,50 +882,64 @@ let AllCancerResolver = class AllCancerResolver {
         return maleData;
     }
     async newDataImport() {
-        // const data = JSON.parse(fs.readFileSync('./temp/newData.json', 'utf-8'));
+        //NOTE: add data from csv to json
+        // const csvFilePath = './temp/all_cancer.csv';
+        // const jsonArray = await csv().fromFile(csvFilePath);
+        // fs.writeFileSync('./temp/newAllCancer.json', JSON.stringify(jsonArray));
+        //NOTE: Parse Data and check
+        // const data = JSON.parse(
+        //   fs.readFileSync('./temp/newAllCancer.json', 'utf-8')
+        // );
         // console.log(data.length);
-        // await NewAllCancer.deleteMany();
+        // console.log(data[0]);
+        // // await NewAllCancer.deleteMany();
         // let allData = [];
-        // for (let i = 0; i < data.length; i++) {
+        // for (let i = 128938; i < data.length; i++) {
         //   console.log('hello' + data[i].Count + 'HI');
         //   console.log(data[i].Count == '~');
         //   let obj = {
-        //     Locationdesc: data[i].Locationdesc, // done
+        //     Locationdesc: data[i].AREA, //ok
         //     AGE_ADJUSTED_CI_LOWER: data[i].AGE_ADJUSTED_CI_LOWER,
         //     AGE_ADJUSTED_CI_UPPER: data[i].AGE_ADJUSTED_CI_UPPER,
-        //     CrudeRateInNumber: Number(data[i].CrudeRate), // done
-        //     Count: data[i].Count, // done
-        //     CountInNumber: 0,
-        //     type: data[i].type, // done
-        //     Population: data[i].Population, // done
-        //     PopulationInNumber: Number(data[i].Population),
-        //     Race: data[i].Race, // done
-        //     Gender: data[i].Gender, // done
-        //     SITE: data[i].SITE,
-        //     Year: data[i].Year,
+        //     AGE_ADJUSTED_RATE: data[i].AGE_ADJUSTED_RATE,
+        //     CrudeRateInNumber: Number(data[i].CRUDE_RATE), // ok
+        //     Count: data[i].COUNT, // OK
+        //     CountInNumber: Number(data[i].COUNT) ? Number(data[i].COUNT) : 0, //OK
+        //     type: data[i].EVENT_TYPE, //OK
+        //     Population: data[i].POPULATION, //OK
+        //     PopulationInNumber: Number(data[i].POPULATION), //OK
+        //     Race: data[i]['Race UI'], // OK
+        //     Race_Origin: data[i].RACE, // OK
+        //     Gender: data[i].SEX, // OK
+        //     SITE: data[i].SITE, //OK
+        //     Year: data[i].YEAR, // OK
         //     CRUDE_CI_LOWER: data[i].CRUDE_CI_LOWER,
         //     CRUDE_CI_UPPER: data[i].CRUDE_CI_UPPER,
-        //     CrudeRate: data[i].CrudeRate, // done
-        //     Locationabbr: data[i].Locationabbr, // done
-        //     Topic: data[i].Topic, // done
-        //     RACE_UI: data[i].RACE_UI,
+        //     CrudeRate: data[i].CRUDE_RATE, // OK
+        //     Locationabbr: data[i].Locationabbr, // OK
+        //     Topic: data[i]['SITE UI'], //OK
+        //     RACE_UI: data[i]['Race UI'],
         //     cnt: i,
-        //     diseaseLabelMale: data[i].Gender === 'Male' ? data[i].Topic : null,
-        //     diseaseLabelFemale: data[i].Gender === 'Female' ? data[i].Topic : null,
+        //     diseaseLabelMale: data[i].SEX === 'Male' ? data[i]['SITE UI'] : null,
+        //     diseaseLabelFemale:
+        //       data[i].SEX === 'Female' ? data[i]['SITE UI'] : null,
         //   };
         //   console.log(i);
         //   allData.push(obj);
         // }
         // await NewAllCancer.insertMany(allData);
-        let data = await newAllCancer_2.default.find({
-            CountInNumber: 0,
-            Count: { $ne: '0' },
-        });
-        for (let i = 0; i < data.length; i++) {
-            await newAllCancer_2.default.findOneAndUpdate({ _id: data[i]._id }, {
-                CountInNumber: +data[i].Count,
-            });
-        }
+        // let data = await NewAllCancer.find({
+        //   CountInNumber: 0,
+        //   Count: { $ne: '0' },
+        // });
+        // for (let i = 0; i < data.length; i++) {
+        //   await NewAllCancer.findOneAndUpdate(
+        //     { _id: data[i]._id },
+        //     {
+        //       CountInNumber: +data[i].Count,
+        //     }
+        //   );
+        // }
         // let count = await NewAllCancer.find({ Count: '+' });
         // console.log(count.length);
         // await NewAllCancer.updateMany({ Count: '+' }, { Count: '0' });

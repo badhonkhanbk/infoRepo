@@ -25,32 +25,28 @@ const newAllCancerSchema = new mongoose_1.Schema({
     SITE: String,
     CRUDE_CI_LOWER: String,
     CRUDE_CI_UPPER: String,
+    AGE_ADJUSTED_RATE: String,
     RACE_UI: String,
     RACE_ORIGIN: String,
 });
 const NewAllCancer = (0, mongoose_1.model)('newAllCancer', newAllCancerSchema);
 exports.default = NewAllCancer;
-// let obj = {
-//   Locationdesc: data[i].Locationdesc, // done
-//   AGE_ADJUSTED_CI_LOWER: data[i].AGE_ADJUSTED_CI_LOWER,
-//   AGE_ADJUSTED_CI_UPPER: data[i].AGE_ADJUSTED_CI_UPPER,
-//   CrudeRateInNumber: Number(data[i].CrudeRate), // done
-//   Count: data[i].Count, // done
-//   CountInNumber: Number(data[i].Count), // done
-//   type: data[i].type, // done
-//   Population: data[i].Population, // done
-//   PopulationInNumber: Number(data[i].Population),
-//   Race: data[i].Race, // done
-//   Gender: data[i].Gender, // done
-//   SITE: data[i].SITE,
-//   Year: data[i].Year,
-//   CRUDE_CI_LOWER: data[i].CRUDE_CI_LOWER,
-//   CRUDE_CI_UPPER: data[i].CRUDE_CI_UPPER,
-//   CrudeRate: data[i].CrudeRate, // done
-//   Locationabbr: data[i].Locationabbr, // done
-//   Topic: data[i].Topic, // done
-//   RACE_UI: data[i].RACE_UI,
-//   cnt: i,
-//   diseaseLabelMale: data[i].Gender === 'Male' ? data[i].Topic : null,
-//   diseaseLabelFemale: data[i].Gender === 'Female' ? data[i].Topic : null,
-// };
+let obj = {
+    AREA: 'Alabama',
+    AGE_ADJUSTED_CI_LOWER: '359.6',
+    AGE_ADJUSTED_CI_UPPER: '374.7',
+    AGE_ADJUSTED_RATE: '367.1',
+    COUNT: '9297',
+    EVENT_TYPE: 'Incidence',
+    POPULATION: '2293259',
+    RACE: 'All Races',
+    SEX: 'Female',
+    SITE: 'All Cancer Sites Combined',
+    YEAR: '1999',
+    CRUDE_CI_LOWER: '397.2',
+    CRUDE_CI_UPPER: '413.7',
+    CRUDE_RATE: '405.4',
+    Locationabbr: 'AL',
+    'Race UI': 'All Races',
+    'SITE UI': 'All Cancer',
+};
