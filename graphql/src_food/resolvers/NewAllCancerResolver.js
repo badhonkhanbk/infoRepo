@@ -326,7 +326,7 @@ let AllCancerResolver = class AllCancerResolver {
     async getYearBasedAggregationForAllCancer(state, race, dataSet, maleDisease, femaleDisease) {
         let maleData;
         let femaleData;
-        let obj = {};
+        let obj = { Year: { $ne: '2016-2020' } };
         if (state) {
             obj.Locationabbr = state;
         }
